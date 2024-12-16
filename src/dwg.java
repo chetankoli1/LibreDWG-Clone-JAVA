@@ -805,8 +805,8 @@ class Dwg_Data {
 
 }
 class Dwg_Header{
-    public DWG_VERSION_TYPE version = DWG_VERSION_TYPE.R_INVALID;
-    public DWG_VERSION_TYPE from_version = DWG_VERSION_TYPE.R_INVALID;
+    public DWG_VERSION_TYPE version;
+    public DWG_VERSION_TYPE from_version;
 
     public char is_maint;
     public  char zero_one_or_three;

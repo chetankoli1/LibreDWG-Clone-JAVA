@@ -17,6 +17,8 @@ public class decode {
         objDwgData.object = null;
         objDwgData.object_map = hash.hash_new(1663131);
 
+
+
         if(objDwgData.object_map == null)
         {
             objDwgData.object_map = hash.hash_new(1024);
@@ -70,7 +72,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         }
 
         dat.from_version = objDwgData.header.from_version;
-        if(objDwgData.header.version.ordinal() == 0)
+        if(objDwgData.header.version == null)
         {
             dat.version = objDwgData.header.version = dat.from_version;
         }

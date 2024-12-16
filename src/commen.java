@@ -18,15 +18,11 @@ class dwg_versions{
     }
 }
 
-
+class commonvar{
+    public static final String CreatedBy = "LibreDWG UNKNOWN";
+}
 
 public class commen {
-    public static String[] version_codes =
-            new String[]
-                    {
-                      "INVALI","AC1015","AC1001","------"
-                    };
-
     static DWG_VERSION_TYPE dwg_version_hdr_type(String hdr) {
         for(int i = DWG_VERSION_TYPE.R_AFTER.ordinal() - 1; i > 0; i--)
             if (strEQ(dwg_versions[i].hdr, hdr)) {
@@ -150,4 +146,8 @@ public class commen {
                     new dwg_versions(DWG_VERSION_TYPE.R_2022b, "r2022b", "AC103-4", "AutoCAD 2022 beta", 0x24),
                     new dwg_versions(DWG_VERSION_TYPE.R_AFTER, "r>2022", "", "AutoCAD Release >2022", 0),
             };
+
+    public static boolean memBEGINc(String s1, String s2) {
+        return (s1.length() >= s2.length() && commen.strcmp(s1,s2,s2.length()));
+    }
 }

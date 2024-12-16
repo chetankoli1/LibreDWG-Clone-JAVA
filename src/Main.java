@@ -48,7 +48,7 @@ public class Main {
                 {
                     dat.version = dat.from_version = objDwgData.header.version;
                     dat.codepages = objDwgData.header.codepage;
-                    BufferedWriter writer = new BufferedWriter(new FileWriter(config.outFilePath, true));
+                    BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
                     config.streamWriter = writer;
                     error = out_json.dwg_write_json(dat, objDwgData);
                     config.streamWriter.close();

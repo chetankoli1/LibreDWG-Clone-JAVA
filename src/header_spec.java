@@ -1,7 +1,9 @@
+import java.io.IOException;
+
 public class header_spec {
     static void header_spec_read(Bit_Chain dat, Bit_Chain hdl_dat,Dwg_Data objDwgData)
     {
-        Dwg_Header header = new Dwg_Header();
+        Dwg_Header header = objDwgData.header;
 
         header.is_maint = dec_macros.FIELD_RC(dat,"RC",0);
         if(commen.VERSIONS(DWG_VERSION_TYPE.R_2_0b,DWG_VERSION_TYPE.R_13b1,dat))
@@ -52,6 +54,26 @@ public class header_spec {
         }
 
 
-        objDwgData.header = header;
+        //objDwgData.header = header;
+    }
+
+    static void header_spec_write(Bit_Chain dat, Bit_Chain hdl_dat, Dwg_Data objDwgData) throws IOException {
+        out_json.FIELD_RC("is_maint",objDwgData.header.is_maint,dat,0);
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_2_0,DWG_VERSION_TYPE.R_13,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13,dat))
+        {
+            out_json.FIELD_RC("zero_one_or_three",objDwgData.header.zero_one_or_three,dat,0);
+            out_json.FIELD_RL("thumbnail_address",objDwgData.header.thumbnail_address,dat,0);
+            out_json.FIELD_RC("dwg_version",objDwgData.header.dwg_version,dat,0);
+            out_json.FIELD_RC("maint_version",objDwgData.header.maint_version,dat,0);
+            out_json.FIELD_RL("codepage",objDwgData.header.codepage,dat,0);
+        }
+        if(commen.PRE(DWG_VERSION_TYPE.R_2004,dat))
+        {
+            out_json.FIELD_RL("sections",objDwgData.header.sections,dat,0);
+        }
     }
 }
