@@ -473,6 +473,79 @@ public class dwg {
         return  error;
     }
 
+    static int dwg_section_init(Dwg_Data objDwgData) {
+        loglevel = objDwgData.opts & DWG_OPTS_LOGLEVEL;
+        if(objDwgData.header.version.ordinal() < DWG_VERSION_TYPE.R_13b1.ordinal())
+        {
+            if(objDwgData.header.num_sections == 0)
+            {
+                objDwgData.header.num_sections = 5;
+            }
+            if(objDwgData.header.sections == 0)
+                objDwgData.header.sections = 5;
+
+            if(objDwgData.header.numheader_vars != 0)
+            {
+                if(objDwgData.header.numheader_vars > 129)
+                    objDwgData.header.num_sections += 2;
+                if(objDwgData.header.num_sections > 158)
+                    objDwgData.header.num_sections += 1;
+                if(objDwgData.header.numheader_vars > 160)
+                    objDwgData.header.num_sections += 2;
+            }else{
+                if(objDwgData.header.version.ordinal() >= DWG_VERSION_TYPE.R_10.ordinal())
+                    objDwgData.header.numheader_vars = 160;
+                objDwgData.header.num_sections += 3;
+                if(objDwgData.header.version.ordinal() >= DWG_VERSION_TYPE.R_11.ordinal())
+                    objDwgData.header.numheader_vars = 205;
+                objDwgData.header.num_sections += 2;
+            }
+            objDwgData.header.num_sections += 1;
+        }else{
+            if(objDwgData.header.num_sections == 0 ||
+                    objDwgData.header.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal())
+            {
+                objDwgData.header.num_sections = (objDwgData.header.version.ordinal() < DWG_VERSION_TYPE.R_13c3.ordinal())
+                        ? 3 : (objDwgData.header.version.ordinal() < DWG_VERSION_TYPE.R_2000b.ordinal())
+                        ? 5 : 6;
+                if(objDwgData.header.num_sections == 3 && objDwgData.objfreespace.numnums != '\0')
+                    objDwgData.header.num_sections = 5;
+            }
+
+            if(objDwgData.header.sections == 0 ||
+                    (objDwgData.header.from_version.ordinal() > DWG_VERSION_TYPE.R_2000.ordinal()
+                    && objDwgData.header.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal()))
+                objDwgData.header.sections = objDwgData.header.num_sections;
+
+            if(objDwgData.header.num_sections != objDwgData.header.sections)
+            {
+                objDwgData.header.num_sections = objDwgData.header.sections;
+            }
+        }
+        if(objDwgData.header.num_sections < 3){
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+        }
+        else if(objDwgData.header.num_sections > 28)
+        {
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+        }
+
+        if (objDwgData.header.section != null) {
+            // Resize the array by creating a new array with a larger size and copying the old elements
+            Dwg_Section[] newSectionArray = new Dwg_Section[(int)objDwgData.header.num_sections + 2];
+            System.arraycopy(objDwgData.header.section, 0, newSectionArray, 0, objDwgData.header.section.length);
+            objDwgData.header.section = newSectionArray;
+        } else {
+            // Allocate a new array if section is null
+            objDwgData.header.section = new Dwg_Section[(int)objDwgData.header.num_sections + 2];
+        }
+        if(objDwgData.header.section == null)
+        {
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.getValue();
+        }
+        return 0;
+    }
+
     private static int dat_read_file(Bit_Chain dat, String filename) throws IOException {
         byte[] fileBytes = Files.readAllBytes(Path.of(filename));
         int[] arr = new int[fileBytes.length];
@@ -723,9 +796,9 @@ class Dwg_Section_InfoHdr
 }
 
 class Dwg_Section{
-    public int number;
-    public int size;
-    public long address;
+    public int number= 0;
+    public int size = 0;
+    public long address = 0;
     public int objid_r11;
 
     public int parent;
@@ -831,8 +904,9 @@ class Dwg_Header{
     public int summaryinfo_address;
     public int vbaproj_address;
     public int r2004_header_address;
-    public int num_sections;
+    public long num_sections;
     public long sections;
+    public Dwg_Section[] section;
     public Dwg_Section_InfoHdr section_infohdr = new Dwg_Section_InfoHdr();
     public Dwg_Section_Info[] section_info;
 }
@@ -912,7 +986,7 @@ class Dwg_RevHistory
 
 class Dwg_ObjFreeSpace
 {
-
+    public char numnums;
 }
 
 class Dwg_Template

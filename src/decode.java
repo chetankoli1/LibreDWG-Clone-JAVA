@@ -107,6 +107,11 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
 
     private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) {
         int error = 0;
+        String[] section_names =
+        {
+                "AcDb:Header","AcDb:Classes","AcDb:Handles","AcDb:ObjFreeSpace",
+                "AcDb:Template","AcDb:AuxHeader"
+        };
 
         {
             Dwg_Header obj = objDwgData.header;
@@ -116,8 +121,38 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             header_spec.header_spec_read(dat,hdl_dat,objDwgData);
         }
 
+        if((error = dwg.dwg_section_init(objDwgData)) != 0)
+        {
+            return error;
+        }
+        if(dat._byte != 0x19)
+        {
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+        }
+
+        assert dat._byte == 0x19;
+
+        for(int j = 0; j < objDwgData.header.sections; j++)
+        {
+            objDwgData.header.section[j] = new Dwg_Section();
+            objDwgData.header.section[j].number = (int)bits.bit_read_RC(dat);
+            objDwgData.header.section[j].address = (long)bits.bit_read_RL(dat);
+            objDwgData.header.section[j].size = (int)bits.bit_read_RL(dat);
+
+            if(j < 6)
+                objDwgData.header.section[j].name = section_names[j].toCharArray();
+
+            if((objDwgData.header.section[j].address +
+                    objDwgData.header.section[j].size) > dat.size)
+            {
+                return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            }
+        }
+
         return error;
     }
+
+
 
     private static int decode_R2004(Bit_Chain dat, Dwg_Data objDwgData)
     {
