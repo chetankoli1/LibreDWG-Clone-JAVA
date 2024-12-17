@@ -23,7 +23,7 @@ public class decode {
         {
             objDwgData.object_map = hash.hash_new(1024);
             System.out.println("out of memory");
-            return DWG_ERROR.DWG_ERR_OUTOFMEM.getValue();
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
         }
         objDwgData.dirty_refs = 1;
 
@@ -53,7 +53,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         dat.bit = 0;
         if(dat.chain == null || dat.size < 58)
         {
-            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
         }
         commen.strcpy(magic,dat.chain,11);
         magic[10] = '\0';
@@ -68,7 +68,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             }else{
                 System.out.println("Invalid or unimplemented DWG version code %s "+magic_str);
             }
-            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
         }
 
         dat.from_version = objDwgData.header.from_version;
@@ -107,6 +107,8 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
 
     private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) {
         int error = 0;
+        int crc, crc2;
+        Dwg_Object obj = null;
         String[] section_names =
         {
                 "AcDb:Header","AcDb:Classes","AcDb:Handles","AcDb:ObjFreeSpace",
@@ -114,7 +116,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         };
 
         {
-            Dwg_Header obj = objDwgData.header;
+            Dwg_Header _obj = objDwgData.header;
             Bit_Chain hdl_dat = new Bit_Chain(dat);
             assert dat._byte == 0xb;
 
@@ -127,7 +129,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         }
         if(dat._byte != 0x19)
         {
-            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
         }
 
         assert dat._byte == 0x19;
@@ -145,7 +147,51 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             if((objDwgData.header.section[j].address +
                     objDwgData.header.section[j].size) > dat.size)
             {
-                return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+                return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
+            }
+        }
+
+        crc2 = bits.bit_calc_CRC(0xC0C1, 0, dat.chain, dat._byte);
+        crc = bits.bit_read_RS (dat);
+
+        if(crc != crc2)
+        {
+            return DWG_ERROR.DWG_ERR_WRONGCRC.value;
+        }
+
+        if(bits.bit_search_sentinel(dat, commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_HEADER_END)) == 0)
+        {
+
+        }
+        /*-------------------------------------------------------------------------
+         * Section 5 AuxHeader
+         * R13c3+, mostly redundant file header information. no sentinels
+         */
+
+        if(objDwgData.header.num_sections == 6 && objDwgData.header.version.ordinal() >= DWG_VERSION_TYPE.R_13c3.ordinal())
+        {
+            objDwgData.auxheader = new Dwg_AuxHeader();
+            Dwg_AuxHeader _obj = objDwgData.auxheader;
+            Bit_Chain hdl_dat = new Bit_Chain(dat);
+            long end_address = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_AUXHEADER_R2000.value].address
+                    + objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_AUXHEADER_R2000.value].size;
+
+            obj = null;
+            dat._byte = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_AUXHEADER_R2000.value].address;
+
+            if(dat.size < end_address)
+            {
+                return DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
+            }
+            else{
+                long old_size = dat.size;
+                dat.size = end_address;
+
+                //
+                auxheader_spec.auxheader_spec_read(dat,objDwgData);
+                //
+
+                dat.size = old_size;
             }
         }
 

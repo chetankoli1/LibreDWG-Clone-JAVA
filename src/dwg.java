@@ -24,15 +24,12 @@ enum DWG_ERROR {
 
     public static final int DWG_ERR_CRITICAL = DWG_ERR_CLASSESNOTFOUND.value;
 
-    private final int value;
+    public final int value;
 
     DWG_ERROR(int value) {
         this.value = value;
     }
 
-    public int getValue() {
-        return value;
-    }
 }
 
 enum DWG_OBJECT_TYPE{
@@ -413,6 +410,32 @@ enum DWG_SECTION_TYPE{
         this.value = value;
     }
 }
+enum DWG_SECTION_TYPE_R13
+{
+    SECTION_HEADER_R13 (0),
+    SECTION_CLASSES_R13(1),
+    SECTION_HANDLES_R13 (2),
+    SECTION_OBJFREESPACE_R13(3), /* including the 2ndheader */
+    SECTION_TEMPLATE_R13 (4),
+    SECTION_AUXHEADER_R2000(5),
+    SECTION_THUMBNAIL_R13(6);
+    public int value;
+    DWG_SECTION_TYPE_R13(int value)
+    {
+        this.value = value;
+    }
+}
+
+class Dwg_Bitcode_TimeBLL{
+    public long days;
+    public long ms;
+    public double value;
+}
+class Dwg_Bitcode_TimeRLL{
+    public long days;
+    public long ms;
+    public double value;
+}
 
 public class dwg {
     public static int loglevel;
@@ -523,11 +546,11 @@ public class dwg {
             }
         }
         if(objDwgData.header.num_sections < 3){
-            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
         }
         else if(objDwgData.header.num_sections > 28)
         {
-            return DWG_ERROR.DWG_ERR_INVALIDDWG.getValue();
+            return DWG_ERROR.DWG_ERR_INVALIDDWG.value;
         }
 
         if (objDwgData.header.section != null) {
@@ -541,7 +564,7 @@ public class dwg {
         }
         if(objDwgData.header.section == null)
         {
-            return DWG_ERROR.DWG_ERR_OUTOFMEM.getValue();
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
         }
         return 0;
     }
@@ -941,7 +964,45 @@ class Dwg_Object_BLOCK_CONTROL
 
 class Dwg_AuxHeader
 {
-
+    public char[] aux_intro;
+    public int dwg_version;
+    public long maint_version;
+    public long numsaves;
+    public long minus_1;
+    public int numsaves_1;
+    public int numsaves_2;
+    public long zero;
+    public int dwg_version_1;
+    public long maint_version_1;
+    public int dwg_version_2;
+    public long maint_version_2;
+    public int[] unknown_6rs;
+    public long[] unknown_5rl;
+    public Dwg_Bitcode_TimeRLL TDCREATE;
+    public Dwg_Bitcode_TimeRLL TDUPDATE;
+    public long HANDSEED;
+    public long plot_stamp;
+    public int zero_1;
+    public int numsaves_3;
+    public long zero_2;
+    public long zero_3;
+    public long zero_4;
+    public long numsaves_4;
+    public long zero_5;
+    public long zero_6;
+    public long zero_7;
+    public long zero_8;     /* ?? */
+    public int[] zero_18; /* R2018+ */
+    public int num_auxheader_variables; /* < R13 */
+    public int auxheader_size;          /* < R13 */
+    public long entities_start;          /* < R13 */
+    public long entities_end;            /* < R13 */
+    public long blocks_start;            /* < R13 */
+    public long extras_start;            /* < R13 */
+    public long auxheader_address;      /* < R13 */
+    public int num_aux_tables;          /* < R13 */
+    public int R11_HANDLING;  /* TODO Merge with HANDSEED */
+    public Dwg_Object_Ref R11_HANDSEED;   /* TODO Merge with HANDSEED */
 }
 
 class Dwg_SecondHeader

@@ -44,7 +44,7 @@ public class Main {
                     dat.fh.close();
                 }
 
-                if(!(error >= DWG_ERROR.DWG_ERR_CLASSESNOTFOUND.getValue()))
+                if(!(error >= DWG_ERROR.DWG_ERR_CLASSESNOTFOUND.value))
                 {
                     dat.version = dat.from_version = objDwgData.header.version;
                     dat.codepages = objDwgData.header.codepage;
