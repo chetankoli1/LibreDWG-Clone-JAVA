@@ -242,6 +242,14 @@ public class bits {
     }
 
 
+    public static void bit_set_position(Bit_Chain dat, long bitpos) {
+        dat._byte = (int)bitpos >> 3;
+        dat.bit = (char)(bitpos & 7);
+        if(dat._byte > dat.size || dat._byte == dat.size && dat.bit != 0)
+        {
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+        }
+    }
 }
 class Bit_Chain {
     public char[] chain;

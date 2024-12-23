@@ -1022,7 +1022,8 @@ class Dwg_Header{
 
 class Dwg_Header_Variables
 {
-
+    public long size;
+    public  long bitsize_hi;
 }
 
 class Dwg_Chain

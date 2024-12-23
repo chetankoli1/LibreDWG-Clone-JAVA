@@ -106,12 +106,19 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             loglevel = objDwgData.opts & dwg.DWG_OPTS_LOGLEVEL;
         }
     }
-
+    public static int MAX_HEADER_SIZE = 2048;
 
     private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) {
         int error = 0;
         int crc, crc2;
         Dwg_Object obj = null;
+        long size;
+        long endpos;
+        long lastmap;
+        long startpos;
+        long object_begin;
+        long object_end;
+        long pvz = 0;
         String[] section_names =
         {
                 "AcDb:Header","AcDb:Classes","AcDb:Handles","AcDb:ObjFreeSpace",
@@ -254,6 +261,51 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 }
             }
         }
+        /*-------------------------------------------------------------------------
+         * Header Variables, section 0
+         */
+
+
+
+        if(objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].address < 58
+        || objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].address +
+            objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size > dat.size)
+        {
+            //LOG_ERROR ("Invalid Header section, skipped")
+            return error = DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
+        }
+        dat._byte = pvz = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].address + 16;
+        objDwgData.header_vars = new Dwg_Header_Variables();
+        objDwgData.header_vars.size = bits.bit_read_RL(dat);
+        if(objDwgData.header_vars.size > MAX_HEADER_SIZE)
+        {
+            objDwgData.header_vars.size =
+                    objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size;
+            if(objDwgData.header_vars.size > 20)
+            {
+                //LOG_WARN ("Fixup illegal Header Length");
+                objDwgData.header_vars.size -= 16 + 4;
+            }
+        }
+        dat.bit = '\0';
+
+        error |= dwg_decode_header_variables(dat,dat,dat,objDwgData);
+
+        if(objDwgData.header_vars.size < MAX_HEADER_SIZE)
+        {
+            long crcpos = pvz + objDwgData.header_vars.size + 4;
+            if(dat.bit != '\0' || dat._byte != crcpos)
+            {
+                //unsigned char r = 8 - dat->bit;
+                //LOG_HANDLE (" padding: %zd byte, %d bits\n", crcpos - dat->byte, r);
+            }
+            //LOG_HANDLE (" crc pos: %" PRIuSIZE "\n", crcpos);
+            bits.bit_set_position(dat,crcpos * 8);
+            crc = bits.bit_read_RS(dat);
+        }
+        else{
+            return error |= DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
+        }
         return error;
     }
 
@@ -266,6 +318,17 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
 
     private static int decode_R2007(Bit_Chain dat, Dwg_Data objDwgData){
         return 0;
+    }
+
+    private static int dwg_decode_header_variables(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat, Dwg_Data objDwgData){
+        int error = 0;
+        Dwg_Header_Variables _obj = objDwgData.header_vars;
+        Dwg_Object obj = new Dwg_Object();
+
+        header_variables_spec.header_variables_spec_read(dat,hdl_dat,str_dat,objDwgData);
+
+
+        return error;
     }
 
 
