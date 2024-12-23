@@ -242,7 +242,15 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
 //                    objDwgData.thumbnail.chain = commen.memcpy(objDwgData.thumbnail.chain,start_address,dat.chain);
                     System.arraycopy(dat.chain, (int)start_address, objDwgData.thumbnail.chain, 0, (int)objDwgData.thumbnail.size);
                     dat._byte += (int)objDwgData.thumbnail.size;
-                    dwg.dwg_bmp(objDwgData,bmpsize,type);
+                    dwg.DwgBumpData data = new dwg.DwgBumpData();
+                    data = dwg.dwg_bmp(objDwgData);
+                    bmpsize = data.size;
+                    type = data.typep;
+                    if(bmpsize > objDwgData.thumbnail.size)
+                    {
+                        /*LOG_ERROR ("thumbnail size overflow: %i > %" PRIuSIZE "\n",
+                           bmpsize, dwg->thumbnail.size)*/
+                    }
                 }
             }
         }

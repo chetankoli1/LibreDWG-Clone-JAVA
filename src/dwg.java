@@ -1,3 +1,4 @@
+import java.beans.Encoder;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -587,13 +588,22 @@ public class dwg {
         return 0;
     }
 
-    static char[] dwg_bmp(Dwg_Data objDwgData, long size, char typep) {
+    static class DwgBumpData{
+        public char[] chain;
+        public long size;
+        public char typep;
+
+        public DwgBumpData(){}
+    }
+
+     static DwgBumpData dwg_bmp(Dwg_Data objDwgData) {
+        DwgBumpData data = new DwgBumpData();
         char i, num_headers,type = 0;
         int found = 0;
         long header_size,address = 0, osize;
         Bit_Chain dat = new Bit_Chain();
         loglevel = objDwgData.opts & DWG_OPTS_LOGLEVEL;
-        size = 0;
+        data.size = 0;
         assert objDwgData != null;
         dat.chain = objDwgData.thumbnail.chain;
         dat.size = objDwgData.thumbnail.size;
@@ -602,7 +612,7 @@ public class dwg {
         osize = bits.bit_read_RL(dat);
         if(osize > dat.size)
         {
-            return new char[]{};
+            return null;
         }
         num_headers = bits.bit_read_RC(dat);
 
@@ -611,9 +621,56 @@ public class dwg {
 
         for(i = 0; i < num_headers; i++)
         {
-
+            if(dat._byte > dat.size)
+            {
+                break;
+            }
+            type = bits.bit_read_RC(dat);
+            data.typep = type;
+            address = bits.bit_read_RL(dat);
+            if(type == 1)
+            {
+                long h_size = bits.bit_read_RL(dat);
+                header_size += h_size;
+            }else if(type == 2 && found == 0){
+                data.size = bits.bit_read_RL(dat);
+                found = 1;
+                if(data.size > dat.size - 4)
+                {
+                    return null;
+                }
+            }else if(type == 3)
+            {
+                osize = bits.bit_read_RL(dat);
+                data.size = osize;
+            }
+            else if(type == 6)
+            {
+                osize = bits.bit_read_RL(dat);
+                data.size = osize;
+            }
+            else{
+                osize = bits.bit_read_RL(dat);
+            }
         }
-        return  new char[]{'c'};
+
+        dat._byte += header_size;
+        if(data.size != 0)
+        {
+            //LOG_TRACE ("Image offset: %" PRIuSIZE "\n", dat.byte);
+        }
+        if(header_size + data.size > dat.size)
+        {
+            data.size = 0;
+            return null;
+        }
+        if(data.size > 0)
+        {
+            data.chain = new char[(int) data.size];
+            System.arraycopy(dat.chain, (int) dat._byte, data.chain, 0, (int) data.size);
+            return data;
+        }
+        return  null;
     }
 }
 
