@@ -49,9 +49,9 @@ public class auxheader_spec {
         obj.TDUPDATE = dec_macros.FIELD_TIMERLL(dat,0);
         obj.HANDSEED = dec_macros.FIELD_RLx(dat,"RL",0);
         obj.plot_stamp = dec_macros.FIELD_RL(dat,"RL",0);
-        obj.zero_1 = dec_macros.FIELD_RL(dat,"RL",0);
+        obj.zero_1 = dec_macros.FIELD_RS(dat,"RL",0);
         obj.numsaves_3 = dec_macros.FIELD_RS(dat,"RS",0);
-        obj.zero_2 = dec_macros.FIELD_RS(dat,"RS",0);
+        obj.zero_2 = dec_macros.FIELD_RL(dat,"RS",0);
         obj.zero_3 = dec_macros.FIELD_RL(dat,"RL",0);
         obj.zero_4 = dec_macros.FIELD_RL(dat,"RL",0);
         obj.numsaves_4 = dec_macros.FIELD_RL(dat,"RL",0);
@@ -133,8 +133,8 @@ public class auxheader_spec {
         out_json.FIELD_RL("zero_6",objDwgData.auxheader.zero_6,dat,0);
         if(commen.SINCE(DWG_VERSION_TYPE.R_2004,dat))
         {
-            out_json.FIELD_RL("zero_6",objDwgData.auxheader.zero_7,dat,0);
-            out_json.FIELD_RL("zero_6",objDwgData.auxheader.zero_8,dat,0);
+            out_json.FIELD_RL("zero_7",objDwgData.auxheader.zero_7,dat,0);
+            out_json.FIELD_RL("zero_8",objDwgData.auxheader.zero_8,dat,0);
         }
         if(commen.SINCE(DWG_VERSION_TYPE.R_2018,dat))
         {
