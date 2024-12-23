@@ -31,7 +31,6 @@ enum DWG_ERROR {
     DWG_ERROR(int value) {
         this.value = value;
     }
-
 }
 
 enum DWG_OBJECT_TYPE{

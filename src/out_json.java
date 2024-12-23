@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,16 +33,52 @@ public class out_json {
         //
 
         //
-        if(dat.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal())
+        if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_13b1.ordinal())
         {
-            if(objDwgData.header.sections >= 6)
+            if(json_thumbnail_write(dat,objDwgData) >= DWG_ERROR.DWG_ERR_CRITICAL)
             {
-                error |= json_section_auxheader(dat,objDwgData);
+                return 1;
+            }
+            if(dat.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal())
+            {
+                if(objDwgData.header.sections >= 6)
+                {
+                    error |= json_section_auxheader(dat,objDwgData);
+                }
             }
         }
-
-        config.streamWriter.write("\n}");
+        config.streamWriter.write("}");
         config.streamWriter.write("\n");
+        return 0;
+    }
+
+    static int json_thumbnail_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        Dwg_Chain thumbnail = objDwgData.thumbnail;
+        Bit_Chain _obj = new Bit_Chain(dat);
+        _obj.bit = thumbnail.bit;
+        _obj.chain = thumbnail.chain;
+        _obj.size = thumbnail.size;
+        _obj._byte = thumbnail._byte;
+
+        if(_obj.chain != null && _obj.size > 10)
+        {
+            if(objDwgData.header.from_version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
+            {
+                _obj.chain = Arrays.copyOfRange(_obj.chain, 16, _obj.chain.length);
+            }
+            KEY(dat,"THUMBNAILIMAGE");
+            HASH(dat);
+            KEY(dat,"size");
+            config.streamWriter.write(_obj.size+"");
+
+            FIELD_BINARY(dat,"chain", _obj, 310);
+            if(objDwgData.header.from_version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
+            {
+                _obj.chain = Arrays.copyOfRange(_obj.chain, 16, _obj.chain.length);
+
+            }
+            ENDHASH(dat);
+        }
         return 0;
     }
 
@@ -59,12 +96,11 @@ public class out_json {
         KEY(dat,"version");
         config.streamWriter.write("\"" + commen.dwg_versions[objDwgData.header.version.ordinal()].hdr + "\"");
 
-        header_spec.header_spec_write(dat,dat,objDwgData);
+        fileheader_spec.fileheader_spec_write(dat,dat,objDwgData);
 
         ENDRECORD(dat);
         return 0;
     }
-
 
     static void KEY(Bit_Chain dat, String name) throws IOException {
         if(ISFIRST != 0)
@@ -116,7 +152,8 @@ public class out_json {
             config.streamWriter.write("  ");
         }
     }
-    static void PRINTFIRST(Bit_Chain dat) throws IOException {
+    static void PRINTFIRST(Bit_Chain dat) throws IOException
+    {
         if(ISFIRST != 0)
         {
             config.streamWriter.write(String.format(",\n"));
@@ -124,7 +161,8 @@ public class out_json {
             ISFIRST = 1;
         }
     }
-    static void FIRSTPREFIX(Bit_Chain dat) throws IOException {
+    static void FIRSTPREFIX(Bit_Chain dat) throws IOException
+    {
         if(ISFIRST != 0)
         {
             PRINTFIRST(dat);
@@ -246,7 +284,6 @@ public class out_json {
     static void FIELD_RLx(Bit_Chain dat, long val, String name, int dxf) throws IOException {
         FIELD_RL(name,val,dat,dxf);
     }
-
     static void FIELD_TIMERLL(Bit_Chain dat,String name, Dwg_Bitcode_TimeRLL nam, int dxf) throws IOException {
         Dwg_Bitcode_TimeBLL bll = new Dwg_Bitcode_TimeBLL();
         bll.days = nam.days;
@@ -255,11 +292,24 @@ public class out_json {
 
         FIELD_TIMEBLL(dat,name,bll,dxf);
     }
-
     static void FIELD_TIMEBLL(Bit_Chain dat,String name, Dwg_Bitcode_TimeBLL nam, int dxf) throws IOException {
         PRINTFIRST(dat);
         _prefix(dat);
         config.streamWriter.write("\""+ _path_field(name)+"\": ");
         commonvar.Sw_write("[ "+nam.days + ", "+nam.ms+ " ]");
     }
+    static void FIELD_BINARY(Bit_Chain dat, String name, Bit_Chain obj, int dxf) throws IOException
+    {
+        KEY(dat,name);
+        config.streamWriter.write("\"");
+        if(obj.chain != null)
+        {
+            for(long _j = 0; _j < obj.size; _j++)
+            {
+                config.streamWriter.write(String.format("%02X",(byte)obj.chain[(int)_j]));
+            }
+        }
+        config.streamWriter.write("\"");
+    }
+
 }

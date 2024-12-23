@@ -96,7 +96,7 @@ public class auxheader_spec {
         else {
             out_json.FIELD_RLx(dat,objDwgData.auxheader.maint_version_1,"maint_version_1",0);
         }
-
+        out_json.FIELD_RS(dat,objDwgData.auxheader.dwg_version_2,"dwg_version_2",0);
         if(commen.UNTIL(DWG_VERSION_TYPE.R_2013,dat))
         {
             out_json.FIELD_CAST(dat,objDwgData.auxheader.maint_version_2,"maint_version_2","RLx",0);

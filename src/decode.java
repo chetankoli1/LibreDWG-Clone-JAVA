@@ -123,7 +123,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             Bit_Chain hdl_dat = new Bit_Chain(dat);
             assert dat._byte == 0xb;
 
-            header_spec.header_spec_read(dat,hdl_dat,objDwgData);
+            fileheader_spec.fileheader_spec_read(dat,hdl_dat,objDwgData);
         }
 
         if((error = dwg.dwg_section_init(objDwgData)) != 0)
