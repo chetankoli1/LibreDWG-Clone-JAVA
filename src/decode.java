@@ -1,3 +1,6 @@
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
 public class decode {
 
     static int loglevel;
@@ -188,13 +191,61 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 dat.size = end_address;
 
                 //
-                auxheader_spec.auxheader_spec_read(dat,objDwgData);
+                error = auxheader_spec.auxheader_spec_read(dat,objDwgData);
                 //
 
                 dat.size = old_size;
             }
         }
-
+        /*-------------------------------------------------------------------------
+         * Thumbnail Image (pre-r13c3 before, since r13c3 at the end)
+         */
+        if(bits.bit_search_sentinel(dat,commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_THUMBNAIL_BEGIN)) != 0)
+        {
+            long start_address;
+            dat.bit = 0;
+            start_address = dat._byte;
+            if(objDwgData.header.thumbnail_address == 0
+                    && objDwgData.header.thumbnail_address != (dat._byte - 16))
+            {
+//                LOG_WARN ("Illegal header.thumbnail_address: %i != %" PRIuSIZE,
+//                        dwg->header.thumbnail_address, dat->byte - 16)
+            }
+            objDwgData.header.thumbnail_address = (dat._byte - 16) & 0xFFFFFFFFL;
+            if(bits.bit_search_sentinel(dat,commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_THUMBNAIL_END)) != 0)
+            {
+                long bmpsize = 0;
+                if(dat._byte - 16 < start_address)
+                {
+//                    LOG_ERROR ("Illegal header.thumbnail_size: %" PRIuSIZE
+//                            " < %" PRIuSIZE,
+//                            dat->byte - 16, start_address);
+                }
+                else if((dat._byte - 16) - start_address < 10) {
+//                    LOG_TRACE ("No header.thumbnail: %" PRIuSIZE " < 10",
+//                            dat->byte - 16 - start_address);
+                }
+                else{
+                    char type = '0';
+                    assert  (dat._byte - 16) >= start_address;
+                    objDwgData.thumbnail.size = (dat._byte - 16) - start_address;
+                    objDwgData.thumbnail.chain = new char[(int)objDwgData.thumbnail.size];
+                    objDwgData.thumbnail._byte = 0;
+                    if(objDwgData.thumbnail.chain == null)
+                    {
+                        System.out.println("Out of memory");
+                        return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+                    }
+//                    byte[] temp = new byte[dat.chain.length];
+//                    String tempStr = new String(dat.chain);
+//                    temp = tempStr.getBytes(StandardCharsets.UTF_8);
+//                    objDwgData.thumbnail.chain = commen.memcpy(objDwgData.thumbnail.chain,start_address,dat.chain);
+                    System.arraycopy(dat.chain, (int)start_address, objDwgData.thumbnail.chain, 0, (int)objDwgData.thumbnail.size);
+                    dat._byte += (int)objDwgData.thumbnail.size;
+                    dwg.dwg_bmp(objDwgData,bmpsize,type);
+                }
+            }
+        }
         return error;
     }
 

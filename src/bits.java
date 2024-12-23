@@ -147,16 +147,29 @@ public class bits {
 
     }
 
-    static int bit_read_RL(Bit_Chain dat) {
+    static long bit_read_RL(Bit_Chain dat) {
         int word1, word2;
         word1 = bit_read_RS(dat);
-        if(CHK_OVERFLOW(dat,0))
-        {
+        if (CHK_OVERFLOW(dat, 0)) {
             return 0;
         }
         word2 = bit_read_RS(dat);
-        return ((word2 << 16) | (int)(word1));
+
+        // Mask both words to ensure they're treated as unsigned 16-bit values
+        long result = (((long)(word2 & 0xFFFF) << 16) | (long)(word1 & 0xFFFF));
+        return result;
     }
+
+    static Dwg_Bitcode_TimeRLL bit_read_TIMERLL(Bit_Chain dat) {
+        Dwg_Bitcode_TimeRLL temp = new Dwg_Bitcode_TimeRLL();
+
+        temp.days = bit_read_RL(dat);
+        temp.ms = bit_read_RL(dat);
+
+        temp.value = temp.days +(temp.ms / 86400000.0);
+        return temp;
+    }
+
 
     public static int bit_calc_CRC(int seed, int index, char[] addr, long len) {
         int dx = seed;
@@ -224,8 +237,11 @@ public class bits {
                 return -1;
             }
         }
+        int rs = 99;
         return 0;
     }
+
+
 }
 class Bit_Chain {
     public char[] chain;

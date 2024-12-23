@@ -1,4 +1,5 @@
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -585,6 +586,35 @@ public class dwg {
         }
         return 0;
     }
+
+    static char[] dwg_bmp(Dwg_Data objDwgData, long size, char typep) {
+        char i, num_headers,type = 0;
+        int found = 0;
+        long header_size,address = 0, osize;
+        Bit_Chain dat = new Bit_Chain();
+        loglevel = objDwgData.opts & DWG_OPTS_LOGLEVEL;
+        size = 0;
+        assert objDwgData != null;
+        dat.chain = objDwgData.thumbnail.chain;
+        dat.size = objDwgData.thumbnail.size;
+        dat._byte = 0;
+        dat.bit = '\0';
+        osize = bits.bit_read_RL(dat);
+        if(osize > dat.size)
+        {
+            return new char[]{};
+        }
+        num_headers = bits.bit_read_RC(dat);
+
+        found = 0;
+        header_size = 0;
+
+        for(i = 0; i < num_headers; i++)
+        {
+
+        }
+        return  new char[]{'c'};
+    }
 }
 
 class Dwg_Class{
@@ -912,12 +942,12 @@ class Dwg_Header{
     public long thumbnail_address;
     public char dwg_version;
     public char maint_version;
-    public int entities_start;
-    public int entities_end;
-    public int blocks_start;
-    public int blocks_size;
-    public int extras_start;
-    public int extras_size;
+    public long entities_start;
+    public long entities_end;
+    public long blocks_start;
+    public long blocks_size;
+    public long extras_start;
+    public long extras_size;
     public int codepage;
     public char unknown_0;
     public char app_dwg_version;
@@ -941,7 +971,7 @@ class Dwg_Header_Variables
 
 class Dwg_Chain
 {
-    public String chain;
+    public char[] chain;
     public long size;
     public long _byte;
     public char bit;
@@ -967,7 +997,7 @@ class Dwg_AuxHeader
     public char[] aux_intro;
     public int dwg_version;
     public long maint_version;
-    public long numsaves;
+    public int numsaves;
     public long minus_1;
     public int numsaves_1;
     public int numsaves_2;
@@ -976,7 +1006,7 @@ class Dwg_AuxHeader
     public long maint_version_1;
     public int dwg_version_2;
     public long maint_version_2;
-    public int[] unknown_6rs;
+    public long[] unknown_6rs;
     public long[] unknown_5rl;
     public Dwg_Bitcode_TimeRLL TDCREATE;
     public Dwg_Bitcode_TimeRLL TDUPDATE;
@@ -992,7 +1022,7 @@ class Dwg_AuxHeader
     public long zero_6;
     public long zero_7;
     public long zero_8;     /* ?? */
-    public int[] zero_18; /* R2018+ */
+    public long[] zero_18; /* R2018+ */
     public int num_auxheader_variables; /* < R13 */
     public int auxheader_size;          /* < R13 */
     public long entities_start;          /* < R13 */

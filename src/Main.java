@@ -52,6 +52,7 @@ public class Main {
                     config.streamWriter = writer;
                     error = out_json.dwg_write_json(dat, objDwgData);
                     config.streamWriter.close();
+                    System.out.println("JSON file is Genarated Succesfully");
                 }
                 break;
         }

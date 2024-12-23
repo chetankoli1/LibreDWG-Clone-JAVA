@@ -11,15 +11,15 @@ public class dec_macros {
     static int FIELD_RS(Bit_Chain dat, String type, int dxf) {
         return bits.bit_read_RS(dat);
     }
-    static long FIELD_RL(Bit_Chain dat, String type, int dxf) {
-        return bits.bit_read_RL(dat);
+    static int FIELD_RL(Bit_Chain dat, String type, int dxf) {
+        return (int) (bits.bit_read_RL(dat) & 0xFFF);
     }
     static int FIELD_RLd(Bit_Chain dat, String type, int dxf) {
-        return bits.bit_read_RL(dat);
+        return (int)bits.bit_read_RL(dat);
     }
-    static int FIELD_RLx(Bit_Chain dat, String type, int dxf)
+    static long FIELD_RLx(Bit_Chain dat, String type, int dxf)
     {
-        return (int)FIELD_CAST(dat,"RL",dxf);
+        return (long)FIELD_CAST(dat,"RL",dxf);
     }
     static Object FIELD_CAST(Bit_Chain dat, String castType, int dxf) {
         switch (castType)
@@ -35,7 +35,7 @@ public class dec_macros {
         }
     }
 
-    static char[] FIELD_VECTOR_INL(Bit_Chain dat, String type, int size, int dxf)
+    static char[] FIELD_VECTOR_INL_CHAR(Bit_Chain dat, String type, int size, int dxf)
     {
         char[] arr = new char[size];
         if(size > 0)
@@ -53,6 +53,39 @@ public class dec_macros {
             }
         }
         return arr;
+    }
+
+    static long[] FIELD_VECTOR_INL_LONG(Bit_Chain dat, String type, int size, int dxf)
+    {
+        long[] arr = new long[size];
+        if(size > 0)
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                if(_VECTOR_CHKCOUNT_STATIC(arr,size,TYPE_MAXELEMSIZE(type),dat) != 0)
+                {
+                    return null;
+                }
+                for(int vcount = 0; vcount < size; vcount++)
+                {
+                    if(type == "RS")
+                    {
+                        arr[vcount] = bits.bit_read_RS(dat);
+                    }
+                    if(type == "RL")
+                    {
+                        arr[vcount] = bits.bit_read_RL(dat);
+                    }
+                }
+            }
+        }
+        return arr;
+    }
+
+    static Dwg_Bitcode_TimeRLL FIELD_TIMERLL(Bit_Chain dat, int i) {
+        Dwg_Bitcode_TimeRLL time = new Dwg_Bitcode_TimeRLL();
+        time = bits.bit_read_TIMERLL(dat);
+        return time;
     }
 
     private static int TYPE_MAXELEMSIZE(String type) {
@@ -106,6 +139,15 @@ public class dec_macros {
     {
         if((8L * siz) > AVAIL_BITS(dat) || ((long)(siz) * (maxelemsize)) > AVAIL_BITS(dat)
         || dat._byte + (siz) > dat.size)
+        {
+            return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+        }
+        return 0;
+    }
+    static int _VECTOR_CHKCOUNT_STATIC(long[] nam, int siz, int maxelemsize, Bit_Chain dat)
+    {
+        if((8L * siz) > AVAIL_BITS(dat) || ((long)(siz) * (maxelemsize)) > AVAIL_BITS(dat)
+                || dat._byte + (siz) > dat.size)
         {
             return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
         }
