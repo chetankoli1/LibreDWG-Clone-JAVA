@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,8 +29,26 @@ public class out_json {
 
         json_fileheader_write(dat,objDwgData);
 
+        //
+
+        //
+        if(dat.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal())
+        {
+            if(objDwgData.header.sections >= 6)
+            {
+                error |= json_section_auxheader(dat,objDwgData);
+            }
+        }
+
         config.streamWriter.write("\n}");
         config.streamWriter.write("\n");
+        return 0;
+    }
+
+    private static int json_section_auxheader(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        RECORD(dat,"AuxHeader");
+        auxheader_spec.auxheader_spec_write(dat,objDwgData);
+        ENDRECORD(dat);
         return 0;
     }
 
@@ -46,6 +65,7 @@ public class out_json {
         return 0;
     }
 
+
     static void KEY(Bit_Chain dat, String name) throws IOException {
         if(ISFIRST != 0)
         {
@@ -56,11 +76,9 @@ public class out_json {
 
         config.streamWriter.write("\"" + _path_field(name) + "\": ");
     }
-
     static void ENDRECORD(Bit_Chain dat) throws IOException {
         ENDHASH(dat);
     }
-
     static void ENDHASH(Bit_Chain dat) throws IOException{
         config.streamWriter.write("\n");
         dat.bit--;
@@ -68,14 +86,12 @@ public class out_json {
         _prefix(dat);
         config.streamWriter.write("}");
     }
-
     static void RECORD(Bit_Chain dat,String name) throws IOException {
         PRINTFIRST(dat);
         _prefix(dat);
         config.streamWriter.write("\""+_path_field(name)+"\": ");
         HASH(dat);
     }
-
     static void HASH(Bit_Chain dat) throws IOException {
         config.streamWriter.write("{");
         config.streamWriter.write("\n");
@@ -83,8 +99,7 @@ public class out_json {
         ISFIRST = 0;
         dat.bit++;
     }
-
-    public static String _path_field(String path) {
+    static String _path_field(String path) {
         int idx = path.lastIndexOf(']');
         String s = "";
         if (idx >= 0) {
@@ -95,14 +110,12 @@ public class out_json {
         }
         return path;
     }
-
     static void _prefix(Bit_Chain dat) throws IOException  {
         for(int i = 0; i < dat.bit; i++)
         {
             config.streamWriter.write("  ");
         }
     }
-
     static void PRINTFIRST(Bit_Chain dat) throws IOException {
         if(ISFIRST != 0)
         {
@@ -111,12 +124,33 @@ public class out_json {
             ISFIRST = 1;
         }
     }
+    static void FIRSTPREFIX(Bit_Chain dat) throws IOException {
+        if(ISFIRST != 0)
+        {
+            PRINTFIRST(dat);
+        }
+        ISFIRST = 1;
+        _prefix(dat);
+    }
+    static void ARRAY(Bit_Chain dat) throws IOException {
+        config.streamWriter.write("[");
+        config.streamWriter.write("\n");
+        dat.bit++;
+        ISFIRST = 0;
+    }
+    static void ENDARRAY(Bit_Chain dat) throws IOException {
+        config.streamWriter.write("\n");
+        dat.bit--;
+        _prefix(dat);
+        config.streamWriter.write("]");
+        ISFIRST = 1;
+    }
+
 
     static void FIELD_RC(String nam, char val, Bit_Chain dat, int dxf) throws IOException {
         FIELD(nam,val,dat,dxf);
     }
-
-    public static void FIELD(String nam, Object val, Bit_Chain dat, int dxf) throws IOException {
+    static void FIELD(String nam, Object val, Bit_Chain dat, int dxf) throws IOException {
         // Regular expression for an integer number
         String regex = "^\\d+"; // Matches positive integers
         Pattern pattern = Pattern.compile(regex);
@@ -155,17 +189,77 @@ public class out_json {
             }
         }
     }
-
-    private static void FIRSTPREFIX(Bit_Chain dat) throws IOException {
-        if(ISFIRST != 0)
+    static void FIELD_RL(String nam, long val, Bit_Chain dat, int dxf) throws IOException {
+        FIELD(nam,val,dat,dxf);
+    }
+    static void FIELD_VECTOR_INL(Object[] nam, int size, String type,String name,Bit_Chain dat, int dxf) throws IOException
+    {
+        FIELD_VECTOR_N(nam,size,type,name,dat,dxf);
+    }
+    static void FIELD_VECTOR_N(Object[] nam, int size, String type, String name,Bit_Chain dat, int dxf) throws IOException
+    {
+        KEY(dat,name);
+        ARRAY(dat);
+        if(nam != null)
         {
-            PRINTFIRST(dat);
+            for(int vcount = 0; vcount < size; vcount++)
+            {
+                FIRSTPREFIX(dat);
+                if(type == "RC")
+                {
+                    config.streamWriter.write(String.valueOf((int)((char)nam[vcount])));
+                }
+                if(type == "RS")
+                {
+                    config.streamWriter.write(String.valueOf((int)((long)nam[vcount]) & 0xFFFF));
+                }
+                if(type == "RL")
+                {
+                    config.streamWriter.write(String.valueOf((int)((long)nam[vcount]) & 0xFFFFFFFFL));
+                }
+            }
         }
-        ISFIRST = 1;
-        _prefix(dat);
+        else
+        {
+            FIRSTPREFIX(dat);
+        }
+        ENDARRAY(dat);
+    }
+    static void FIELD_RSx(Bit_Chain dat, Object val, String name, int dxf) throws IOException {
+        FIELD_RS(dat,val,name,dxf);
+    }
+    static void FIELD_RS(Bit_Chain dat, Object val, String name, int dxf) throws IOException {
+        FIELD(name,val,dat,dxf);
+    }
+    static void FIELD_RLd(String name, long val, Bit_Chain dat, int dxf) throws IOException {
+        FIELD_RL(name,val,dat,dxf);
+    }
+    static void FIELD_CAST(Bit_Chain dat, long val, String name, String type, int dxf) throws IOException {
+        switch (type)
+        {
+            case "RLx":
+                FIELD(name,val & 0xFFFFFFFFL,dat,dxf);
+                break;
+        }
+
+    }
+    static void FIELD_RLx(Bit_Chain dat, long val, String name, int dxf) throws IOException {
+        FIELD_RL(name,val,dat,dxf);
     }
 
-    public static void FIELD_RL(String nam, long val, Bit_Chain dat, int dxf) throws IOException {
-        FIELD(nam,val,dat,dxf);
+    static void FIELD_TIMERLL(Bit_Chain dat,String name, Dwg_Bitcode_TimeRLL nam, int dxf) throws IOException {
+        Dwg_Bitcode_TimeBLL bll = new Dwg_Bitcode_TimeBLL();
+        bll.days = nam.days;
+        bll.ms = nam.ms;
+        bll.value = nam.value;
+
+        FIELD_TIMEBLL(dat,name,bll,dxf);
+    }
+
+    static void FIELD_TIMEBLL(Bit_Chain dat,String name, Dwg_Bitcode_TimeBLL nam, int dxf) throws IOException {
+        PRINTFIRST(dat);
+        _prefix(dat);
+        config.streamWriter.write("\""+ _path_field(name)+"\": ");
+        commonvar.Sw_write("[ "+nam.days + ", "+nam.ms+ " ]");
     }
 }

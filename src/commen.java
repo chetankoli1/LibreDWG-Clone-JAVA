@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 class dwg_versions{
     public DWG_VERSION_TYPE r;
     public String type;
@@ -20,6 +22,31 @@ class dwg_versions{
 
 class commonvar{
     public static final String CreatedBy = "LibreDWG UNKNOWN";
+    static void Sw_write(Object writeValue) throws IOException
+    {
+        if (writeValue instanceof Double) {
+            Double doubleValue = (Double) writeValue;
+            if (!writeValue.toString().contains(".")) {
+                config.streamWriter.write(String.format("%.1f", doubleValue));
+            } else {
+                if (Double.parseDouble(writeValue.toString()) <= 0) {
+                    config.streamWriter.write("0.0");
+                } else {
+                    config.streamWriter.write(writeValue.toString());
+                }
+            }
+        } else if (writeValue instanceof Integer) {
+            config.streamWriter.write(writeValue.toString());
+        } else if (writeValue instanceof String || writeValue instanceof Character) {
+            if (writeValue instanceof String && !((String) writeValue).contains("[")) {
+                config.streamWriter.write("\"" + writeValue + "\"");
+            } else {
+                config.streamWriter.write(writeValue.toString());
+            }
+        } else {
+            config.streamWriter.write(writeValue.toString());
+        }
+    }
 }
 
 public class commen {
@@ -132,11 +159,11 @@ public class commen {
         return dat.version.ordinal() <= v1.ordinal();
     }
 
-
     static boolean SINCE(DWG_VERSION_TYPE version, Bit_Chain dat)
     {
         return dat.version.ordinal() >= version.ordinal();
     }
+
     static boolean PRE(DWG_VERSION_TYPE version, Bit_Chain dat)
     {
         return dat.version.ordinal() < version.ordinal();
