@@ -1023,7 +1023,21 @@ class Dwg_Header{
 class Dwg_Header_Variables
 {
     public long size;
-    public  long bitsize_hi;
+    public long bitsize_hi;
+    public long bitsize;
+    public char ACADMAINTVER;
+    public long REQUIREDVERSIONS;
+    public String DWGCODEPAGE;
+    public int codepage;
+    public double unit1_ratio;
+    public double unit2_ratio;
+    public double unit3_ratio;
+    public double unit4_ratio;
+    public String unit1_name;
+    public String unit2_name;
+    public String unit3_name;
+    public String unit4_name;
+
 }
 
 class Dwg_Chain

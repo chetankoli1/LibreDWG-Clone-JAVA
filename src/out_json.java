@@ -30,6 +30,7 @@ public class out_json {
 
         json_fileheader_write(dat,objDwgData);
 
+        json_header_write(dat,objDwgData);
         //
 
         //
@@ -50,6 +51,28 @@ public class out_json {
         config.streamWriter.write("}");
         config.streamWriter.write("\n");
         return 0;
+    }
+
+    private static void json_header_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        int error = 0;
+        RECORD(dat,"HEADER");
+        ISFIRST = 0;
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            //error = json_preR13_header_write_private (dat, objDwgData);
+        }else {
+            error = json_header_write_private(dat,objDwgData);
+        }
+        ENDRECORD(dat);
+    }
+
+    private static int json_header_write_private(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        int error = 0;
+        Dwg_Object obj = null;
+
+        error = header_variables_spec.header_variables_spec_write(dat,objDwgData);
+
+        return error;
     }
 
     static int json_thumbnail_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
@@ -310,6 +333,9 @@ public class out_json {
             }
         }
         config.streamWriter.write("\"");
+    }
+     static void FIELD_RLL(Bit_Chain dat, String name, long val, int dxf) throws IOException{
+        FIELD(name,val,dat,dxf);
     }
 
 }

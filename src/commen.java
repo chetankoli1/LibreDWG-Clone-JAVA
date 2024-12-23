@@ -50,6 +50,35 @@ class commonvar{
 }
 
 public class commen {
+
+    /**
+     * Converts a 64-bit big-endian value to host byte order.
+     * Reverses the byte order of the input long value.
+     *
+     * @param value the 64-bit big-endian value
+     * @return the value in host byte order
+     */
+    public static long be64toh(long value) {
+        return ((value & 0xff00000000000000L) >>> 56)
+                | ((value & 0x00ff000000000000L) >>> 40)
+                | ((value & 0x0000ff0000000000L) >>> 24)
+                | ((value & 0x000000ff00000000L) >>> 8)
+                | ((value & 0x00000000ff000000L) << 8)
+                | ((value & 0x0000000000ff0000L) << 24)
+                | ((value & 0x000000000000ff00L) << 40)
+                | ((value & 0x00000000000000ffL) << 56);
+    }
+
+    /**
+     * Converts a 64-bit little-endian value to host byte order (big-endian or native).
+     *
+     * @param value The 64-bit little-endian value to be converted.
+     * @return The value in host byte order after reversing the bytes.
+     */
+    public static long le64toh(long value) {
+        return Long.reverseBytes(value);
+    }
+
     static enum DWG_SENTINEL
     {
         DWG_SENTINEL_HEADER_END,

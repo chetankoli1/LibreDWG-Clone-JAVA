@@ -157,4 +157,25 @@ public class dec_macros {
     static long AVAIL_BITS(Bit_Chain dat) {
         return ((dat.size * 8) - bits.bit_position(dat));
     }
+
+    static long FIELD_BLL(Bit_Chain dat, String type, int dxf) {
+        return (long)FIELDG(dat,type,dxf);
+    }
+
+    private static Object FIELDG(Bit_Chain dat, String type, int dxf) {
+        return switch (type) {
+            case "BLL" -> bits.bit_read_BLL(dat);
+            case "RL" -> bits.bit_read_RL(dat);
+            default -> null;
+        };
+    }
+
+    static double FIELD_BD(Bit_Chain dat, String type, int dxf) {
+        double val = bits.bit_read_BD(dat);
+        if(bits.bit_isnan(val))
+        {
+            return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+        }
+        return val;
+    }
 }

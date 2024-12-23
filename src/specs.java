@@ -18,4 +18,5 @@ public class specs {
     static final boolean IF_IS_DECODER = false;
     static final boolean IF_IS_DXF = false;
     static final boolean IF_IS_FREE = false;
+    static final boolean IS_RELEASE = false;
 }

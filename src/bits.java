@@ -1,8 +1,5 @@
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.RandomAccessFile;
-import java.util.RandomAccess;
-import java.util.stream.Stream;
+
 enum DWG_VERSION_TYPE {
     R_INVALID,
     // Releases based on https://autodesk.blogs.com/between_the_lines/autocad-release-history.html
@@ -249,6 +246,168 @@ public class bits {
         {
             loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
         }
+    }
+
+    /** Read 1 bitlonglong (compacted uint64_t) for REQUIREDVERSIONS, preview_size.
+     *  ODA doc bug. ODA say 1-3 bits until the first 0 bit. See 3BLL.
+     *  The first 3 bits indicate the length len (see paragraph 2.1). Then
+     *  len bytes follow, which represent the number (the least significant
+     *  byte is first).
+     */
+    static long bit_read_BLL(Bit_Chain dat) {
+        int i = 0, len = 0;
+        long result = 0L;
+        len = bit_read_BB(dat) << 1 | bit_read_B(dat);
+        switch (len)
+        {
+            case 1:
+                return bit_read_RC(dat);
+            case 2:
+                return bit_read_RS(dat);
+            case 4:
+                return bit_read_RL(dat);
+            default:
+                if (CHK_OVERFLOW(dat, 0)) {
+                    return 1;
+                }
+                for(i = 0; i < 8; i++)
+                {
+                    result <<= 8;
+                    if(i < len)
+                    {
+                        result |= bit_read_RC(dat);
+                    }
+                }
+                return commen.be64toh(result);
+        }
+    }
+
+    /**
+     * Reads a single bit from the bit chain and advances the position by 1.
+     * Treats bytes as unsigned and checks for overflow.
+     *
+     * @param dat The `Bit_Chain` object.
+     * @return The bit value (0 or 1), or 1 if overflow occurs.
+     */
+    private static int bit_read_B(Bit_Chain dat) {
+        int result = 0;
+        int _byte = 0;
+        if (CHK_OVERFLOW(dat, 0)) {
+            return 1;
+        }
+        _byte = dat.chain[(int)dat._byte] & 0xFF;
+        result = (_byte & (0x80 >> dat.bit)) >> (7 - dat.bit);
+        bit_advance_position(dat,1);
+        return result & 0xFF;
+    }
+
+    /**
+     * Reads 2 bits from the bit chain and advances the position by 2.
+     * Handles cases where bits span across two bytes and checks for overflow.
+     *
+     * @param dat The `Bit_Chain` object.
+     * @return The 2-bit value (0 to 3), or 1 if overflow occurs.
+     */
+    static int bit_read_BB(Bit_Chain dat) {
+        int result = 0;
+        int _byte;
+
+        if (CHK_OVERFLOW(dat, 0)) {
+            return 1;
+        }
+        _byte = dat.chain[(int)dat._byte] & 0xFF;
+        if (dat.bit < 7) {
+            result = (_byte & (0xC0 >> dat.bit)) >> (6 - dat.bit);
+        } else {
+            result = (_byte & 0x01) << 1;
+            if (dat._byte < dat.size - 1) {
+                _byte = dat.chain[(int)dat._byte + 1] & 0xFF;
+                result |= (_byte & 0x80) >> 7;
+            }
+        }
+        bit_advance_position(dat, 2);
+        return result & 0xFF;
+    }
+
+    /** Read 1 bitdouble (compacted data).
+     */
+    static double bit_read_BD(Bit_Chain dat) {
+        int two_bit_code = bit_read_BB(dat);
+        if(two_bit_code == 0)
+        {
+            if(CHK_OVERFLOW(dat,(int)bit_nan()))
+            {
+                return 1;
+            }
+            return  bit_read_RD(dat);
+        }
+        else if(two_bit_code == 1){
+            return 1.0;
+        }
+        else if(two_bit_code == 2)
+        {
+            return 0.0;
+        }
+        else{
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+            // LOG_ERROR ("bit_read_BD: unexpected 2-bit code: '11'")
+            return bit_nan();
+        }
+    }
+
+    static double bit_read_RD(Bit_Chain dat) {
+        long res = 0;
+        double result = 0;
+
+        res = bits.bit_read_RLL(dat);
+        result = Double.longBitsToDouble(res);
+
+        return result;
+    }
+
+    /** Read 1 raw 64bit long (8 byte, BE).*/
+    static long bit_read_RLL(Bit_Chain dat) {
+        if(dat.bit == 0 && (dat._byte % 8) != 0)
+        {
+            long v = commen.le64toh(dat.chain[(int)dat._byte]);
+            dat._byte+= 8;
+            return v;
+        }else{
+            long word1, word2;
+            word1 = bit_read_RL(dat);
+            if(CHK_OVERFLOW(dat,0))
+            {
+                return 1;
+            }
+            word2 = bit_read_RL(dat) & 0xFFFFFFFFL;
+
+            return ((word2 << 32) | word1) & 0xFFFFFFFFL;
+        }
+    }
+
+    /** create a Not-A-Number (NaN) without libm dependency */
+    static double bit_nan() {
+        if(specs.IS_RELEASE)
+        {
+            return 0.0;
+        }
+        else{
+            long result = 0xFFFFFFFFFFFFFFFFL;
+//            int[] res = new int[2];
+//            res[0] = -1;
+//            res[1] = -1;
+            return Double.longBitsToDouble(result);
+        }
+    }
+
+    static boolean bit_isnan(double number)
+    {
+        long bits = Double.doubleToLongBits(number);
+
+        int lower = (int) (bits & 0xFFFFFFFF);
+        int upper = (int) ((bits >> 32) & 0xFFFFFFFF);
+
+        return (lower == -1 && upper == -1);
     }
 }
 class Bit_Chain {
