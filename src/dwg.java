@@ -730,7 +730,7 @@ class Dwg_Eed_Data
 
 class Dwg_Object_Ref{
     public Dwg_Object obj;
-    public Dwg_Handle handleref;
+    public Dwg_Handle handleref = new Dwg_Handle();
     public long absolute_ref;
     public short r11_idx;
 }
@@ -1037,6 +1037,21 @@ class Dwg_Header_Variables
     public String unit2_name;
     public String unit3_name;
     public String unit4_name;
+    public long unknown_8;
+    public long unknown_9;
+    public int unknown_10;
+    public Dwg_Object_Ref VX_TABLE_RECORD;
+    public char DIMASO;
+    public char DIMSHO;
+    public char DIMSAV; /* undocumented */
+    public char PLINEGEN;
+    public char ORTHOMODE;
+    public char REGENMODE;
+    public char FILLMODE;
+    public char QTEXTMODE;
+    public char PSLTSCALE; /* r10- */
+    public char LIMCHECK;
+
 
 }
 

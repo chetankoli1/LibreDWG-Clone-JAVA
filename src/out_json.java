@@ -404,7 +404,7 @@ public class out_json {
                 && codepages <= Dwg_Codepages.CP_ANSI_1258.value) {
             tmp = bits.bit_TV_to_utf8(src, codepages);
             if (!tmp.isEmpty()) {
-                s = tmp;
+                s = tmp.trim();
             }
         }
         for (int i = 0; i < s.length(); i++) {
@@ -455,5 +455,42 @@ public class out_json {
     static char _hex(int c) {
         c &= 0xF; // Mask to get the lower nibble (0-15)
         return (c >= 10) ? (char) ('a' + c - 10) : (char) ('0' + c);
+    }
+
+    static void FIELD_BL(Bit_Chain dat, String name, long value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    static void FIELD_BS(Bit_Chain dat, String name, int value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    static void FIELD_HANDLE(Bit_Chain hdl_dat, String name, Dwg_Object_Ref valRef, int code, int dxf) throws IOException {
+        if(valRef != null)
+        {
+            if(commen.PRE(DWG_VERSION_TYPE.R_13b1,hdl_dat))
+            {
+                KEY(hdl_dat,name);
+                ARGS_HREF11(valRef);
+
+            }
+            else{
+                KEY(hdl_dat,name);
+                ARGS_HREF11(valRef);
+            }
+        }
+    }
+
+    private static final String PRIu64 = "%d";
+    private static final String FORMAT_RLL = PRIu64;
+    private static final String FORMAT_HREF11 = "[%d,%d," + FORMAT_RLL + "]";
+    private static final String JSON_KEY = "\"%s\":%s";
+    private static void ARGS_HREF11(Dwg_Object_Ref ref) throws IOException {
+        commonvar.Sw_write("["+(byte)ref.handleref.code+","+(byte)ref.handleref.size
+                +","+ref.handleref.value+","+ref.absolute_ref+"]");
+    }
+
+    static void FIELD_B(Bit_Chain dat, String name, char value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
     }
 }

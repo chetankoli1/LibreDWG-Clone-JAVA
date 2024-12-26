@@ -735,6 +735,75 @@ public class bits {
             return 256;
         }
     }
+
+    static long bit_read_BL(Bit_Chain dat) {
+        int two_bit_code = bit_read_BB(dat);
+        if(two_bit_code == 0)
+        {
+            return bit_read_RL(dat) & IntMask.UINT32_MASK;
+        }
+        else if(two_bit_code == 1)
+        {
+            return (int)bit_read_RC(dat) & IntMask.UINT32_MASK;
+        }
+        else if(two_bit_code == 2)
+        {
+            return 0;
+        }
+        else{
+            return 256;
+        }
+    }
+
+    static int bit_read_H(Bit_Chain dat, Dwg_Handle handle) {
+        class Union {
+            byte[] c = new byte[8];
+            long v = 0;
+        }
+
+        Union u = new Union();
+        long pos = dat._byte;
+        handle.code = bit_read_RC(dat);
+
+        if (pos == dat._byte) {
+            return DWG_ERROR.DWG_ERR_INVALIDHANDLE.ordinal();
+        }
+
+        handle.is_global = '\0';
+        handle.value = 0;
+
+        if (dat.from_version.ordinal() < DWG_VERSION_TYPE.R_13b1.ordinal()) {
+            handle.size = handle.code;
+            if (handle.size > Byte.BYTES) {
+                int logLevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+                System.err.printf(
+                        "Invalid handle-reference, longer than 8 bytes: %s%n", handle.toString()
+                );
+                return DWG_ERROR.DWG_ERR_INVALIDHANDLE.ordinal();
+            }
+            handle.code = 0;
+        } else {
+            handle.size = (char)(handle.code & 0x0F);
+            handle.code = (char)((handle.code & 0xf0) >> 4);
+        }
+
+        // Ensure size does not exceed 8
+        if (handle.size > Byte.BYTES || handle.code > 14) {
+            int logLevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+            System.err.printf(
+                    "Invalid handle-reference, longer than 8 bytes: %s%n", handle.toString()
+            );
+            return DWG_ERROR.DWG_ERR_INVALIDHANDLE.ordinal();
+        }
+
+        u.v = 0L;
+        for (int i = 0; i < handle.size; i++) {
+            u.v = (u.v << 8) | bit_read_RC(dat);
+        }
+
+        handle.value = Long.reverseBytes(u.v); // Replaces `htole64` for endianness handling
+        return 0;
+    }
 }
 class Bit_Chain {
     public char[] chain;

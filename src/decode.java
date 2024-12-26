@@ -325,7 +325,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         Dwg_Header_Variables _obj = objDwgData.header_vars;
         Dwg_Object obj = new Dwg_Object();
 
-        header_variables_spec.header_variables_spec_read(dat,hdl_dat,str_dat,objDwgData);
+        header_variables_spec.header_variables_spec_read(dat,hdl_dat,str_dat,obj,objDwgData);
 
 
         return error;

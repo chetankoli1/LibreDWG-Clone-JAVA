@@ -166,6 +166,9 @@ public class dec_macros {
         return switch (type) {
             case "BLL" -> bits.bit_read_BLL(dat);
             case "RL" -> bits.bit_read_RL(dat);
+            case "BL" -> bits.bit_read_BL(dat);
+            case "BS" -> bits.bit_read_BS(dat);
+            case "B" -> bits.bit_read_B(dat);
             default -> null;
         };
     }
@@ -183,5 +186,110 @@ public class dec_macros {
         String value = "";
         value = bits.bit_read_TV(dat);
         return value;
+    }
+
+    static long FIELD_BL(Bit_Chain dat, String type, int dxf) {
+        return (long)((long)FIELDG(dat,type,dxf) & IntMask.UINT32_MASK);
+    }
+
+    static int FIELD_BS(Bit_Chain dat, String type, int dxf) {
+        return (int)((int)FIELDG(dat,type,dxf) & IntMask.UINT32_MASK);
+    }
+
+    static Dwg_Object_Ref FIELD_HANDLE(Bit_Chain dat, Dwg_Object obj, Dwg_Data objDwgData, int code, int dxf) {
+        Dwg_Object_Ref ref = new Dwg_Object_Ref();
+        ref = VALUE_HANDLE(dat,ref,code,obj,objDwgData,dxf);
+        return ref;
+    }
+
+     static Dwg_Object_Ref VALUE_HANDLE(Bit_Chain hdl_dat,Dwg_Object_Ref ref, int code, Dwg_Object obj, Dwg_Data dwgObj,int dxf) {
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,hdl_dat))
+        {
+            long _pos = bits.bit_position(hdl_dat);
+            if(ref != null)
+                ref = null;
+
+           // ref = dwg_decode_preR13_handleref(dat,code,dwgObj);
+        }
+        else {
+            long _pos = bits.bit_position(hdl_dat);
+            if(code >= 0)
+            {
+                ref = dwg_decode_handleref_with_code(hdl_dat,obj,dwgObj,code);
+            }else{
+               // ref = dwg_decode_handleref(hdl_dat,obj,dwgObj);
+            }
+        }
+        return ref;
+    }
+
+    private static Dwg_Object_Ref dwg_decode_handleref_with_code(Bit_Chain dat, Dwg_Object obj, Dwg_Data dwgObj, int code) {
+        Dwg_Object_Ref ref = new Dwg_Object_Ref();
+        if(ref == null)
+        {
+            return null;
+        }
+        if(bits.bit_read_H(dat,ref.handleref) != 0)
+        {
+            return null;
+        }
+
+        if(ref.handleref.size != 0 || (obj != null && ref.handleref.code > 5))
+        {
+//            if (dwg_decode_add_object_ref (dwg, ref))
+//            {
+//                free (ref);
+//                return NULL;
+//            }
+        }
+        else if(ref.handleref.value == 0) {
+            ref.absolute_ref = 0;
+            ref.obj = null;
+            return ref;
+        }
+        if(obj == null)
+        {
+            ref.absolute_ref = ref.handleref.value;
+            ref.obj = null;
+            return ref;
+        }
+
+        switch (ref.handleref.code) {
+            case 0x06:
+                ref.absolute_ref = obj.handle.value + 1;
+                break;
+            case 0x08:
+                ref.absolute_ref = obj.handle.value - 1;
+                break;
+            case 0x0A:
+                ref.absolute_ref = obj.handle.value + ref.handleref.value;
+                break;
+            case 0x0C:
+                ref.absolute_ref = obj.handle.value - ref.handleref.value;
+                break;
+            case 0x0E: // e.g., 2007 REGION.history_id (some very high number)
+                ref.absolute_ref = obj.handle.value;
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                ref.absolute_ref = ref.handleref.value;
+                break;
+            case 0: // ignore?
+                ref.absolute_ref = ref.handleref.value;
+                break;
+            default:
+                // Equivalent handling for logging and cleanup in Java
+                ref.absolute_ref = 0;
+                ref.obj = null;
+                System.err.printf("Invalid handle pointer code %d%n", ref.handleref.code);
+                break;
+        }
+        return ref;
+    }
+
+    static char FIELD_B(Bit_Chain dat, String type, int dxf) {
+        return (char) (int)FIELDG(dat, type, dxf);
     }
 }
