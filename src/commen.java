@@ -47,6 +47,23 @@ class commonvar{
             config.streamWriter.write(writeValue.toString());
         }
     }
+
+    static String memcpy(String dest, int destPos, String src, int length) {
+        return dest.substring(0, destPos) + src.substring(0, length) + dest.substring(destPos + length);
+    }
+
+    static char[] memmove(char[] dest, int destPos, int srcPos, int length) {
+        if (destPos < srcPos) {
+            for (int i = 0; i < length; i++) {
+                dest[destPos + i] = dest[srcPos + i];
+            }
+        } else {
+            for (int i = length - 1; i >= 0; i--) {
+                dest[destPos + i] = dest[srcPos + i];
+            }
+        }
+        return dest;
+    }
 }
 
 public class commen {

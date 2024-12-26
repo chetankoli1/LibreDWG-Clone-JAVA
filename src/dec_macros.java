@@ -178,4 +178,10 @@ public class dec_macros {
         }
         return val;
     }
+
+    static String FIELD_TV(Bit_Chain dat, String type, int dxf) {
+        String value = "";
+        value = bits.bit_read_TV(dat);
+        return value;
+    }
 }

@@ -1,4 +1,6 @@
 import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.Scanner;
 
 enum DWG_VERSION_TYPE {
     R_INVALID,
@@ -79,7 +81,7 @@ public class bits {
             result = _byte;
             dat._byte++;
         }else{
-            result = (char) (_byte << dat.bit);
+            result = (char) ((_byte << dat.bit) & 0xFF);
             if(dat._byte < dat.size - 1)
             {
                 _byte = dat.chain[(int)dat._byte + 1];
@@ -289,7 +291,7 @@ public class bits {
      * @param dat The `Bit_Chain` object.
      * @return The bit value (0 or 1), or 1 if overflow occurs.
      */
-    private static int bit_read_B(Bit_Chain dat) {
+    static int bit_read_B(Bit_Chain dat) {
         int result = 0;
         int _byte = 0;
         if (CHK_OVERFLOW(dat, 0)) {
@@ -361,6 +363,7 @@ public class bits {
 
         res = bits.bit_read_RLL(dat);
         result = Double.longBitsToDouble(res);
+        String formattedResult = String.format("%.0f", result);
 
         return result;
     }
@@ -379,9 +382,9 @@ public class bits {
             {
                 return 1;
             }
-            word2 = bit_read_RL(dat) & 0xFFFFFFFFL;
+            word2 = bit_read_RL(dat);
 
-            return ((word2 << 32) | word1) & 0xFFFFFFFFL;
+            return ((word2 << 32) | word1);
         }
     }
 
@@ -408,6 +411,329 @@ public class bits {
         int upper = (int) ((bits >> 32) & 0xFFFFFFFF);
 
         return (lower == -1 && upper == -1);
+    }
+
+    static String bit_TV_to_utf8(String src, int codepage) {
+        if(codepage == Dwg_Codepages.CP_UTF8.value)
+        {
+            return bit_u_expand(src);
+        }
+        else if(src.isEmpty())
+        {
+            return "";
+        }
+        else {
+            return bit_TV_to_utf8_codepage(src,codepage);
+        }
+    }
+
+//    static String bit_u_expand(char[] src) {
+//        char[] ret = src;
+//        char[] p = src;
+//        char[] s;
+//
+//        while ((s = bit_is_U_expand(p)) != null || (s = bit_is_M_expand(p)) != null)
+//        {
+//            int wc,i;
+//            long lp = s.length;
+//
+//            if(s[1] == 'U' && Arrays.toString(s).matches("\\\\U\\+[0-9A-Fa-f]{4}"))
+//            {
+//                wc = Integer.parseInt(Arrays.toString(s).substring(3, 7), 16);
+//                char[] wp = { (char) wc, '\0' };
+//                char[] u8 = bit_convert_TU(wp);
+//                long l = u8.length;
+//                String _str = commonvar.memcpy(Arrays.toString(s), Arrays.toString(s).indexOf("\\U+"), Arrays.toString(u8), (int)(l + 1));
+//                s = _str.toCharArray();
+//                if(lp > 7)
+//                {
+//                    s = commonvar.memmove(s,1,7, (int)(lp-6));
+//                }
+//            }
+//            else if( Arrays.toString(s).matches("\\\\M\\+\\d{1}\\p{XDigit}{4}"))
+//            {
+//                i = Integer.parseInt(String.valueOf(s[1]).substring(0, 1));
+//                wc = Integer.parseInt(String.valueOf(s[1]).substring(1), 16);
+//                int uc;
+//
+//                Dwg_Codepages mif_tbl[]
+//                    = { Dwg_Codepages.CP_UNDEFINED, Dwg_Codepages.CP_ANSI_932,  Dwg_Codepages.CP_ANSI_950,
+//                    Dwg_Codepages.CP_ANSI_949,  Dwg_Codepages.CP_ANSI_1361, Dwg_Codepages.CP_ANSI_936 };
+//                wc = Integer.parseInt(String.valueOf(s[4]).substring(4, 8), 16);
+//            }
+//        }
+//    }
+
+    public static String bit_u_expand(String src) {
+        StringBuilder ret = new StringBuilder(src);
+        StringBuilder p = new StringBuilder(src);
+        String s;
+
+        while ((s = bit_is_U_expand(p.toString())) != null || (s = bit_is_M_expand(p.toString())) != null) {
+            if (s.charAt(1) == 'U') {
+                if (s.length() >= 7 && s.substring(0, 7).matches("\\\\U\\+[0-9A-Fa-f]{4}")) {
+                    int wc = Integer.parseInt(s.substring(3, 7), 16);
+                    char[] wp = { (char) wc, '\0' };
+                    String u8 = bit_convert_TU(wp);
+                    int l = u8.length();
+                    int start = p.indexOf("\\U+");
+                    ret.replace(start, start + 7, u8);
+                    p.replace(start, start + 7, u8);
+                    if (s.length() > 7) {
+                        String remaining = s.substring(7);
+                        ret.replace(start + l, start + l + remaining.length(), remaining);
+                        p.replace(start + l, start + l + remaining.length(), remaining);
+                    }
+                }
+            } else if (s.charAt(1) == 'M') {
+                if (s.length() >= 8 && s.substring(0, 8).matches("\\\\M\\+\\d{1}[0-9A-Fa-f]{4}")) {
+                    int i = Integer.parseInt(s.substring(3, 4));
+                    int wc = Integer.parseInt(s.substring(4, 8), 16);
+
+                    if (i < 1 || i > 5) {
+                        throw new IllegalArgumentException("Invalid \\M+ sequence index: " + i);
+                    }
+
+                    Dwg_Codepages[] mif_tbl = {
+                            Dwg_Codepages.CP_UNDEFINED, Dwg_Codepages.CP_ANSI_932,
+                            Dwg_Codepages.CP_ANSI_950, Dwg_Codepages.CP_ANSI_949,
+                            Dwg_Codepages.CP_ANSI_1361, Dwg_Codepages.CP_ANSI_936
+                    };
+
+                    int uc = codepages.dwg_codepage_uwc(mif_tbl[i], wc);
+                    int start = p.indexOf("\\M+");
+
+                    if (uc < 0x80) {
+                        ret.replace(start, start + 7, String.valueOf((char) uc));
+                        p.replace(start, start + 7, String.valueOf((char) uc));
+                    } else if (uc < 0x800) {
+                        String replacement = String.valueOf((char) ((uc >> 6) | 0xC0)) +
+                                String.valueOf((char) ((uc & 0x3F) | 0x80));
+                        ret.replace(start, start + 7, replacement);
+                        p.replace(start, start + 7, replacement);
+                    } else {
+                        String replacement = String.valueOf((char) ((uc >> 12) | 0xE0)) +
+                                String.valueOf((char) (((uc >> 6) & 0x3F) | 0x80)) +
+                                String.valueOf((char) ((uc & 0x3F) | 0x80));
+                        ret.replace(start, start + 7, replacement);
+                        p.replace(start, start + 7, replacement);
+                    }
+                }
+            }
+        }
+
+        return ret.toString();
+    }
+
+    public static String bit_convert_TU(char[] wstr) {
+        char[] tmp = wstr;
+        StringBuilder str = new StringBuilder();
+        int i = 0;
+        int len = 0;
+        int c = 0;
+
+        if (wstr == null || wstr.length == 0) {
+            return null;
+        }
+
+        // First pass to calculate the destination length
+        for (int j = 0; j < wstr.length; j++) {
+            c = tmp[j];
+            if (c == 0) {
+                break;
+            }
+            len++;
+            if (c >= 0x80) {
+                len++;
+                if (c >= 0x800) {
+                    len++;
+                }
+            }
+        }
+
+        // Convert to UTF-8
+        for (int j = 0; j < wstr.length; j++) {
+            c = tmp[j];
+            if (c == 0) {
+                break;
+            }
+
+            if (c < 0x80) {
+                str.append((char) c);
+            } else if (c < 0x800) {
+                str.append((char) ((c >> 6) | 0xC0));
+                str.append((char) ((c & 0x3F) | 0x80));
+            } else {
+                str.append((char) ((c >> 12) | 0xE0));
+                str.append((char) (((c >> 6) & 0x3F) | 0x80));
+                str.append((char) ((c & 0x3F) | 0x80));
+            }
+        }
+
+        return str.toString();
+    }
+
+
+    private static String bit_is_U_expand(String p) {
+        String s;
+        if (p != null && p.length() >= 7 && (s = p.contains("\\U+") ? p.substring(p.indexOf("\\U+")) : null) != null
+                && ishex(s.charAt(3)) && ishex(s.charAt(4)) && ishex(s.charAt(5)) && ishex(s.charAt(6))) {
+            return s;
+        } else {
+            return null;
+        }
+    }
+
+    private static String bit_is_M_expand(String p) {
+        String s;
+        if (p != null && p.length() >= 8 && (s = p.contains("\\M+") ? p.substring(p.indexOf("\\M+")) : null) != null
+                && s.charAt(3) >= '1' && s.charAt(3) <= '5'
+                && ishex(s.charAt(4)) && ishex(s.charAt(5)) && ishex(s.charAt(6)) && ishex(s.charAt(7))) {
+            return s;
+        } else {
+            return null;
+        }
+    }
+
+    static boolean ishex(int c)
+    {
+        return ((c >= '0' && c<= '9') || (c >= 'a' && c <= 'f')
+            || (c >= 'A' && c <= 'F'));
+    }
+
+    static String bit_TV_to_utf8_codepage(String src, int codepage) {
+        boolean is_asian_cp = codepages.dwg_codepage_isasian(Dwg_Codepages.fromValue(codepage));
+        long srclen = src.length();
+        long destlen = is_asian_cp ? srclen * 3 : (long) Math.floor(srclen * 1.5);
+        int i = 0;
+        char[] str = new char[(int)destlen + 1];
+        char[] temp = src.toCharArray();
+
+        int c = 0;
+
+        if(srclen == 0)
+        {
+            return "";
+        }
+        if(codepage == 0)
+        {
+            return src;
+        }
+        //UTF8 encode
+        int index = 0;
+        while (i < destlen && index < srclen)
+        {
+            char wc;
+            c = temp[index++];
+            if(is_asian_cp)
+            {
+                if (codepages.dwg_codepage_is_twobyte(Dwg_Codepages.fromValue(codepage), c))
+                {
+                    if (index < srclen) {
+                        c = (c << 8) | temp[index++];
+                    }
+                    wc = codepages.dwg_codepage_uwc(Dwg_Codepages.fromValue(codepage), c);
+                    c = wc;
+                    if(c < 0x80)
+                    {
+                        str[i++]  = (char) (c & 0xff);
+                    }
+                }
+            }
+            else if(c < 0x80)
+            {
+                str[i++]  = (char) (c & 0xff);
+            }
+            else if((wc = codepages.dwg_codepage_uc(Dwg_Codepages.fromValue(codepage), c & 0xFF)) > 0){
+                c = wc;
+                if(c < 0x80)
+                    str[i++] = (char) (c & 0xff);
+            }
+            if(c >= 0x80 && c < 0x800)
+            {
+                str = EXTEND_SIZE(str,i+1,destlen);
+                str[i++] = (char)((c>> 6) | 0xC0);
+                str[i++] = (char)((c & 0x3F) | 0x80);
+            }
+            else if(c >= 0x800)
+            {
+                str = EXTEND_SIZE(str,i+2,destlen);
+                str[i++] = (char) ((c >> 12) | 0xE0);
+                str[i++] = (char) (((c >> 6) & 0x3F) | 0x80);
+                str[i++] = (char) ((c & 0x3F) | 0x80);
+            }
+        }
+        str = EXTEND_SIZE(str,i+1,destlen);
+        str[i] = '\0';
+        return bit_u_expand(new String(str));
+    }
+
+    private static char[] EXTEND_SIZE(char[] str, int i, long len) {
+        if (i >= len) {
+            len *= 2;
+            char[] newStr = new char[(int) len + 1];
+            System.arraycopy(str, 0, newStr, 0, str.length);
+            return newStr;
+        }
+        return str;
+    }
+
+    static String bit_read_TV(Bit_Chain dat) {
+        int i = 0;
+        int length = 0;
+        char[] chain = null;
+
+        if(dat.from_version.ordinal() < DWG_VERSION_TYPE.R_13b1.ordinal())
+        {
+            length = bit_read_RS(dat);
+        }else{
+            length = bit_read_BS(dat);
+        }
+
+        if(loglevel == 0)
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+        chain = new char[length + 1];
+        if(chain == null)
+        {
+            return null;
+        }
+        for(i = 0; i < length; i++)
+        {
+            chain[i] = bit_read_RC(dat);
+        }
+        /*  if (DWG_LOGLEVEL >= DWG_LOGLEVEL_HANDLE)
+    {
+      // check if the string is already zero-terminated or not.
+      // only observed >=r2004 as writer app
+      if (length > 0 && dat->from_version > R_2000
+          && chain[length - 1] != '\0')
+        LOG_HANDLE ("TV-not-ZERO %u\n ", length)
+      // and preR2000 the final \0 is not included in the length (ie == strlen)
+      else if (length > 0 && dat->from_version < R_2000
+               && chain[length - 1] == '\0')
+        LOG_HANDLE ("TV-ZERO %u\n", length)
+    }*/
+        chain[i] = '\0';
+        return new String(chain);
+    }
+
+    static int bit_read_BS(Bit_Chain dat) {
+        int two_bit_code = bit_read_BB(dat);
+        if(two_bit_code == 0)
+        {
+            return bit_read_RS(dat);
+        }
+        else if(two_bit_code == 1)
+        {
+            return (int)bit_read_RC(dat);
+        }
+        else if(two_bit_code == 2)
+        {
+            return 0;
+        }
+        else{
+            return 256;
+        }
     }
 }
 class Bit_Chain {
