@@ -1,4 +1,5 @@
 import java.io.RandomAccessFile;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -166,6 +167,22 @@ public class bits {
         temp.ms = bit_read_RL(dat);
 
         temp.value = temp.days +(temp.ms / 86400000.0);
+        return temp;
+    }
+    static Dwg_Bitcode_TimeBLL bit_read_TIMEBLL(Bit_Chain dat) {
+        Dwg_Bitcode_TimeBLL temp = new Dwg_Bitcode_TimeBLL();
+
+        if(dat.from_version.ordinal() < DWG_VERSION_TYPE.R_13b1.ordinal())
+        {
+            temp.days = bit_read_RL(dat);
+            temp.ms = bit_read_RL(dat);
+        }
+        else{
+            temp.days = bit_read_BL(dat);
+            temp.ms = bit_read_BL(dat);
+        }
+       // temp.value = temp.days +(temp.ms / 86400000.0);
+        temp.value = temp.days + (temp.ms / 1e-8);
         return temp;
     }
 
@@ -363,19 +380,17 @@ public class bits {
 
         res = bits.bit_read_RLL(dat);
         result = Double.longBitsToDouble(res);
-        String formattedResult = String.format("%.0f", result);
-
         return result;
     }
 
     /** Read 1 raw 64bit long (8 byte, BE).*/
     static long bit_read_RLL(Bit_Chain dat) {
-        if(dat.bit == 0 && (dat._byte % 8) != 0)
-        {
-            long v = commen.le64toh(dat.chain[(int)dat._byte]);
-            dat._byte+= 8;
-            return v;
-        }else{
+//        if(dat.bit == 0 && (dat._byte % 8) != 0)
+//        {
+//            long v = commen.le64toh(dat.chain[(int)dat._byte]);
+//            dat._byte+= 8;
+//            return v;
+//        }else{
             long word1, word2;
             word1 = bit_read_RL(dat);
             if(CHK_OVERFLOW(dat,0))
@@ -384,8 +399,8 @@ public class bits {
             }
             word2 = bit_read_RL(dat);
 
-            return ((word2 << 32) | word1);
-        }
+            return ((word2 << 32) | (word1 & 0xFFFFFFFFL));
+       // }
     }
 
     /** create a Not-A-Number (NaN) without libm dependency */
@@ -801,8 +816,73 @@ public class bits {
             u.v = (u.v << 8) | bit_read_RC(dat);
         }
 
-        handle.value = Long.reverseBytes(u.v); // Replaces `htole64` for endianness handling
+        //htole64 pending
+        handle.value = u.v; // Replaces `htole64` for endianness handling
         return 0;
+    }
+
+    public static Dwg_Color bit_read_CMC(Bit_Chain dat, Bit_Chain str_dat) {
+        Dwg_Color color = new Dwg_Color();
+        if(dat.from_version.ordinal() < DWG_VERSION_TYPE.R_13b1.ordinal())
+            color.index = (short)bit_read_RS(dat);
+        else
+            color.index = (short)bit_read_BS(dat);
+        if(dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
+        {
+            color.rgb = bit_read_BL(dat);
+            color.method = (int)(color.rgb >> 0x18);
+            color.flag = bit_read_RC(dat);
+            if (color.flag < 4)
+            {
+                color.name = (color.flag & 1) != 0 ? bit_read_T(str_dat) : null;
+                color.book_name = (color.flag & 2) != 0 ? bit_read_T(str_dat) : null;
+            }
+            else{
+                loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+                color.flag = 0;
+            }
+            if(color.method < 0xc0 || color.method > 0xc8)
+            {
+                loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+                color.method = 0xc2;
+                color.rgb = 0xc2000000L | (color.rgb & 0xffffff);
+            }
+
+            color.index = dwg.dwg_find_color_index(color.rgb);
+        }
+        return color;
+    }
+
+    static String bit_read_T(Bit_Chain dat) {
+        if(IS_FROM_TU(dat))
+        {
+            return bit_read_TU(dat);
+        }else{
+            return bit_read_TV(dat);
+        }
+    }
+
+    /** Read UCS-2 unicode text. no supplementary planes
+     *  See also bfr_read_string()
+     */
+    static String bit_read_TU(Bit_Chain dat) {
+        int i;
+        int length;
+        char[] ws;
+        length = bit_read_BS(dat);
+        ws = new char[length + 1];
+
+        for (i = 0; i < length; i++) {
+            ws[i] = (char)(int)bit_read_RS(dat);
+        }
+        ws[length] = 0;
+        return new String(ws, 0, length);
+    }
+
+
+    static boolean IS_FROM_TU(Bit_Chain dat) {
+        return (dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2007.ordinal())
+                && (dat.opts & dwg.DWG_OPTS_IN) == 0;
     }
 }
 class Bit_Chain {

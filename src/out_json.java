@@ -63,7 +63,7 @@ public class out_json {
         int error = 0;
         Dwg_Object obj = null;
 
-        error = header_variables_spec.header_variables_spec_write(dat, objDwgData);
+        error = header_variables_spec.header_variables_spec_write(dat,dat,dat ,objDwgData);
 
         return error;
     }
@@ -123,6 +123,18 @@ public class out_json {
         _prefix(dat);
 
         config.streamWriter.write("\"" + _path_field(name) + "\": ");
+    }
+    static void KEYs(Bit_Chain dat, String name) throws IOException
+    {
+        if (ISFIRST != 0)
+        {
+            PRINTFIRST(dat);
+        }
+
+        ISFIRST = 1;
+
+        _prefix(dat);
+        config.streamWriter.write("\""+name+"\": ");
     }
 
     static void ENDRECORD(Bit_Chain dat) throws IOException {
@@ -358,6 +370,24 @@ public class out_json {
         config.streamWriter.write(buffer.toString());
     }
 
+    static void _VALUE_BD(double value, Bit_Chain dat, int dxf) throws IOException {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append(String.format("%.14f", value));
+
+        int k = buffer.length();
+
+        if (k > 0 && buffer.lastIndexOf(".") != -1 && buffer.charAt(k - 1) == '0') {
+            while (k > 1 && buffer.charAt(k - 1) == '0' && buffer.charAt(k - 2) != '.') {
+                buffer.deleteCharAt(k - 1);
+                k--;
+            }
+            if (k > 1 && buffer.charAt(k - 1) == '.') {
+                buffer.deleteCharAt(k - 1);
+            }
+        }
+        config.streamWriter.write(buffer.toString());
+    }
+
     static void FIELD_TV(Bit_Chain dat, String name, String value, int dxf) throws IOException {
         FIELD_TEXT(dat, name, value, dxf);
     }
@@ -492,5 +522,108 @@ public class out_json {
 
     static void FIELD_B(Bit_Chain dat, String name, char value, int dxf) throws IOException {
         FIELD(name,value,dat,dxf);
+    }
+
+    static void FIELD_BSd(Bit_Chain dat, String name, short value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    static void FIELD_CMC(Bit_Chain dat, String name, Dwg_Color value, int dxf) throws IOException {
+        if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
+        {
+            KEYs(dat,name);
+            HASH(dat);
+            if(value.index != 0)
+            {
+                FIELD_BS(dat,"index",value.index,62);
+            }
+            FIRSTPREFIX(dat);
+            config.streamWriter.write("\""+_path_field("rgb")+ "\"");
+            config.streamWriter.write("\""+_path_field(String.format("%06x", value.rgb))+ "\"");
+            if(value.flag != 0)
+            {
+                FIELD_BS(dat,"flag",value.flag,62);
+            }
+            //pending
+            if(value.flag > 0 && value.flag < 8)
+            {
+
+            }
+            ENDHASH(dat);
+        }
+        else {
+            KEY(dat,_path_field(name));
+            config.streamWriter.write(value.index+"");
+        }
+    }
+    static void SUB_FIELD_CMC(Bit_Chain dat, String name, Dwg_Color value, int dxf) throws IOException {
+        if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
+        {
+            KEYs(dat,name);
+            HASH(dat);
+            if(value.index != 0)
+            {
+                FIELD_BS(dat,"index",value.index,62);
+            }
+            FIRSTPREFIX(dat);
+            config.streamWriter.write("\""+_path_field("rgb")+ "\"");
+            config.streamWriter.write("\""+_path_field(String.format("%06x", value.rgb))+ "\"");
+            if(value.flag != 0)
+            {
+                FIELD_BS(dat,"flag",value.flag,62);
+            }
+            //pending
+            if(value.flag > 0 && value.flag < 8)
+            {
+
+            }
+            ENDHASH(dat);
+        }
+        else {
+            KEY(dat,_path_field(name));
+            config.streamWriter.write(value.index+"");
+        }
+    }
+
+    public static void FIELD_DATAHANDLE(Bit_Chain hdl_dat, String name, Dwg_Object_Ref valRef, int code, int dxf) throws IOException {
+        FIELD_HANDLE(hdl_dat,name,valRef,code,dxf);
+    }
+
+    static void FIELD_3BD(Bit_Chain dat, String name, Dwg_Bitcode_3BD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_BD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.y,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.z,dat,dxf);
+        config.streamWriter.write(" ] ");
+    }
+    static void FIELD_3RD(Bit_Chain dat, String name, Dwg_Bitcode_3RD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_RD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_RD(value.y,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_RD(value.z,dat,dxf);
+        config.streamWriter.write(" ] ");
+    }
+
+    static void FIELD_2RD(Bit_Chain dat, String name, Dwg_Bitcode_2RD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_RD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_RD(value.y,dat,dxf);
+        config.streamWriter.write(" ] ");
+    }
+    static void FIELD_2BD(Bit_Chain dat, String name, Dwg_Bitcode_2BD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_BD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.y,dat,dxf);
+        config.streamWriter.write(" ] ");
     }
 }

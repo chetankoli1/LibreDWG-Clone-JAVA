@@ -201,6 +201,11 @@ public class commen {
     {
         return dat.version.ordinal() >= v1.ordinal() && dat.version.ordinal() <= v2.ordinal();
     }
+
+    static boolean VERSION(DWG_VERSION_TYPE v1,Bit_Chain dat)
+    {
+        return dat.version.ordinal() == v1.ordinal();
+    }
     static boolean UNTIL(DWG_VERSION_TYPE v1, Bit_Chain dat)
     {
         return dat.version.ordinal() <= v1.ordinal();

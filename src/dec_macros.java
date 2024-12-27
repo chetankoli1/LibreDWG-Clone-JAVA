@@ -2,6 +2,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class dec_macros {
+    private static final int REFS_PER_REALLOC = 16384;
+
     static char FIELD_RC(Bit_Chain dat, String type, int dxf)
     {
         return bits.bit_read_RC(dat);
@@ -30,6 +32,8 @@ public class dec_macros {
                 return bits.bit_read_RS(dat);
             case "RL":
                 return bits.bit_read_RL(dat);
+            case "BS":
+                return bits.bit_read_BS(dat);
             default:
                 return 101;
         }
@@ -82,9 +86,15 @@ public class dec_macros {
         return arr;
     }
 
-    static Dwg_Bitcode_TimeRLL FIELD_TIMERLL(Bit_Chain dat, int i) {
+    static Dwg_Bitcode_TimeRLL FIELD_TIMERLL(Bit_Chain dat, int dxf) {
         Dwg_Bitcode_TimeRLL time = new Dwg_Bitcode_TimeRLL();
         time = bits.bit_read_TIMERLL(dat);
+        return time;
+    }
+
+    static Dwg_Bitcode_TimeBLL FIELD_TIMEBLL(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_TimeBLL time = new Dwg_Bitcode_TimeBLL();
+        time = bits.bit_read_TIMEBLL(dat);
         return time;
     }
 
@@ -201,6 +211,11 @@ public class dec_macros {
         ref = VALUE_HANDLE(dat,ref,code,obj,objDwgData,dxf);
         return ref;
     }
+    static Dwg_Object_Ref FIELD_DATAHANDLE(Bit_Chain hdl_dat, Dwg_Object obj, Dwg_Data objDwgData, int code, int dxf) {
+        Dwg_Object_Ref ref = new Dwg_Object_Ref();
+        ref = dwg_decode_handleref(hdl_dat,obj,objDwgData);
+        return ref;
+    }
 
      static Dwg_Object_Ref VALUE_HANDLE(Bit_Chain hdl_dat,Dwg_Object_Ref ref, int code, Dwg_Object obj, Dwg_Data dwgObj,int dxf) {
         if(commen.PRE(DWG_VERSION_TYPE.R_13b1,hdl_dat))
@@ -217,11 +232,104 @@ public class dec_macros {
             {
                 ref = dwg_decode_handleref_with_code(hdl_dat,obj,dwgObj,code);
             }else{
-               // ref = dwg_decode_handleref(hdl_dat,obj,dwgObj);
+                ref = dwg_decode_handleref(hdl_dat,obj,dwgObj);
             }
         }
         return ref;
     }
+
+    private static Dwg_Object_Ref dwg_decode_handleref(Bit_Chain hdl_dat, Dwg_Object obj, Dwg_Data dwgObj) {
+        Dwg_Object_Ref ref = new Dwg_Object_Ref();
+        if(ref == null)
+        {
+            return null;
+        }
+        if(bits.bit_read_H(hdl_dat,ref.handleref) != 0)
+        {
+            return null;
+        }
+        if(ref.handleref.size != 0 || (obj != null && ref.handleref.code > 5))
+        {
+            if (dwg_decode_add_object_ref (dwgObj, ref) != 0)
+            {
+                return null;
+            }
+        }
+        else if(ref.handleref.value == 0) {
+            ref.absolute_ref = 0;
+            ref.obj = null;
+            return ref;
+        }
+        if(obj == null)
+        {
+            if(ref.handleref.value != 0)
+            {
+                ref.absolute_ref = ref.handleref.value;
+                ref.obj = null;
+                return ref;
+            }
+            if(ref.handleref.code >= 6)
+            {
+                ref.obj = null;
+                return null;
+            }
+        }
+
+        switch (ref.handleref.code)
+        {
+            case 6:
+                ref.absolute_ref = (obj.handle.value + 1);
+                break;
+            case 8:
+                ref.absolute_ref = (obj.handle.value - 1);
+                break;
+            case 10:
+                ref.absolute_ref = (obj.handle.value + ref.handleref.value);
+                break;
+            case 12:
+                ref.absolute_ref = (obj.handle.value - ref.handleref.value);
+                break;
+            case 14:
+                ref.absolute_ref = obj.handle.value;
+                break;
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                ref.absolute_ref = ref.handleref.value;
+            case 0:
+                ref.absolute_ref = ref.handleref.value;
+                break;
+            default:
+                ref.absolute_ref = 0;
+                ref.obj = null;
+                System.out.println("Invalid handle pointer code %d "+ ref.handleref.code);
+                break;
+        }
+        return ref;
+    }
+
+    static int dwg_decode_add_object_ref(Dwg_Data dwgObj, Dwg_Object_Ref ref) {
+        Dwg_Object_Ref[] object_ref_old = dwgObj.object_ref;
+        if (dwgObj.num_object_refs == 0) {
+            dwgObj.object_ref = new Dwg_Object_Ref[REFS_PER_REALLOC];
+        } else if (dwgObj.num_object_refs % REFS_PER_REALLOC == 0) {
+            Dwg_Object_Ref[] newObjectRef = new Dwg_Object_Ref[dwgObj.num_object_refs + REFS_PER_REALLOC];
+            if (dwgObj.object_ref != null) {
+                System.arraycopy(dwgObj.object_ref, 0, newObjectRef, 0, dwgObj.num_object_refs);
+            }
+            dwgObj.object_ref = newObjectRef;
+            dwgObj.dirty_refs = 1;
+        }
+        if (dwgObj.object_ref == null) {
+            dwgObj.object_ref = object_ref_old;
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+        }
+        dwgObj.object_ref[dwgObj.num_object_refs++] = ref;
+        ref.handleref.is_global = 1;
+        return 0;
+    }
+
 
     private static Dwg_Object_Ref dwg_decode_handleref_with_code(Bit_Chain dat, Dwg_Object obj, Dwg_Data dwgObj, int code) {
         Dwg_Object_Ref ref = new Dwg_Object_Ref();
@@ -291,5 +399,66 @@ public class dec_macros {
 
     static char FIELD_B(Bit_Chain dat, String type, int dxf) {
         return (char) (int)FIELDG(dat, type, dxf);
+    }
+
+    static short FIELD_BSd(Bit_Chain dat, String type, String cast, int dxf) {
+        return (short)(int)FIELD_CAST(dat,cast,dxf);
+    }
+
+    static Dwg_Color FIELD_CMC(Bit_Chain dat, Bit_Chain str_dat, int dxf) {
+        Dwg_Color color = new Dwg_Color();
+        color = bits.bit_read_CMC(dat, str_dat);
+        return color;
+    }
+
+
+    static Dwg_Bitcode_3BD FIELD_3BD(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_3BD val = new Dwg_Bitcode_3BD();
+        val.x = bits.bit_read_BD(dat);
+        val.y = bits.bit_read_BD(dat);
+        val.z = bits.bit_read_BD(dat);
+        if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y) || bits.bit_isnan(val.z))
+        {
+            System.out.print("DWG_ERR_VALUEOUTOFBOUNDS"+dxf);
+            return null;
+        }
+        return val;
+    }
+
+    static Dwg_Bitcode_3RD FIELD_3RD(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_3RD val = new Dwg_Bitcode_3RD();
+        val.x = bits.bit_read_RD(dat);
+        val.y = bits.bit_read_RD(dat);
+        val.z = bits.bit_read_RD(dat);
+        if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y) || bits.bit_isnan(val.z))
+        {
+            System.out.print("DWG_ERR_VALUEOUTOFBOUNDS"+dxf);
+            return null;
+        }
+        return val;
+    }
+
+    static Dwg_Bitcode_2BD FIELD_2BD(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_2BD val = new Dwg_Bitcode_2BD();
+        val.x = bits.bit_read_BD(dat);
+        val.y = bits.bit_read_BD(dat);
+        if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y))
+        {
+            System.out.print("DWG_ERR_VALUEOUTOFBOUNDS"+dxf);
+            return null;
+        }
+        return val;
+    }
+
+    static Dwg_Bitcode_2RD FIELD_2RD(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_2RD val = new Dwg_Bitcode_2RD();
+        val.x = bits.bit_read_RD(dat);
+        val.y = bits.bit_read_RD(dat);
+        if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y))
+        {
+            System.out.print("DWG_ERR_VALUEOUTOFBOUNDS"+dxf);
+            return null;
+        }
+        return val;
     }
 }

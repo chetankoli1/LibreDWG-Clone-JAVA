@@ -19,4 +19,9 @@ public class specs {
     static final boolean IF_IS_DXF = false;
     static final boolean IF_IS_FREE = false;
     static final boolean IS_RELEASE = false;
+
+    static boolean IF_FREE_OR_SINCE(DWG_VERSION_TYPE v, Bit_Chain dat)
+    {
+        return commen.SINCE(v,dat);
+    }
 }
