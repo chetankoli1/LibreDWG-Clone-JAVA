@@ -348,7 +348,7 @@ public class out_json {
         if (!bits.bit_isnan(val)) {
             FIRSTPREFIX(dat);
             config.streamWriter.write("\"" + _path_field(name) + "\": ");
-            _VALUE_RD(val, dat, dxf);
+            _VALUE_BD(val, dat, dxf);
         }
     }
 
@@ -439,14 +439,14 @@ public class out_json {
         }
         for (int i = 0; i < s.length(); i++) {
             c = s.charAt(i);
-            if (dest.length() >= endp.length()) {
-                dest = "";
-                if (tmp != null && !tmp.equals(src)) {
-                    tmp = null;
-                }
-
-                return d;
-            }
+//            if (dest.length() >= endp.length()) {
+//                dest = "";
+//                if (tmp != null && !tmp.equals(src)) {
+//                    tmp = null;
+//                }
+//
+//                return d;
+//            }
             if (c == '"' && dest.length() + 1 < endp.length()) {
                 dest += '\\';
                 dest += c;
@@ -625,5 +625,9 @@ public class out_json {
         config.streamWriter.write(", ");
         _VALUE_BD(value.y,dat,dxf);
         config.streamWriter.write(" ] ");
+    }
+
+    static void FIELD_BLx(Bit_Chain dat, String name, long value, int dxf) throws IOException {
+        FIELD_BL(dat,name,value,dxf);
     }
 }

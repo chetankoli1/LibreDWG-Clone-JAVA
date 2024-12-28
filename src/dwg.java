@@ -776,6 +776,52 @@ public class dwg {
         return rgb_palettes;
     }
 
+    static short dxf_cvt_lweight(short value) {
+        return lweights[value % 32];
+    }
+    static short dxf_revcvt_lweight(short lw) {
+        for(short i = 0; i < lweights.length; i++)
+        {
+            if(lweights[i] == lw)
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+    static short lweights[] = { 0,
+            5,
+            9,
+            13,
+            15,
+            18,
+            20,
+            25,
+            30,
+            35,
+            40,
+            50,
+            53,
+            60,
+            70,
+            80,
+            90,
+            100,
+            106,
+            120,
+            /*20:*/ 140,
+            158,
+            200,
+            211,
+            /*illegal/reserved:*/ 0,
+            0,
+            0,
+            0,
+            /*28:*/ 0,  // 0x1c
+            /*29:*/ -1, // 0x1d BYLAYER
+            -2,         // BYBLOCK
+            -3 };       // BYLWDEFAULT
+
     static class DwgBumpData{
         public char[] chain;
         public long size;
@@ -1473,7 +1519,7 @@ class Dwg_Header_Variables {
     public char DIMSAH;
     public char DIMTIX;
     public char DIMSOXD;
-    public char DIMALTD;   /*!< r13-r14 only RC */
+    public int DIMALTD;   /*!< r13-r14 only RC */
     public char DIMZIN;    /*!< r13-r14 only RC */
     public char DIMSD1;
     public char DIMSD2;

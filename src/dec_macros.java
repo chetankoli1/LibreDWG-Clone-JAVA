@@ -34,6 +34,8 @@ public class dec_macros {
                 return bits.bit_read_RL(dat);
             case "BS":
                 return bits.bit_read_BS(dat);
+            case "BL":
+                return bits.bit_read_BL(dat);
             default:
                 return 101;
         }
@@ -179,6 +181,7 @@ public class dec_macros {
             case "BL" -> bits.bit_read_BL(dat);
             case "BS" -> bits.bit_read_BS(dat);
             case "B" -> bits.bit_read_B(dat);
+            case "TV" -> bits.bit_read_TV(dat);
             default -> null;
         };
     }
@@ -460,5 +463,13 @@ public class dec_macros {
             return null;
         }
         return val;
+    }
+
+    static long FIELD_BLx(Bit_Chain dat, String type, String cast, int dxf) {
+        return (long)FIELD_CAST(dat,cast,dxf);
+    }
+
+    static long FIELD_BLd(Bit_Chain dat, String type, String cast, int dxf) {
+        return (long)FIELD_CAST(dat,cast,dxf);
     }
 }

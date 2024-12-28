@@ -69,6 +69,8 @@ class commonvar{
 
 public class commen {
 
+    static double M_PI = 3.14159265358979323846;
+    static double M_PI_2 = 1.57079632679489661923132169163975144;
     /**
      * Converts a 64-bit big-endian value to host byte order.
      * Reverses the byte order of the input long value.

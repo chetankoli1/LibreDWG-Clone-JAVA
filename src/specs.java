@@ -1,6 +1,6 @@
 public class specs {
-    static final boolean DECODER = false;
-    static final boolean ENCODER = false;
+    static boolean DECODER = false;
+    static boolean ENCODER = false;
     static final boolean PRINT = false;
     static final boolean DECODER_OR_ENCODER = false;
     static final boolean DXF_OR_PRINT = false;
@@ -23,5 +23,9 @@ public class specs {
     static boolean IF_FREE_OR_SINCE(DWG_VERSION_TYPE v, Bit_Chain dat)
     {
         return commen.SINCE(v,dat);
+    }
+    static boolean IF_FREE_OR_VERSIONS(DWG_VERSION_TYPE v1,DWG_VERSION_TYPE v2, Bit_Chain dat)
+    {
+        return commen.VERSIONS(v1,v2,dat);
     }
 }

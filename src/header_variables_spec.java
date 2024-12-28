@@ -298,7 +298,367 @@ public class header_variables_spec {
         headerVars.UCSYDIR = dec_macros.FIELD_3BD(dat,10);
         headerVars.UCSNAME = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,2);
 
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            headerVars.UCSORTHOREF = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,2);
+            headerVars.UCSORTHOVIEW = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.UCSBASE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,2);
+            headerVars.UCSORGTOP = dec_macros.FIELD_3BD(dat,10);
+            headerVars.UCSORGBOTTOM = dec_macros.FIELD_3BD(dat,10);
+            headerVars.UCSORGLEFT = dec_macros.FIELD_3BD(dat,10);
+            headerVars.UCSORGRIGHT = dec_macros.FIELD_3BD(dat,10);
+            headerVars.UCSORGFRONT = dec_macros.FIELD_3BD(dat,10);
+            headerVars.UCSORGBACK = dec_macros.FIELD_3BD(dat,10);
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                headerVars.DIMPOST = dec_macros.FIELD_TV(dat,"TV",1);
+                headerVars.DIMAPOST = dec_macros.FIELD_TV(dat,"TV",1);
+            }
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            headerVars.DIMTOL = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMLIM = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTIH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTOH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSE1 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSE2 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMALT = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTOFL = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSAH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTIX = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSOXD = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMALTD = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMZIN = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMSD1 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSD2 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTOLJ = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMJUST = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMFIT = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMUPT = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTZIN = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMALTZ = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMALTTZ = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMTAD = (char) dec_macros.FIELD_CAST(dat,"BS",70);
+            headerVars.DIMUNIT = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMAUNIT = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMDEC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTDEC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTU = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTTD = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTXSTY = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,7);
+        }
+        headerVars.DIMSCALE = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMASZ = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMEXO = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMDLI = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMEXE = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMRND = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMDLE = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMTP = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMTM = dec_macros.FIELD_BD(dat,"BD",40);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            headerVars.DIMFXL = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.DIMJOGANG = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.DIMTFILL = dec_macros.FIELD_BS(dat,"BS",40);
+            headerVars.DIMTFILLCLR = dec_macros.FIELD_CMC(dat,str_dat,70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            headerVars.DIMTOL = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMLIM = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTIH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTOH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSE1 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSE2 = dec_macros.FIELD_B(dat,"B",70);
 
+            headerVars.DIMTAD = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMZIN = (char) dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMAZIN = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            headerVars.DIMARCSYM = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        headerVars.DIMTXT = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMCEN = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMTSZ = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMALTF = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMLFAC = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMTVP = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMTFAC = dec_macros.FIELD_BD(dat,"BD",40);
+        headerVars.DIMGAP = dec_macros.FIELD_BD(dat,"BD",40);
+
+        if(specs.IF_FREE_OR_VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            headerVars.DIMPOST = dec_macros.FIELD_TV(dat,"TV",1);
+            headerVars.DIMAPOST = dec_macros.FIELD_TV(dat,"TV",1);
+            headerVars.DIMBLK_T = dec_macros.FIELD_TV(dat,"TV",1);
+            headerVars.DIMBLK1_T = dec_macros.FIELD_TV(dat,"TV",1);
+            headerVars.DIMBLK2_T = dec_macros.FIELD_TV(dat,"TV",1);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            headerVars.DIMALTRND = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.DIMALT = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMALTD = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTOFL = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSAH = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTIX = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSOXD = dec_macros.FIELD_B(dat,"B",70);
+
+        }
+        headerVars.DIMCLRD = dec_macros.FIELD_CMC(dat,str_dat,70);
+        headerVars.DIMCLRE = dec_macros.FIELD_CMC(dat,str_dat,70);
+        headerVars.DIMCLRT = dec_macros.FIELD_CMC(dat,str_dat,70);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat)){
+            headerVars.DIMADEC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMDEC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTDEC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTU = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTTD = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMAUNIT = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMFRAC = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMLUNIT = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMDSEP = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTMOVE = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMJUST = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMSD1 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMSD2 = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMTOLJ = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMTZIN = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTZ = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMALTTZ = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.DIMUPT = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMATFIT = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            headerVars.DIMFXLON = dec_macros.FIELD_B(dat,"B",70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2010b,dat))
+        {
+            headerVars.DIMTXTDIRECTION = dec_macros.FIELD_B(dat,"B",70);
+            headerVars.DIMALTMZF = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.DIMMZF = dec_macros.FIELD_BD(dat,"BD",40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            headerVars.DIMTXSTY = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,7);
+            headerVars.DIMLDRBLK = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,1);
+            headerVars.DIMBLK = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,1);
+            headerVars.DIMBLK1 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,1);
+            headerVars.DIMBLK2 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,1);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            headerVars.DIMLTYPE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,6);
+            headerVars.DIMLTEX1 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,6);
+            headerVars.DIMLTEX2 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,6);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            headerVars.DIMLWD = dec_macros.FIELD_BSd(dat,"BSd","BS",70);
+            headerVars.DIMLWE = dec_macros.FIELD_BSd(dat,"BSd","BS",70);
+        }
+        headerVars.BLOCK_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.LAYER_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.STYLE_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.LTYPE_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.VIEW_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.UCS_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.VPORT_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.APPID_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.DIMSTYLE_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            headerVars.VX_CONTROL_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        }
+        headerVars.DICTIONARY_ACAD_GROUP = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.DICTIONARY_ACAD_MLINESTYLE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        headerVars.DICTIONARY_NAMED_OBJECT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.IF_ENCODE_FROM_EARLIER_OR_DXF)
+            {
+                headerVars.TSTACKALIGN = 1;
+                headerVars.TSTACKSIZE = 70;
+            }
+            headerVars.TSTACKALIGN = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.TSTACKSIZE = dec_macros.FIELD_BS(dat,"BS",70);
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                headerVars.HYPERLINKBASE = dec_macros.FIELD_TV(dat,"TV",1);
+                headerVars.STYLESHEET = dec_macros.FIELD_TV(dat,"TV",1);
+            }
+            headerVars.DICTIONARY_LAYOUT = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+            headerVars.DICTIONARY_PLOTSETTINGS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+            headerVars.DICTIONARY_PLOTSTYLENAME = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            headerVars.DICTIONARY_MATERIAL = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+            headerVars.DICTIONARY_COLOR = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            headerVars.DICTIONARY_VISUALSTYLE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2013b,dat))
+        {
+            headerVars.unknown_20 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.ENCODER)
+            {
+                // unneeded here. done in in_dxf.c:1189
+                //FIELD_VALUE (FLAGS) |= dxf_revcvt_lweight (FIELD_VALUE (CELWEIGHT));
+                //if (FIELD_VALUE (ENDCAPS)) FIELD_VALUE (FLAGS) |= 0x60;
+                // ...
+            }
+            headerVars.FLAGS = dec_macros.FIELD_BLx(dat,"BLx","BL",70);
+            if(specs.DECODER)
+            {
+                headerVars.CELWEIGHT = dwg.dxf_cvt_lweight((short)(headerVars.FLAGS & 0x1f));
+                //FIELD_G_TRACE (CELWEIGHT, BSd, 370) // default: -1 ByLayer
+                headerVars.ENDCAPS = (char)((headerVars.FLAGS & 0x60) != 0 ? 1 : 0);
+                //FIELD_G_TRACE (ENDCAPS, RC, 280)
+                headerVars.JOINSTYLE = (char)((headerVars.FLAGS & 0x180) != 0 ? 1 : 0);
+                headerVars.LWDISPLAY = (char)((headerVars.FLAGS & 0x200) != 0 ? 1 : 0);
+                headerVars.XEDIT = (char)((headerVars.FLAGS & 0x400) != 0 ? 0 : 1);
+                headerVars.EXTNAMES = (char)((headerVars.FLAGS & 0x800) != 0 ? 1 : 0);
+                headerVars.PSTYLEMODE = (char)((headerVars.FLAGS & 0x2000) != 0 ? 1 : 0);
+                headerVars.OLESTARTUP = (char)((headerVars.FLAGS & 0x4000) != 0 ? 1 : 0);
+            }
+            headerVars.INSUNITS = dec_macros.FIELD_BS(dat,"BS",70);
+            headerVars.CEPSNTYPE = dec_macros.FIELD_BS(dat,"BS",70);
+            if(headerVars.CEPSNTYPE == 3)
+            {
+                headerVars.CPSNID = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+            }
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                headerVars.FINGERPRINTGUID = dec_macros.FIELD_TV(dat,"TV",0);
+                headerVars.VERSIONGUID = dec_macros.FIELD_TV(dat,"TV",0);
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            headerVars.SORTENTS = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.INDEXCTL = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.HIDETEXT = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.XCLIPFRAME = dec_macros.FIELD_RC(dat,"RC",290);
+            headerVars.DIMASSOC = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.HALOGAP = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.OBSCOLOR = dec_macros.FIELD_BS(dat,"BS",280);
+            headerVars.INTERSECTIONCOLOR = dec_macros.FIELD_BS(dat,"BS",280);
+            headerVars.OBSLTYPE = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.INTERSECTIONDISPLAY = dec_macros.FIELD_RC(dat,"RC",290);
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                headerVars.PROJECTNAME = dec_macros.FIELD_TV(dat,"TV",1);
+            }
+        }
+        headerVars.BLOCK_RECORD_PSPACE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        headerVars.BLOCK_RECORD_MSPACE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        headerVars.LTYPE_BYLAYER = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        headerVars.LTYPE_BYBLOCK = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        headerVars.LTYPE_CONTINUOUS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            if(specs.IF_ENCODE_FROM_EARLIER)
+            {
+                headerVars.STEPSPERSEC = 2.0;
+                headerVars.STEPSIZE = 50.0;
+                headerVars.LENSLENGTH = 50.0;
+                headerVars._3DDWFPREC = 2.0;
+                headerVars.PSOLWIDTH = 5.0;
+                headerVars.PSOLHEIGHT = 80;
+                headerVars.LOFTANG1 = commen.M_PI_2;
+                headerVars.LOFTANG2 = commen.M_PI_2;
+                headerVars.LOFTPARAM = 7;
+                headerVars.LOFTNORMALS = 1;
+                headerVars.LATITUDE = 1.0;
+                headerVars.LONGITUDE = 1.0;
+                headerVars.TIMEZONE = -8000;
+                headerVars.LIGHTGLYPHDISPLAY = 1;
+                headerVars.TILEMODELIGHTSYNCH = 1;
+                headerVars.SOLIDHIST = 1;
+                headerVars.SHOWHIST = 1;
+                headerVars.DWFFRAME = 2;
+                headerVars.REALWORLDSCALE = 1;
+            }
+            headerVars.CAMERADISPLAY = dec_macros.FIELD_B(dat,"B",290);
+            headerVars.unknown_21 = dec_macros.FIELD_BL(dat,"BL",0);
+            headerVars.unknown_22 = dec_macros.FIELD_BL(dat,"BL",0);
+            headerVars.unknown_23 = dec_macros.FIELD_BD(dat,"BD",0);
+            headerVars.STEPSPERSEC = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.STEPSIZE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars._3DDWFPREC = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LENSLENGTH = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.CAMERAHEIGHT = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.SOLIDHIST = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.SHOWHIST = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.PSOLWIDTH = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.PSOLHEIGHT = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTANG1 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTANG2 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTMAG1 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTMAG2 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTPARAM = dec_macros.FIELD_BS(dat,"BS",40);
+            headerVars.LOFTNORMALS = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.LATITUDE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LONGITUDE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.NORTHDIRECTION = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.TIMEZONE = dec_macros.FIELD_BLd(dat,"BLd","BL",40);
+            headerVars.LIGHTGLYPHDISPLAY = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.TILEMODELIGHTSYNCH = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.DWFFRAME = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.DGNFRAME = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.REALWORLDSCALE = dec_macros.FIELD_B(dat,"B",40);
+            headerVars.INTERFERECOLOR = dec_macros.FIELD_CMC(dat,str_dat,40);
+            headerVars.INTERFEREOBJVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,345);
+            headerVars.INTERFEREVPVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,346);
+            headerVars.DRAGVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,349);
+            headerVars.CSHADOW = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.SHADOWPLANELOCATION = dec_macros.FIELD_BD(dat,"BD",40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_14,dat))
+        {
+            headerVars.unknown_54 = dec_macros.FIELD_BS(dat,"BS",0);
+            headerVars.unknown_55 = dec_macros.FIELD_BS(dat,"BS",0);
+            headerVars.unknown_56 = dec_macros.FIELD_BS(dat,"BS",0);
+            headerVars.unknown_57 = dec_macros.FIELD_BS(dat,"BS",0);
+        }
+
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            /**
+             * // TODO split str_dat stream and get rid of this block
+             *     SECTION_STRING_STREAM
+             *     FIELD_T (unit1_name, 0);
+             *     FIELD_T (unit2_name, 0);
+             *     FIELD_T (unit3_name, 0);
+             *     FIELD_T (unit4_name, 0);
+             *     FIELD_T (MENU, 1);
+             *     FIELD_T (DIMPOST, 1);
+             *     FIELD_T (DIMAPOST, 1);
+             *     SINCE (R_2010b) {
+             *       FIELD_T (DIMALTMZS, 1);
+             *       FIELD_T (DIMMZS, 1);
+             *     }
+             *     FIELD_T (HYPERLINKBASE, 1); // see SummaryInfo
+             *     FIELD_T (STYLESHEET, 1);
+             *     FIELD_T (FINGERPRINTGUID, 1);
+             *     FIELD_T (VERSIONGUID, 1);
+             *     FIELD_T (PROJECTNAME, 1);
+             *     END_STRING_STREAM
+             * */
+        }
     }
 
     static int header_variables_spec_write(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat, Dwg_Data objDwgData) throws IOException {
@@ -615,7 +975,373 @@ public class header_variables_spec {
         out_json.FIELD_3BD(dat,"UCSYDIR",headerVars.UCSYDIR,10);
         out_json.FIELD_HANDLE(hdl_dat,"UCSNAME",headerVars.UCSNAME,5,2);
 
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"UCSORTHOREF",headerVars.UCSORTHOREF,5,2);
+            out_json.FIELD_BS(dat,"UCSORTHOVIEW",headerVars.UCSORTHOVIEW,70);
+            out_json.FIELD_HANDLE(hdl_dat,"UCSBASE",headerVars.UCSBASE,5,2);
+            out_json.FIELD_3BD(dat,"UCSORGTOP",headerVars.UCSORGTOP,10);
+            out_json.FIELD_3BD(dat,"UCSORGBOTTOM",headerVars.UCSORGBOTTOM,10);
+            out_json.FIELD_3BD(dat,"UCSORGLEFT",headerVars.UCSORGLEFT,10);
+            out_json.FIELD_3BD(dat,"UCSORGRIGHT",headerVars.UCSORGRIGHT,10);
+            out_json.FIELD_3BD(dat,"UCSORGFRONT",headerVars.UCSORGFRONT,10);
+            out_json.FIELD_3BD(dat,"UCSORGBACK",headerVars.UCSORGBACK,10);
 
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                out_json.FIELD_TV(dat,"DIMPOST",headerVars.DIMPOST,1);
+                out_json.FIELD_TV(dat,"DIMAPOST",headerVars.DIMAPOST,1);
+            }
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            out_json.FIELD_B(dat,"DIMTOL",headerVars.DIMTOL,70);
+            out_json.FIELD_B(dat,"DIMLIM",headerVars.DIMLIM,70);
+            out_json.FIELD_B(dat,"DIMTIH",headerVars.DIMTIH,70);
+            out_json.FIELD_B(dat,"DIMTOH",headerVars.DIMTOH,70);
+            out_json.FIELD_B(dat,"DIMSE1",headerVars.DIMSE1,70);
+            out_json.FIELD_B(dat,"DIMSE2",headerVars.DIMSE2,70);
+            out_json.FIELD_B(dat,"DIMALT",headerVars.DIMALT,70);
+            out_json.FIELD_B(dat,"DIMTOFL",headerVars.DIMTOFL,70);
+            out_json.FIELD_B(dat,"DIMSAH",headerVars.DIMSAH,70);
+            out_json.FIELD_B(dat,"DIMTIX",headerVars.DIMTIX,70);
+            out_json.FIELD_B(dat,"DIMSOXD",headerVars.DIMSOXD,70);
+            out_json.FIELD_CAST(dat,headerVars.DIMALTD,"DIMALTD","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMZIN,"DIMZIN","BS",70);
+            out_json.FIELD_B(dat,"DIMSD1",headerVars.DIMSD1,70);
+            out_json.FIELD_B(dat,"DIMSD2",headerVars.DIMSD2,70);
+            out_json.FIELD_CAST(dat,headerVars.DIMTOLJ,"DIMTOLJ","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMJUST,"DIMJUST","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMFIT,"DIMFIT","BS",70);
+            out_json.FIELD_B(dat,"DIMUPT",headerVars.DIMUPT,70);
+            out_json.FIELD_CAST(dat,headerVars.DIMTZIN,"DIMTZIN","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMALTZ,"DIMALTZ","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMALTTZ,"DIMALTTZ","BS",70);
+            out_json.FIELD_CAST(dat,headerVars.DIMTAD,"DIMTAD","BS",70);
+
+            out_json.FIELD_BS(dat,"DIMUNIT",headerVars.DIMUNIT,70);
+            out_json.FIELD_BS(dat,"DIMAUNIT",headerVars.DIMAUNIT,70);
+            out_json.FIELD_BS(dat,"DIMDEC",headerVars.DIMDEC,70);
+            out_json.FIELD_BS(dat,"DIMTDEC",headerVars.DIMTDEC,70);
+            out_json.FIELD_BS(dat,"DIMALTU",headerVars.DIMALTU,70);
+            out_json.FIELD_BS(dat,"DIMALTTD",headerVars.DIMALTTD,70);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMTXSTY",headerVars.DIMTXSTY,5,7);
+        }
+        out_json.FIELD_BD(dat,"DIMSCALE",headerVars.DIMSCALE,40);
+        out_json.FIELD_BD(dat,"DIMASZ",headerVars.DIMASZ,40);
+        out_json.FIELD_BD(dat,"DIMEXO",headerVars.DIMEXO,40);
+        out_json.FIELD_BD(dat,"DIMDLI",headerVars.DIMDLI,40);
+        out_json.FIELD_BD(dat,"DIMEXE",headerVars.DIMEXE,40);
+        out_json.FIELD_BD(dat,"DIMRND",headerVars.DIMRND,40);
+        out_json.FIELD_BD(dat,"DIMDLE",headerVars.DIMDLE,40);
+        out_json.FIELD_BD(dat,"DIMTP",headerVars.DIMTP,40);
+        out_json.FIELD_BD(dat,"DIMTM",headerVars.DIMTM,40);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_BD(dat,"DIMFXL",headerVars.DIMFXL,40);
+            out_json.FIELD_BD(dat,"DIMJOGANG",headerVars.DIMJOGANG,40);
+            out_json.FIELD_BD(dat,"DIMTFILL",headerVars.DIMTFILL,40);
+            out_json.FIELD_CMC(dat,"",headerVars.DIMTFILLCLR,70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_B(dat,"DIMTOL",headerVars.DIMTOL,40);
+            out_json.FIELD_B(dat,"DIMLIM",headerVars.DIMLIM,40);
+            out_json.FIELD_B(dat,"DIMTIH",headerVars.DIMTIH,40);
+            out_json.FIELD_B(dat,"DIMTOH",headerVars.DIMTOH,40);
+            out_json.FIELD_B(dat,"DIMSE1",headerVars.DIMSE1,40);
+            out_json.FIELD_B(dat,"DIMSE2",headerVars.DIMSE2,40);
+
+            out_json.FIELD_BS(dat,"DIMTAD",headerVars.DIMTAD,40);
+            out_json.FIELD_BS(dat,"DIMZIN",headerVars.DIMZIN,40);
+            out_json.FIELD_BS(dat,"DIMAZIN",headerVars.DIMAZIN,40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_BS(dat,"DIMARCSYM",headerVars.DIMARCSYM,70);
+        }
+        out_json.FIELD_BD(dat,"DIMTXT",headerVars.DIMTXT,40);
+        out_json.FIELD_BD(dat,"DIMCEN",headerVars.DIMCEN,40);
+        out_json.FIELD_BD(dat,"DIMTSZ",headerVars.DIMTSZ,40);
+        out_json.FIELD_BD(dat,"DIMALTF",headerVars.DIMALTF,40);
+        out_json.FIELD_BD(dat,"DIMLFAC",headerVars.DIMLFAC,40);
+        out_json.FIELD_BD(dat,"DIMTVP",headerVars.DIMTVP,40);
+        out_json.FIELD_BD(dat,"DIMTFAC",headerVars.DIMTFAC,40);
+        out_json.FIELD_BD(dat,"DIMGAP",headerVars.DIMGAP,40);
+
+        if(specs.IF_FREE_OR_VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            out_json.FIELD_TV(dat,"DIMPOST",headerVars.DIMPOST,1);
+            out_json.FIELD_TV(dat,"DIMAPOST",headerVars.DIMAPOST,1);
+            out_json.FIELD_TV(dat,"DIMBLK_T",headerVars.DIMBLK_T,1);
+            out_json.FIELD_TV(dat,"DIMBLK1_T",headerVars.DIMBLK1_T,1);
+            out_json.FIELD_TV(dat,"DIMBLK2_T",headerVars.DIMBLK2_T,1);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_BD(dat,"DIMALTRND",headerVars.DIMALTRND,40);
+            out_json.FIELD_B(dat,"DIMALT",headerVars.DIMALT,70);
+            out_json.FIELD_BS(dat,"DIMALTD",headerVars.DIMALTD,70);
+            out_json.FIELD_B(dat,"DIMTOFL",headerVars.DIMTOFL,70);
+            out_json.FIELD_B(dat,"DIMSAH",headerVars.DIMSAH,70);
+            out_json.FIELD_B(dat,"DIMTIX",headerVars.DIMTIX,70);
+            out_json.FIELD_B(dat,"DIMSOXD",headerVars.DIMSOXD,70);
+        }
+        out_json.FIELD_CMC(dat,"DIMCLRD",headerVars.DIMCLRD,70);
+        out_json.FIELD_CMC(dat,"DIMCLRE",headerVars.DIMCLRE,70);
+        out_json.FIELD_CMC(dat,"DIMCLRT",headerVars.DIMCLRT,70);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat)){
+            out_json.FIELD_BS(dat,"DIMADEC",headerVars.DIMADEC,70);
+            out_json.FIELD_BS(dat,"DIMDEC",headerVars.DIMDEC,70);
+            out_json.FIELD_BS(dat,"DIMTDEC",headerVars.DIMTDEC,70);
+            out_json.FIELD_BS(dat,"DIMALTU",headerVars.DIMALTU,70);
+            out_json.FIELD_BS(dat,"DIMALTTD",headerVars.DIMALTTD,70);
+            out_json.FIELD_BS(dat,"DIMAUNIT",headerVars.DIMAUNIT,70);
+            out_json.FIELD_BS(dat,"DIMFRAC",headerVars.DIMFRAC,70);
+            out_json.FIELD_BS(dat,"DIMLUNIT",headerVars.DIMLUNIT,70);
+            out_json.FIELD_BS(dat,"DIMDSEP",headerVars.DIMDSEP,70);
+            out_json.FIELD_BS(dat,"DIMTMOVE",headerVars.DIMTMOVE,70);
+            out_json.FIELD_BS(dat,"DIMJUST",headerVars.DIMJUST,70);
+            out_json.FIELD_B(dat,"DIMSD1",headerVars.DIMSD1,70);
+            out_json.FIELD_B(dat,"DIMSD2",headerVars.DIMSD2,70);
+            out_json.FIELD_BS(dat,"DIMTOLJ",headerVars.DIMTOLJ,70);
+            out_json.FIELD_BS(dat,"DIMTZIN",headerVars.DIMTZIN,70);
+            out_json.FIELD_BS(dat,"DIMALTZ",headerVars.DIMALTZ,70);
+            out_json.FIELD_BS(dat,"DIMALTTZ",headerVars.DIMALTTZ,70);
+            out_json.FIELD_B(dat,"DIMUPT",headerVars.DIMUPT,70);
+            out_json.FIELD_BS(dat,"DIMATFIT",headerVars.DIMATFIT,70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_B(dat,"DIMFXLON",headerVars.DIMFXLON,70);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2010b,dat))
+        {
+            out_json.FIELD_B(dat,"DIMTXTDIRECTION",headerVars.DIMTXTDIRECTION,70);
+            out_json.FIELD_BD(dat,"DIMALTMZF",headerVars.DIMALTMZF,40);
+            out_json.FIELD_BD(dat,"DIMMZF",headerVars.DIMMZF,40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {;
+            out_json.FIELD_HANDLE(hdl_dat,"DIMTXSTY",headerVars.DIMTXSTY,5,7);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLDRBLK",headerVars.DIMLDRBLK,5,1);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK",headerVars.DIMBLK,5,1);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK1",headerVars.DIMBLK1,5,1);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK2",headerVars.DIMBLK2,5,1);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTYPE",headerVars.DIMLTYPE,5,6);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTEX1",headerVars.DIMLTEX1,5,6);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTEX2",headerVars.DIMLTEX2,5,6);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_BSd(dat,"DIMLWD",headerVars.DIMLWD,70);
+            out_json.FIELD_BSd(dat,"DIMLWE",headerVars.DIMLWE,70);
+        }
+
+        out_json.FIELD_HANDLE(hdl_dat,"BLOCK_CONTROL_OBJECT",headerVars.BLOCK_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"LAYER_CONTROL_OBJECT",headerVars.LAYER_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"STYLE_CONTROL_OBJECT",headerVars.STYLE_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"LTYPE_CONTROL_OBJECT",headerVars.LTYPE_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"VIEW_CONTROL_OBJECT",headerVars.VIEW_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"UCS_CONTROL_OBJECT",headerVars.UCS_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"VPORT_CONTROL_OBJECT",headerVars.VPORT_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"APPID_CONTROL_OBJECT",headerVars.APPID_CONTROL_OBJECT,3,0);
+        out_json.FIELD_HANDLE(hdl_dat,"DIMSTYLE_CONTROL_OBJECT",headerVars.DIMSTYLE_CONTROL_OBJECT,3,0);
+
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"VX_CONTROL_OBJECT",headerVars.VX_CONTROL_OBJECT,3,0);
+        }
+        out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_ACAD_GROUP",headerVars.DICTIONARY_ACAD_GROUP,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_ACAD_MLINESTYLE",headerVars.DICTIONARY_ACAD_MLINESTYLE,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_NAMED_OBJECT",headerVars.DICTIONARY_NAMED_OBJECT,5,0);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.IF_ENCODE_FROM_EARLIER_OR_DXF)
+            {
+                headerVars.TSTACKALIGN = 1;
+                headerVars.TSTACKSIZE = 70;
+            }
+            out_json.FIELD_BS(dat,"TSTACKALIGN",headerVars.TSTACKALIGN,70);
+            out_json.FIELD_BS(dat,"TSTACKSIZE",headerVars.TSTACKSIZE,70);
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                out_json.FIELD_TV(dat,"HYPERLINKBASE",headerVars.HYPERLINKBASE,1);
+                out_json.FIELD_TV(dat,"STYLESHEET",headerVars.STYLESHEET,1);
+            }
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_LAYOUT",headerVars.DICTIONARY_LAYOUT,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_PLOTSETTINGS",headerVars.DICTIONARY_PLOTSETTINGS,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_PLOTSTYLENAME",headerVars.DICTIONARY_PLOTSTYLENAME,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_MATERIAL",headerVars.DICTIONARY_MATERIAL,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_COLOR",headerVars.DICTIONARY_COLOR,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"DICTIONARY_VISUALSTYLE",headerVars.DICTIONARY_VISUALSTYLE,5,0);
+        }
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2013b,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"unknown_20",headerVars.unknown_20,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.ENCODER)
+            {
+                // unneeded here. done in in_dxf.c:1189
+                //FIELD_VALUE (FLAGS) |= dxf_revcvt_lweight (FIELD_VALUE (CELWEIGHT));
+                //if (FIELD_VALUE (ENDCAPS)) FIELD_VALUE (FLAGS) |= 0x60;
+                // ...
+            }
+            out_json.FIELD_BLx(dat,"FLAGS",headerVars.FLAGS,70);
+            if(specs.DECODER)
+            {
+                headerVars.CELWEIGHT = dwg.dxf_cvt_lweight((short)(headerVars.FLAGS & 0x1f));
+                //FIELD_G_TRACE (CELWEIGHT, BSd, 370) // default: -1 ByLayer
+                headerVars.ENDCAPS = (char)((headerVars.FLAGS & 0x60) != 0 ? 1 : 0);
+                //FIELD_G_TRACE (ENDCAPS, RC, 280)
+                headerVars.JOINSTYLE = (char)((headerVars.FLAGS & 0x180) != 0 ? 1 : 0);
+                headerVars.LWDISPLAY = (char)((headerVars.FLAGS & 0x200) != 0 ? 1 : 0);
+                headerVars.XEDIT = (char)((headerVars.FLAGS & 0x400) != 0 ? 0 : 1);
+                headerVars.EXTNAMES = (char)((headerVars.FLAGS & 0x800) != 0 ? 1 : 0);
+                headerVars.PSTYLEMODE = (char)((headerVars.FLAGS & 0x2000) != 0 ? 1 : 0);
+                headerVars.OLESTARTUP = (char)((headerVars.FLAGS & 0x4000) != 0 ? 1 : 0);
+            }
+            out_json.FIELD_BS(dat,"INSUNITS",headerVars.INSUNITS,70);
+            out_json.FIELD_BS(dat,"CEPSNTYPE",headerVars.CEPSNTYPE,70);
+            if(headerVars.CEPSNTYPE == 3)
+            {
+                out_json.FIELD_HANDLE(hdl_dat,"CPSNID",headerVars.CPSNID,5,0);
+            }
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                out_json.FIELD_TV(dat,"FINGERPRINTGUID",headerVars.FINGERPRINTGUID,0);
+                out_json.FIELD_TV(dat,"VERSIONGUID",headerVars.VERSIONGUID,0);
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            out_json.FIELD_RC("SORTENTS",headerVars.SORTENTS,dat,280);
+            out_json.FIELD_RC("INDEXCTL",headerVars.INDEXCTL,dat,280);
+            out_json.FIELD_RC("HIDETEXT",headerVars.HIDETEXT,dat,280);
+            out_json.FIELD_RC("XCLIPFRAME",headerVars.XCLIPFRAME,dat,290);
+            out_json.FIELD_RC("DIMASSOC",headerVars.DIMASSOC,dat,280);
+            out_json.FIELD_RC("HALOGAP",headerVars.HALOGAP,dat,280);
+            headerVars.OBSCOLOR = dec_macros.FIELD_BS(dat,"BS",280);
+            headerVars.INTERSECTIONCOLOR = dec_macros.FIELD_BS(dat,"BS",280);
+            out_json.FIELD_RC("OBSLTYPE",headerVars.OBSLTYPE,dat,280);
+            out_json.FIELD_BS(dat,"",headerVars.INTERSECTIONDISPLAY,290);
+            out_json.FIELD_RC("INTERSECTIONDISPLAY",headerVars.INTERSECTIONDISPLAY,dat,290);
+            if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+                out_json.FIELD_TV(dat,"PROJECTNAME", headerVars.PROJECTNAME,1);
+            }
+        }
+        out_json.FIELD_HANDLE(hdl_dat,"BLOCK_RECORD_PSPACE",headerVars.BLOCK_RECORD_PSPACE,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"BLOCK_RECORD_MSPACE",headerVars.BLOCK_RECORD_MSPACE,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"LTYPE_BYLAYER",headerVars.LTYPE_BYLAYER,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"LTYPE_BYBLOCK",headerVars.LTYPE_BYBLOCK,5,0);
+        out_json.FIELD_HANDLE(hdl_dat,"LTYPE_CONTINUOUS",headerVars.LTYPE_CONTINUOUS,5,0);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            if(specs.IF_ENCODE_FROM_EARLIER)
+            {
+                headerVars.STEPSPERSEC = 2.0;
+                headerVars.STEPSIZE = 50.0;
+                headerVars.LENSLENGTH = 50.0;
+                headerVars._3DDWFPREC = 2.0;
+                headerVars.PSOLWIDTH = 5.0;
+                headerVars.PSOLHEIGHT = 80;
+                headerVars.LOFTANG1 = commen.M_PI_2;
+                headerVars.LOFTANG2 = commen.M_PI_2;
+                headerVars.LOFTPARAM = 7;
+                headerVars.LOFTNORMALS = 1;
+                headerVars.LATITUDE = 1.0;
+                headerVars.LONGITUDE = 1.0;
+                headerVars.TIMEZONE = -8000;
+                headerVars.LIGHTGLYPHDISPLAY = 1;
+                headerVars.TILEMODELIGHTSYNCH = 1;
+                headerVars.SOLIDHIST = 1;
+                headerVars.SHOWHIST = 1;
+                headerVars.DWFFRAME = 2;
+                headerVars.REALWORLDSCALE = 1;
+            }
+            headerVars.CAMERADISPLAY = dec_macros.FIELD_B(dat,"B",290);
+            headerVars.unknown_21 = dec_macros.FIELD_BL(dat,"BL",0);
+            headerVars.unknown_22 = dec_macros.FIELD_BL(dat,"BL",0);
+            headerVars.unknown_23 = dec_macros.FIELD_BD(dat,"BD",0);
+            headerVars.STEPSPERSEC = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.STEPSIZE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars._3DDWFPREC = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LENSLENGTH = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.CAMERAHEIGHT = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.SOLIDHIST = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.SHOWHIST = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.PSOLWIDTH = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.PSOLHEIGHT = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTANG1 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTANG2 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTMAG1 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTMAG2 = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LOFTPARAM = dec_macros.FIELD_BS(dat,"BS",40);
+            headerVars.LOFTNORMALS = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.LATITUDE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.LONGITUDE = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.NORTHDIRECTION = dec_macros.FIELD_BD(dat,"BD",40);
+            headerVars.TIMEZONE = dec_macros.FIELD_BLd(dat,"BLd","BL",40);
+            headerVars.LIGHTGLYPHDISPLAY = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.TILEMODELIGHTSYNCH = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.DWFFRAME = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.DGNFRAME = dec_macros.FIELD_RC(dat,"RC",40);
+            headerVars.REALWORLDSCALE = dec_macros.FIELD_B(dat,"B",40);
+            headerVars.INTERFERECOLOR = dec_macros.FIELD_CMC(dat,str_dat,40);
+            headerVars.INTERFEREOBJVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,345);
+            headerVars.INTERFEREVPVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,346);
+            headerVars.DRAGVS = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,349);
+            headerVars.CSHADOW = dec_macros.FIELD_RC(dat,"RC",280);
+            headerVars.SHADOWPLANELOCATION = dec_macros.FIELD_BD(dat,"BD",40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_14,dat))
+        {
+            out_json.FIELD_BS(dat,"unknown_54",headerVars.unknown_54,0);
+            out_json.FIELD_BS(dat,"unknown_55",headerVars.unknown_55,0);
+            out_json.FIELD_BS(dat,"unknown_56",headerVars.unknown_56,0);
+            out_json.FIELD_BS(dat,"unknown_57",headerVars.unknown_57,0);
+        }
+
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            /**
+             * // TODO split str_dat stream and get rid of this block
+             *     SECTION_STRING_STREAM
+             *     FIELD_T (unit1_name, 0);
+             *     FIELD_T (unit2_name, 0);
+             *     FIELD_T (unit3_name, 0);
+             *     FIELD_T (unit4_name, 0);
+             *     FIELD_T (MENU, 1);
+             *     FIELD_T (DIMPOST, 1);
+             *     FIELD_T (DIMAPOST, 1);
+             *     SINCE (R_2010b) {
+             *       FIELD_T (DIMALTMZS, 1);
+             *       FIELD_T (DIMMZS, 1);
+             *     }
+             *     FIELD_T (HYPERLINKBASE, 1); // see SummaryInfo
+             *     FIELD_T (STYLESHEET, 1);
+             *     FIELD_T (FINGERPRINTGUID, 1);
+             *     FIELD_T (VERSIONGUID, 1);
+             *     FIELD_T (PROJECTNAME, 1);
+             *     END_STRING_STREAM
+             * */
+        }
         return error;
     }
 }

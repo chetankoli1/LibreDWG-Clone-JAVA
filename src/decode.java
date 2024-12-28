@@ -306,6 +306,26 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         else{
             return error |= DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
         }
+        crc2 = 0;
+        if(objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size > 34
+        && objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size < 0xfff
+        && pvz < dat._byte
+        && pvz + objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size < dat.size)
+        {
+            long crc_size = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_HEADER_R13.value].size - 34;
+            crc2 = bits.bit_calc_CRC(0xC0C1,(int)pvz, dat.chain, crc_size);
+        }
+        if(crc != crc2)
+        {
+            error |= DWG_ERROR.DWG_ERR_WRONGCRC.value;
+
+        }
+
+        /*-------------------------------------------------------------------------
+         * Classes, section 1
+         */
+
+
         return error;
     }
 

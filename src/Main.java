@@ -30,6 +30,7 @@ public class Main {
                 String path = dirName + File.separator + fileNameWithExtension;
                 NewFile(path);
 
+                specs.DECODER = true;
                 error = dwg.dwg_read_file(dwgFilePath,objDwgData);
 
                 if(!config.outFilePath.isEmpty())
@@ -50,6 +51,7 @@ public class Main {
                     dat.codepages = objDwgData.header.codepage;
                     BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
                     config.streamWriter = writer;
+                    specs.DECODER = false;
                     error = out_json.dwg_write_json(dat, objDwgData);
                     config.streamWriter.close();
                     System.out.println("JSON file is Genarated Succesfully");
