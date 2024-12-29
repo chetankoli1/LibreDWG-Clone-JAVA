@@ -126,6 +126,13 @@ public class commen {
         return Long.reverseBytes(value);
     }
 
+    public static void VALUEOUTOFBOUNDS(Object srcLen, int destLen) {
+        if((int)srcLen > destLen)
+        {
+            System.out.println("value out of bound");
+        }
+    }
+
     static enum DWG_SENTINEL
     {
         DWG_SENTINEL_HEADER_END,

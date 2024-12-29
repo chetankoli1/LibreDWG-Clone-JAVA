@@ -1247,7 +1247,7 @@ class Dwg_Data {
 
     public Dwg_Object_BLOCK_CONTROL block_control;
     public Dwg_AuxHeader auxheader;
-    public Dwg_SecondHeader secondheader;
+    public Dwg_SecondHeader secondheader = new Dwg_SecondHeader();
     public Dwg_SummaryInfo summaryinfo;;
     public Dwg_AppInfo appinfo;
     public Dwg_FileDepList filedeplist;
@@ -1776,7 +1776,33 @@ class Dwg_AuxHeader
 
 class Dwg_SecondHeader
 {
+    public long size;
+    public long address;
+    public char[] version = new char[11];
+    public char is_maint;
+    public char zero_one_or_three;
+    public int dwg_version;
+    public int codepage;
+    public int num_sections;
+    public Dwg_SecondHeader_Sections[] sections = new Dwg_SecondHeader_Sections[7];
+    public int num_handles;
+    public Dwg_SecondHeader_Handles[] handles = new Dwg_SecondHeader_Handles[14];
+    public int crc;
+    public long junk_r14;
 
+}
+
+class Dwg_SecondHeader_Sections {
+    public char nr;
+    public long address;
+    public long size;
+}
+
+class Dwg_SecondHeader_Handles{
+    public char num_hdl;
+    public char nr;
+    public char[] hdl = new char[8];
+    public String name;
 }
 
 class Dwg_SummaryInfo

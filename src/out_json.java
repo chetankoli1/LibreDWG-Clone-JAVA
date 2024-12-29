@@ -47,6 +47,10 @@ public class out_json {
                 if (objDwgData.header.sections >= 3 && objDwgData.objfreespace.numnums != 0) {
                     error |= json_section_objfreespace(dat, objDwgData);
                 }
+                if(objDwgData.secondheader.num_sections != 0)
+                {
+                    error |= json_section_2ndheader(dat, objDwgData, objDwgData.secondheader);
+                }
                 if (objDwgData.header.sections >= 6) {
                     error |= json_section_auxheader(dat, objDwgData);
                 }
@@ -57,7 +61,24 @@ public class out_json {
         return 0;
     }
 
-    private static int json_section_objfreespace(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+    static int json_section_2ndheader(Bit_Chain dat, Dwg_Data objDwgData,Dwg_SecondHeader _obj) throws IOException {
+        Bit_Chain str_dat = dat;
+        Dwg_Object obj = new Dwg_Object();
+        int error = 0;
+
+        RECORD(dat,"SecondHeader");
+
+        second_header_spec.second_header_spec_write(dat, obj, objDwgData, _obj);
+
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_14,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            out_json.FIELD_RL("junk_r14",_obj.junk_r14,dat,0);
+        }
+        ENDRECORD(dat);
+        return error;
+    }
+
+    static int json_section_objfreespace(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         RECORD(dat,"ObjFreeSpace");
         Dwg_Object obj = null;
         int error = 0;
@@ -596,6 +617,9 @@ public class out_json {
     static void FIELD_BSd(Bit_Chain dat, String name, short value, int dxf) throws IOException {
         FIELD(name,value,dat,dxf);
     }
+    static void FIELD_BSx(Bit_Chain dat, String name, short value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
 
     static void FIELD_CMC(Bit_Chain dat, String name, Dwg_Color value, int dxf) throws IOException {
         if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_2004.ordinal())
@@ -698,5 +722,123 @@ public class out_json {
 
     static void FIELD_BLx(Bit_Chain dat, String name, long value, int dxf) throws IOException {
         FIELD_BL(dat,name,value,dxf);
+    }
+
+    static void FIELD_TFF(Bit_Chain dat, String name, String value, int dxf) throws IOException {
+        FIELD_TF(dat,name,value,dxf);
+    }
+
+    static void FIELD_TF(Bit_Chain dat, String name, String value, int dxf) throws IOException {
+        FIRSTPREFIX(dat);
+        config.streamWriter.write("\""+_path_field(name)+ "\": ");
+        json_write_TF(dat,value,value.length());
+    }
+    static void json_write_TF(Bit_Chain dat, String src, int len) {
+        int slen = (src != null) ? src.length() : 0;
+        boolean hasSlack = false;
+
+        try {
+            config.streamWriter.write('"');
+
+            if (slen == 0) {
+                config.streamWriter.write('"');
+                return;
+            }
+
+            for (int i = 0; i < len; i++) {
+                char c = src.charAt(i);
+
+                if (c == '\r' || c == '\n' || c == '"' || c == '\\') {
+                    config.streamWriter.write('\\');
+                    if (c == '\r') {
+                        config.streamWriter.write('r');
+                    } else if (c == '\n') {
+                        config.streamWriter.write('n');
+                    } else {
+                        config.streamWriter.write(c);
+                    }
+                } else if (c == '\\' && i + 6 < len && src.charAt(i + 1) == 'U' && src.charAt(i + 2) == '+'
+                        && isHex(src.charAt(i + 3)) && isHex(src.charAt(i + 4))
+                        && isHex(src.charAt(i + 5)) && isHex(src.charAt(i + 6))) {
+                    config.streamWriter.write('\\');
+                    config.streamWriter.write('u');
+                    i += 3; // Skip 'U+'
+                } else if (c == '\0') {
+                    if (!hasSlack && i == slen) {
+                        for (int j = i; j < len; j++) {
+                            if (src.charAt(j) != '\0') {
+                                hasSlack = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (hasSlack) {
+                        config.streamWriter.write("\\u0000");
+                    } else {
+                        config.streamWriter.write('"');
+                        return;
+                    }
+                } else if (c < 0x1F) {
+                    config.streamWriter.write(String.format("\\u00%02x", (int) c));
+                } else {
+                    config.streamWriter.write(c);
+                }
+            }
+            config.streamWriter.write('"');
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Helper method to check if a character is a hexadecimal digit
+    static boolean isHex(char c) {
+        return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F') || (c >= 'a' && c <= 'f');
+    }
+
+    static void REPEAT(Bit_Chain dat, String sections) throws IOException {
+        KEY(dat,sections);
+        ARRAY(dat);
+    }
+
+    static void ENDREPEAT(Bit_Chain dat) throws IOException {
+        ENDARRAY(dat);
+    }
+
+    static void REPEAT_BLOCK(Bit_Chain dat) throws IOException
+    {
+        FIRSTPREFIX(dat); HASH(dat);
+    }
+    static void END_REPEAT_BLOCK(Bit_Chain dat) throws IOException
+    {
+        ENDHASH(dat);
+    }
+
+    static void SUB_FIELD_RCd(Bit_Chain dat, String name, char value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    public static void SUB_FIELD_BL(Bit_Chain dat, String name, long value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    static void SUB_FIELD_VECTOR_INL(Bit_Chain dat, String name, char[] arr, int size, int dxf) throws IOException {
+        SUB_FIELD_VECTOR_N(dat,name,arr,size,dxf);
+    }
+
+    static void SUB_FIELD_VECTOR_N(Bit_Chain dat, String name, char[] arr, int size, int dxf) throws IOException {
+        KEY(dat,name);
+        ARRAY(dat);
+        if(arr != null)
+        {
+            for(int i = 0; i < size; i++)
+            {
+                FIRSTPREFIX(dat);
+                byte val = (byte)arr[i];
+                config.streamWriter.write(_path_field(val+""));
+            }
+        }else{
+            PRINTFIRST(dat);
+        }
+        ENDARRAY(dat);
     }
 }

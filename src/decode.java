@@ -420,6 +420,62 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         /*-------------------------------------------------------------------------
          * Second header, r13-r2000 only. With sentinels.
          */
+        if(bits.bit_search_sentinel(dat,commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_2NDHEADER_BEGIN)) != 0)
+        {
+            Dwg_SecondHeader _obj = objDwgData.secondheader;
+            String[] names = {
+                    "HANDSEED",
+                    "BLOCK_CONTROL_OBJECT",
+                    "LAYER_CONTROL_OBJECT",
+                    "STYLE_CONTROL_OBJECT",
+                    "LTYPE_CONTROL_OBJECT",
+                    "VIEW_CONTROL_OBJECT",
+                    "UCS_CONTROL_OBJECT",
+                    "VPORT_CONTROL_OBJECT",
+                    "APPID_CONTROL_OBJECT",
+                    "DIMSTYLE_CONTROL_OBJECT",
+                    "VX_CONTROL_OBJECT",
+                    "DICTIONARY_NAMED_OBJECT",
+                    "DICTIONARY_ACAD_MLINESTYLE",
+                    "DICTIONARY_ACAD_GROUP"
+            };
+            _obj.handles = new Dwg_SecondHeader_Handles[names.length];
+            for(int i  = 0; i < names.length; i++)
+            {
+                _obj.handles[i] = new Dwg_SecondHeader_Handles();
+                _obj.handles[i].name = names[i];
+            }
+
+            error = secondheader_private(dat,objDwgData,_obj);
+            if(bits.bit_search_sentinel(dat,
+                    commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_2NDHEADER_END)) != 0)
+            {
+
+            }
+        }
+        return error;
+    }
+
+    static int secondheader_private(Bit_Chain dat, Dwg_Data objDwgData,Dwg_SecondHeader _obj) {
+        Bit_Chain str_dat = dat;
+        Dwg_Object obj = new Dwg_Object();
+
+        int error = 0;
+        if(dat.chain == null || dat.size == 0)
+        {
+            return 1;
+        }
+
+        second_header_spec.second_header_spec_read(dat, obj, objDwgData, _obj);
+
+        if(bits.bit_check_CRC(dat,_obj.address + 16,0xC0C1 ) == 0)
+        {
+            error |= DWG_ERROR.DWG_ERR_WRONGCRC.value;
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_14,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            _obj.junk_r14 = dec_macros.FIELD_RLL(dat,"RLL",0);
+        }
         return error;
     }
 

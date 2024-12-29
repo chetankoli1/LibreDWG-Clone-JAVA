@@ -3,6 +3,8 @@ import java.util.Map;
 
 public class dec_macros {
     private static final int REFS_PER_REALLOC = 16384;
+    private static final long MAX_MEM_ALLOC =  0x10000000000L;
+    static int loglevel =  0;
 
     static char FIELD_RC(Bit_Chain dat, String type, int dxf)
     {
@@ -475,6 +477,86 @@ public class dec_macros {
     }
 
     static long FIELD_RLL(Bit_Chain dat, String type, int dxf) {
-        return (long)FIELDG(dat,type,dxf);
+        return bits.bit_read_RLL(dat);
+    }
+
+    static String FIELD_TFF(Bit_Chain dat, long len, String type, int dxf) {
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+          //  _VECTOR_CHKCOUNT_STATIC()
+        }
+        String nam = "";
+        nam = bit_read_fixed(dat,len);
+        return nam;
+    }
+
+    static String bit_read_fixed(Bit_Chain dat, long len) {
+        String dest = "";
+        if(dat._byte >= MAX_MEM_ALLOC || len >= MAX_MEM_ALLOC ||
+                (dat.bit != 0 ? (((dat._byte + len) * 8) +
+                        dat.bit > dat.size * 8) : (dat._byte + len > dat.size)))
+        {
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+            if (len < dat.size - dat._byte) {
+                char[] tempDest = new char[(int) len];
+                for (int i = 0; i < len; i++) {
+                    tempDest[i] = 0;
+                }
+                dest = new String(tempDest);
+            }
+        }
+        if(dat.bit == 0)
+        {
+            assert dat._byte + len <= dat.size;
+            System.arraycopy(dat.chain, (int) dat._byte, dest, 0, (int) len);
+            dat._byte += len;
+        }
+        else{
+            char[] temp = new char[11];
+            for(long i = 0; i < len; i++)
+            {
+               temp[(int)i] = bits.bit_read_RC(dat);
+            }
+            dest = new String(temp);
+        }
+        return dest;
+    }
+
+    static int FIELD_BSx(Bit_Chain dat, String type, int dxf) {
+        return (int)FIELD_CAST(dat,"BS",dxf);
+    }
+
+    static char SUB_FIELD_RCd(Bit_Chain dat, String type, int dxf) {
+        return (char)SUB_FIELD_CAST(dat,"RC",dxf);
+    }
+
+    static Object SUB_FIELD_CAST(Bit_Chain dat, String type, int dxf) {
+        switch (type)
+        {
+            case "RC":
+                return bits.bit_read_RC(dat);
+            case "BL":
+                return bits.bit_read_BL(dat);
+            default:
+                return null;
+        }
+    }
+
+
+    static long SUB_FIELD_BL(Bit_Chain dat, String type, int dxf) {
+        return (long)SUB_FIELD_CAST(dat,type,dxf);
+    }
+
+    static char[] SUB_FIELD_VECTOR_INL(Bit_Chain dat, String type, int size, int dxf) {
+        char[] arr = new char[size];
+       int err =  _VECTOR_CHKCOUNT_STATIC(arr,size,TYPE_MAXELEMSIZE(type),dat);
+       if(err == 0)
+       {
+           for (int i = 0; i < size; i++)
+           {
+               arr[i] = bits.bit_read_RC(dat);
+           }
+       }
+        return arr;
     }
 }
