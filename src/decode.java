@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -119,6 +120,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         long object_begin;
         long object_end;
         long pvz = 0;
+        int sentinel_size = 16;
         String[] section_names =
         {
                 "AcDb:Header","AcDb:Classes","AcDb:Handles","AcDb:ObjFreeSpace",
@@ -324,11 +326,116 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         /*-------------------------------------------------------------------------
          * Classes, section 1
          */
+        dat._byte = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].address;
+        if(dat._byte + 16 > dat.size || objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].address
+            + objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].size > dat.size)
+        {
+            System.out.print("Invalid Classes section, skipped");
+            return DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
+        }
 
+        if(commonvar.memcmp(commen.dwg_sentinel(commen.DWG_SENTINEL.DWG_SENTINEL_CLASS_BEGIN),dat.chain, dat._byte,16) == 0)
+        {
+            dat._byte += 16;
+        }else{
+            sentinel_size = 0;
+        }
+        dat.bit = 0;
+        size = bits.bit_read_RL(dat);
+        if(size != objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].size
+                - ((sentinel_size * 2) + 6))
+        {
+            endpos = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].address
+                    + objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].size - sentinel_size;
+            System.out.print("Invalid size in classes section");
+            return DWG_ERROR.DWG_ERR_SECTIONNOTFOUND.value;
+        }
+        else{
+            endpos = dat._byte + size;
+        }
 
+        /* Read the classes
+         */
+        objDwgData.layout_type = 0;
+        objDwgData.num_classes = 0;
+
+        while (dat._byte < endpos - 1)
+        {
+            int i = 0;
+            Dwg_Class klass = new Dwg_Class();
+            i = objDwgData.num_classes;
+            if( i == 0 )
+            {
+                objDwgData.dwg_class = new Dwg_Class[objDwgData.num_classes + 1];
+                objDwgData.dwg_class[i] = new Dwg_Class();
+            }
+            else {
+                objDwgData.dwg_class = Arrays.copyOf(objDwgData.dwg_class, i + 1);
+                objDwgData.dwg_class[i] = new Dwg_Class();
+            }
+            klass = objDwgData.dwg_class[i];
+            klass.number = bits.bit_read_BS(dat);
+            klass.proxyflag = bits.bit_read_BS(dat);
+            klass.appname = bits.bit_read_TV(dat).toCharArray();
+            klass.cppname = bits.bit_read_TV(dat).toCharArray();
+            klass.dxfname = bits.bit_read_TV(dat).toCharArray();
+            klass.is_zombie = (char)bits.bit_read_B(dat);
+            klass.item_class_id = bits.bit_read_BS(dat);
+
+            if (new String(klass.dxfname).equals("LAYOUT" ) && klass.dxfname != null)
+            {
+                objDwgData.layout_type = klass.number;
+            }
+
+            objDwgData.num_classes++;
+        }
+        dat._byte = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].address
+                + objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].size - 18;
+        dat.bit = 0;
+        pvz = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_CLASSES_R13.value].address + 16;
+        if(bits.bit_check_CRC(dat,pvz,0xC0C1) == 0)
+            error |= DWG_ERROR.DWG_ERR_WRONGCRC.value;
+        dat._byte += 16;
+        pvz = bits.bit_read_RL(dat);
+
+        /*-------------------------------------------------------------------------
+         * Object-map, section 2
+         */
+        //pending
+
+        pvz = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_OBJFREESPACE_R13.value].address;
+        /*-------------------------------------------------------------------------
+         * Section 2: ObjFreeSpace, r13c3-r2000
+         */
+
+        if(objDwgData.header.sections > 3 &&
+                (objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_OBJFREESPACE_R13.value].address == pvz))
+        {
+            dat._byte = objDwgData.header.section[DWG_SECTION_TYPE_R13.SECTION_OBJFREESPACE_R13.value].address;
+            dat.bit = 0;
+
+            error |= objfreespace_private(dat,objDwgData);
+        }
+
+        /*-------------------------------------------------------------------------
+         * Second header, r13-r2000 only. With sentinels.
+         */
         return error;
     }
 
+    static int objfreespace_private(Bit_Chain dat, Dwg_Data objDwgData) {
+        Dwg_Object obj = null;
+        int error = 0;
+
+        if(dat.chain == null || dat.size == 0)
+        {
+            return 1;
+        }
+
+        error = objfreespace_spec.objfreespace_spec_read(dat, obj, objDwgData);
+
+        return error;
+    }
 
 
     private static int decode_R2004(Bit_Chain dat, Dwg_Data objDwgData)

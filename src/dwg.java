@@ -1225,7 +1225,7 @@ class Dwg_Section_Info
 class Dwg_Data {
     public Dwg_Header header = new Dwg_Header();
     public int num_classes;        /*!< number of classes */
-    public Dwg_Class dwg_class;         /*!< array of classes */
+    public Dwg_Class[] dwg_class;         /*!< array of classes */
     public int num_objects;        /*!< number of objects */
     public int num_alloced_objects;/*!< room for objects */
     public Dwg_Object[] object;           /*!< list of all objects and entities */
@@ -1255,11 +1255,11 @@ class Dwg_Data {
     public Dwg_VBAProject vbaproject;
     public Dwg_AppInfoHistory appinfohistory;
     public Dwg_RevHistory revhistory;
-    public Dwg_ObjFreeSpace objfreespace;
+    public Dwg_ObjFreeSpace objfreespace = new Dwg_ObjFreeSpace();
     public Dwg_Template Template;
     public Dwg_AcDs acds;
 
-    public int layout_tupe;
+    public int layout_type;
     public int num_acid_sab_hdl;
     public Dwg_Object_Ref[] acis_sab_hdl;
     public long next_hdl;
@@ -1816,7 +1816,20 @@ class Dwg_RevHistory
 
 class Dwg_ObjFreeSpace
 {
+    public long zero;
+    public long numhandles;
+    public Dwg_Bitcode_TimeRLL TDUPDATE;
+    public long objects_address;
     public char numnums;
+    public long max32;
+    public long max64;
+    public long maxtbl;
+    public long maxrl;
+    public long max32_hi;
+    public long max64_hi;
+    public long maxtbl_hi;
+    public long maxrl_hi;
+
 }
 
 class Dwg_Template

@@ -29,14 +29,24 @@ public class out_json {
         json_fileheader_write(dat, objDwgData);
 
         json_header_write(dat, objDwgData);
+        if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_13b1.ordinal())
+        {
+            if (json_classes_write(dat, objDwgData) >= DWG_ERROR.DWG_ERR_CRITICAL) {
+                return 1;
+            }
+        }
         //
 
         //
+
         if (dat.version.ordinal() >= DWG_VERSION_TYPE.R_13b1.ordinal()) {
             if (json_thumbnail_write(dat, objDwgData) >= DWG_ERROR.DWG_ERR_CRITICAL) {
                 return 1;
             }
             if (dat.version.ordinal() <= DWG_VERSION_TYPE.R_2000.ordinal()) {
+                if (objDwgData.header.sections >= 3 && objDwgData.objfreespace.numnums != 0) {
+                    error |= json_section_objfreespace(dat, objDwgData);
+                }
                 if (objDwgData.header.sections >= 6) {
                     error |= json_section_auxheader(dat, objDwgData);
                 }
@@ -45,6 +55,59 @@ public class out_json {
         config.streamWriter.write("}");
         config.streamWriter.write("\n");
         return 0;
+    }
+
+    private static int json_section_objfreespace(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        RECORD(dat,"ObjFreeSpace");
+        Dwg_Object obj = null;
+        int error = 0;
+        error = objfreespace_spec.objfreespace_spec_write(dat,obj,objDwgData);
+
+        ENDRECORD(dat);
+        return error;
+    }
+
+    static int json_classes_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        SECTION(dat,"CLASSES");
+        for(int i = 0; i < objDwgData.num_classes; i++)
+        {
+            Dwg_Class klass = objDwgData.dwg_class[i];
+            FIRSTPREFIX(dat); HASH(dat);
+            FIELD_BS(dat,"number",klass.number,0);
+            FIELD_TV(dat,"dxfname",new String(klass.dxfname),1);
+            FIELD_T(dat,"cppname",new String(klass.cppname),2);
+            FIELD_T(dat,"appname",new String(klass.appname),2);
+            FIELD_BS(dat,"proxyflag",klass.proxyflag,90);
+            FIELD_BL(dat,"num_instances",klass.num_instances,91);
+            FIELD_B(dat,"is_zombie",klass.is_zombie,280);
+            FIELD_BS(dat,"item_class_id",klass.item_class_id,281);
+            ENDHASH(dat);
+            CLEARFIRST(dat);
+        }
+        ENDSEC(dat);
+        return 0;
+    }
+
+    static void CLEARFIRST(Bit_Chain dat) {
+        dat.opts &= (char) ~dwg.DWG_OPTS_JSONFIRST;
+    }
+
+    static void FIELD_T(Bit_Chain dat, String name, String val, int dxf) throws IOException {
+        if(bits.IS_FROM_TU(dat))
+        {
+           // FIELD_TU(dat,name,val,dxf);
+        }
+        else{
+            FIELD_TV(dat,name,val,dxf);
+        }
+    }
+
+    static void SECTION(Bit_Chain dat,String name) throws IOException {
+        KEY(dat,name);
+        ARRAY(dat);
+    }
+    static void ENDSEC(Bit_Chain dat) throws IOException {
+        ENDARRAY(dat);
     }
 
     private static void json_header_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
@@ -303,6 +366,12 @@ public class out_json {
     static void FIELD_CAST(Bit_Chain dat, long val, String name, String type, int dxf) throws IOException {
         switch (type) {
             case "RLx":
+                FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
+                break;
+            case "RLL":
+                FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
+                break;
+            case "RL":
                 FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
                 break;
         }

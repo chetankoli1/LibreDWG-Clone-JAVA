@@ -222,9 +222,10 @@ public class bits {
                 0x4100, 0x81C1, 0x8081, 0x4040
         };
 
-        for (int i = 0; i < len; i++) {
-            int al = (addr[i] ^ (dx & 0xFF)) & 0xFF;
+        for (; len > 0; len--) {
+            int al = (addr[index] ^ (dx & 0xFF)) & 0xFF;
             dx = ((dx >> 8) & 0xFF) ^ crctable[al];
+            index++;;
         }
         return dx & 0xFFFF; // Ensure the result is a 16-bit unsigned value
     }
@@ -883,6 +884,35 @@ public class bits {
     static boolean IS_FROM_TU(Bit_Chain dat) {
         return (dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2007.ordinal())
                 && (dat.opts & dwg.DWG_OPTS_IN) == 0;
+    }
+
+    static int bit_check_CRC(Bit_Chain dat, long start_address, int seed) {
+        loglevel = dat.opts & (char) dwg.DWG_OPTS_LOGLEVEL;
+        int calculated;
+        int read;
+        long size;
+
+        if(dat.bit > 0)
+        {
+            dat._byte++;
+            dat.bit = 0;
+        }
+        if(start_address > dat._byte || dat._byte >= dat.size)
+        {
+            loglevel = dat.opts & (char) dwg.DWG_OPTS_LOGLEVEL;
+            return 0;
+        }
+        assert dat._byte >= start_address;
+        size = dat._byte - start_address;
+        calculated = bits.bit_calc_CRC(seed,(int)start_address,dat.chain,size);
+        read = bits.bit_read_RS(dat);
+        if(calculated == read)
+        {
+            return 1;
+        }
+        else{
+            return 0;
+        }
     }
 }
 class Bit_Chain {

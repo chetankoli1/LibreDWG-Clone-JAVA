@@ -65,6 +65,33 @@ class commonvar{
         return dest;
     }
 
+    /**
+     * Compares two byte arrays for equality up to a given length.
+     *
+     * @param buf1 the first byte array
+     * @param buf2 the second byte array
+     * @param size the number of bytes to compare
+     * @return 0 if the arrays are equal up to the specified length,
+     *         a negative number if the first differing byte in arr1 is less than that in arr2,
+     *         or a positive number if the first differing byte in arr1 is greater than that in arr2.
+     */
+    public static int memcmp(char[] buf1, char[] buf2, long index, long size) {
+        if (buf1 == null || buf2 == null) {
+            throw new IllegalArgumentException("Input arrays must not be null.");
+        }
+        if (index < 0 || index + size > buf2.length || size > buf1.length) {
+            throw new IllegalArgumentException("Invalid index or size exceeds array bounds.");
+        }
+
+        for (int i = 0; i < size; i++) {
+            int diff = (buf1[i] & 0xFF) - (buf2[(int) index + i] & 0xFF);
+            if (diff != 0) {
+                return diff;
+            }
+        }
+        return 0;
+    }
+
 }
 
 public class commen {

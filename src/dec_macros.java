@@ -177,6 +177,7 @@ public class dec_macros {
     private static Object FIELDG(Bit_Chain dat, String type, int dxf) {
         return switch (type) {
             case "BLL" -> bits.bit_read_BLL(dat);
+            case "RLL" -> bits.bit_read_RLL(dat);
             case "RL" -> bits.bit_read_RL(dat);
             case "BL" -> bits.bit_read_BL(dat);
             case "BS" -> bits.bit_read_BS(dat);
@@ -471,5 +472,9 @@ public class dec_macros {
 
     static long FIELD_BLd(Bit_Chain dat, String type, String cast, int dxf) {
         return (long)FIELD_CAST(dat,cast,dxf);
+    }
+
+    static long FIELD_RLL(Bit_Chain dat, String type, int dxf) {
+        return (long)FIELDG(dat,type,dxf);
     }
 }
