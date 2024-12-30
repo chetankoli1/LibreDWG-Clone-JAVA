@@ -1,7 +1,8 @@
 import java.io.IOException;
 
 public class second_header_spec {
-    static void second_header_spec_read(Bit_Chain dat, Dwg_Object obj, Dwg_Data objDwgData, Dwg_SecondHeader secondHeader) {
+    static void second_header_spec_read(Bit_Chain dat, Dwg_Object obj,
+                                        Dwg_Data objDwgData, Dwg_SecondHeader secondHeader) {
         if(commen.VERSIONS(DWG_VERSION_TYPE.R_13,DWG_VERSION_TYPE.R_2000,dat))
         {
             secondHeader.size = dec_macros.FIELD_RL(dat,"RL",0);

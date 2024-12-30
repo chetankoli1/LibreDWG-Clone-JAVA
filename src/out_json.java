@@ -51,6 +51,9 @@ public class out_json {
                 {
                     error |= json_section_2ndheader(dat, objDwgData, objDwgData.secondheader);
                 }
+                if (objDwgData.header.sections >= 4) {
+                    error |= json_section_template(dat, objDwgData);
+                }
                 if (objDwgData.header.sections >= 6) {
                     error |= json_section_auxheader(dat, objDwgData);
                 }
@@ -59,6 +62,18 @@ public class out_json {
         config.streamWriter.write("}");
         config.streamWriter.write("\n");
         return 0;
+    }
+
+    static int json_section_template(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
+        Dwg_Template temp = objDwgData.template;
+        Dwg_Object obj = null;
+        int error = 0;
+
+        RECORD(dat,"Template");
+        error = template_spec.template_spec_write(dat,obj,objDwgData,temp);
+        ENDRECORD(dat);
+
+        return error;
     }
 
     static int json_section_2ndheader(Bit_Chain dat, Dwg_Data objDwgData,Dwg_SecondHeader _obj) throws IOException {
@@ -72,10 +87,14 @@ public class out_json {
 
         if(commen.VERSIONS(DWG_VERSION_TYPE.R_14,DWG_VERSION_TYPE.R_2000,dat))
         {
-            out_json.FIELD_RL("junk_r14",_obj.junk_r14,dat,0);
+            out_json.FIELD_RLL1("junk_r14",_obj.junk_r14.toString(),dat,0);
         }
         ENDRECORD(dat);
         return error;
+    }
+
+    static void FIELD_RLL1(String name, String val, Bit_Chain dat, int dxf) throws IOException {
+        FIELD(name, val, dat, dxf);
     }
 
     static int json_section_objfreespace(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
@@ -840,5 +859,9 @@ public class out_json {
             PRINTFIRST(dat);
         }
         ENDARRAY(dat);
+    }
+
+    static void FIELD_T16(Bit_Chain dat, String name, String value, int dxf) throws IOException {
+        FIELD_T(dat,name,value,dxf);
     }
 }

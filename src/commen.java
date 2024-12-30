@@ -133,6 +133,10 @@ public class commen {
         }
     }
 
+    static long labs(int offset) {
+        return Math.abs(offset);
+    }
+
     static enum DWG_SENTINEL
     {
         DWG_SENTINEL_HEADER_END,

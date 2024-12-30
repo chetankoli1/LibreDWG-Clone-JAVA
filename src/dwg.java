@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
@@ -31,7 +32,7 @@ enum DWG_ERROR {
     }
 }
 
-enum DWG_OBJECT_TYPE{
+enum DWG_OBJECT_TYPE {
     DWG_TYPE_UNUSED(0x00),
     DWG_TYPE_TEXT(0x01),
     DWG_TYPE_ATTRIB(0x02),
@@ -369,12 +370,22 @@ enum DWG_OBJECT_TYPE{
     DWG_TYPE_FREED(0xfffd),
     DWG_TYPE_UNKNOWN_ENT(0xfffe),
     DWG_TYPE_UNKNOWN_OBJ(0xffff);
+
     public int value;
     DWG_OBJECT_TYPE(int value)
     {
         this.value = value;
     }
+    DWG_OBJECT_TYPE(){}
 
+    static DWG_OBJECT_TYPE fromValue(int value) {
+        for (DWG_OBJECT_TYPE type : DWG_OBJECT_TYPE.values()) {
+            if (type.value == value) {
+                return type;
+            }
+        }
+        return null;
+    }
 }
 
 enum DWG_OBJECT_SUPERTYPE {
@@ -1122,8 +1133,9 @@ class Dwg_Object_Object
 {
     public int objid;
     class Tio{
-
+        public Dwg_Object_BLOCK_CONTROL BLOCK_CONTROL;
     }
+    Tio tio = new Tio();
     public Dwg_Data dwg;
     public int num_eed;
     public Dwg_Eed[] eed;
@@ -1144,15 +1156,15 @@ class Dwg_Object{
     public long address;
     public int type;
     public int index;
-    public DWG_OBJECT_TYPE fixedtype;
-    char[] name;
-    char[] dxfname;
+    public DWG_OBJECT_TYPE fixedtype = DWG_OBJECT_TYPE.DWG_TYPE_UNUSED;
+    String name;
+    String dxfname;
     public DWG_OBJECT_SUPERTYPE supertype;
     class Tio{
         Dwg_Object_Entity entity;
         Dwg_Object_Object object;
     }
-    public Tio tio;
+    public Tio tio = new Tio();
     public Dwg_Handle handle = new Dwg_Handle();
     public Dwg_Data parent;
     public Dwg_Class klass;
@@ -1161,6 +1173,7 @@ class Dwg_Object{
     public long bitsize_pos;
     public long hdlpos;
     public char was_bitsize_set;
+    public char has_strings;
     public char stringstream_size;
     public long handlestream_size;
     public long comman_size;
@@ -1256,7 +1269,7 @@ class Dwg_Data {
     public Dwg_AppInfoHistory appinfohistory;
     public Dwg_RevHistory revhistory;
     public Dwg_ObjFreeSpace objfreespace = new Dwg_ObjFreeSpace();
-    public Dwg_Template Template;
+    public Dwg_Template template = new Dwg_Template();
     public Dwg_AcDs acds;
 
     public int layout_type;
@@ -1726,9 +1739,10 @@ class Dwg_R2007_Header
 
 }
 
-class Dwg_Object_BLOCK_CONTROL
+class Dwg_Object_BLOCK_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
 {
-
+    public Dwg_Object_Ref model_space;
+    public Dwg_Object_Ref paper_space;
 }
 
 class Dwg_AuxHeader
@@ -1788,7 +1802,7 @@ class Dwg_SecondHeader
     public int num_handles;
     public Dwg_SecondHeader_Handles[] handles = new Dwg_SecondHeader_Handles[14];
     public int crc;
-    public long junk_r14;
+    public BigInteger junk_r14;
 
 }
 
@@ -1860,10 +1874,47 @@ class Dwg_ObjFreeSpace
 
 class Dwg_Template
 {
-
+    public String description;
+    public int MEASUREMENT;
 }
 
 class Dwg_AcDs
 {
 
+}
+
+class Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS implements ICommon {
+    public COMMON_TABLE_CONTROL_FIELDS common = new COMMON_TABLE_CONTROL_FIELDS();
+    @Override
+    public IParent getCommon() {
+        return common;
+    }
+}
+
+class COMMON_TABLE_CONTROL_FIELDS implements IParent
+{
+    public Dwg_Object_Object parent;
+    public int num_entries;
+    public Dwg_Object_Ref[] entres;
+    public int objid;
+    public int flags_r11;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+}
+
+interface ICommon {
+    public IParent getCommon();
+}
+
+interface IParent {
+    public Dwg_Object_Object getParent();
+    public void setParent(Dwg_Object_Object parent);
 }

@@ -1,5 +1,6 @@
 import java.io.RandomAccessFile;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -95,7 +96,7 @@ public class bits {
         return result;
     }
 
-    private static void bit_advance_position(Bit_Chain dat, int advance) {
+    static void bit_advance_position(Bit_Chain dat, int advance) {
         long pos = bit_position(dat);
         long endpos = dat.size * 8;
 
@@ -400,8 +401,19 @@ public class bits {
             }
             word2 = bit_read_RL(dat);
 
-            return ((word2 << 32) | (word1 & 0xFFFFFFFFL));
+        return ((word2 << 32) | (word1 & 0xFFFFFFFFL));
        // }
+    }
+
+    static BigInteger bit_read_RLL1(Bit_Chain dat) {
+        // Read least and most significant words as unsigned 32-bit
+        long word1 = bit_read_RL(dat) & 0xFFFFFFFFL; // Least significant word
+        long word2 = bit_read_RL(dat) & 0xFFFFFFFFL; // Most significant word
+
+        // Combine as unsigned 64-bit using BigInteger
+        BigInteger high = BigInteger.valueOf(word2).shiftLeft(32); // Shift high bits
+        BigInteger low = BigInteger.valueOf(word1); // Low bits
+        return high.or(low); // Combine
     }
 
     /** create a Not-A-Number (NaN) without libm dependency */
@@ -913,6 +925,138 @@ public class bits {
         else{
             return 0;
         }
+    }
+
+    /** read ASCII string, with length as RS */
+    static String bit_read_T16(Bit_Chain dat) {
+        int length = bit_read_RS(dat);
+        char[] chain = new char[length+1];
+        if(chain == null)
+        {
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+            return null;
+        }
+        for(int i = 0; i < length; i++)
+        {
+            chain[i] = bit_read_RC(dat);
+        }
+        chain[length] = 0;
+        return new String(chain).trim();
+    }
+    /** read UCS-2 string, with length as RS */
+    static String bit_read_TU16(Bit_Chain dat) {
+        return "";
+    }
+
+    /** Read 1 raw short (BE).
+     */
+    static int bit_read_RS_BE(Bit_Chain dat) {
+        char byte1, byte2;
+        byte1 = bit_read_RC(dat);
+        if(CHK_OVERFLOW(dat,0))
+        {
+            return -1;
+        }
+        byte2 = bit_read_RC(dat);
+        return ((byte1 & 0xFF) << 8) | (byte2 & 0xFF);
+    }
+
+    /** Read unsigned modular char (max 5 bytes, unsigned).
+     Can be quite large if there are many deleted handles.
+     */
+    static long bit_read_UMC(Bit_Chain dat) {
+        int i  = 0, j = 0;
+        int MAX_BYTE_UMC = 8;
+        char[] _byte = new char[MAX_BYTE_UMC];
+        long result = 0;
+
+        for(i = MAX_BYTE_UMC - 1; i >= 0; i--, j+= 7)
+        {
+            _byte[i] = bits.bit_read_RC(dat);
+            if((_byte[i] & 0x80) == 0)
+            {
+                result |= (((long)_byte[i]) << j);
+                return result;
+            }
+            else {
+                _byte[i] &= 0x7f;
+            }
+            result |= ((long)_byte[i]) << j;
+        }
+        loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+        return 0;
+    }
+
+    static int bit_read_MC(Bit_Chain dat) {
+        int i = 0, j = 0;
+        int negative = 0;
+        char[] _byte = new char[8];
+        long result = 0;
+        for(i = 4, j = 0; i >= 0; i--,j +=7 )
+        {
+            _byte[i] = bits.bit_read_RC(dat);
+            if((_byte[i] & 0x80) == 0)
+            {
+                if((_byte[i] & 0x40) != 0)
+                {
+                    negative = 1;
+                    _byte[i] &= 0xbf;
+                }
+                result |= (((long)_byte[i]) << j);
+
+                return (negative != 0 ? -((int)result) : (int) result);
+            }
+            else{
+                _byte[i] &= 0x7f;
+            }
+            result |= ((long)_byte[i]) << j;
+        }
+        loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+        return 0;
+    }
+
+    static int bit_read_MS(Bit_Chain dat) {
+        int i = 0, j = 0;
+        int[] word = new int[2];
+        int result = 0;
+
+        for(i = 1, j = 0; i >= 0; i--, j += 15)
+        {
+            word[i] = bits.bit_read_RS(dat);
+            if((word[i] & 0x8000) == 0)
+            {
+                result |= ((int)word[i] << j);
+                return result;
+            }
+            else{
+                word[i] &= 0x7fff;
+            }
+            result |= ((int)word[i] << j);
+        }
+        loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+        return 0;
+    }
+
+    public static void bit_reset_chain(Bit_Chain dat) {
+        long pos = dat._byte;
+        dat._byte = 0;
+        if (pos < dat.size) {
+            char[] newChain = new char[dat.chain.length - (int) pos];
+            System.arraycopy(dat.chain, (int) pos, newChain, 0, newChain.length);
+            dat.chain = newChain;
+        }
+        if (dat.size > 0) {
+            dat.size -= pos;
+        }
+    }
+
+    static void bit_chain_init(Bit_Chain dat, int size) {
+        dat.chain = new char[size];
+        if (dat.chain.length == 0)
+            return; //abort();
+        dat.size = size;
+        dat._byte = 0;
+        dat.bit = '\0';
     }
 }
 class Bit_Chain {

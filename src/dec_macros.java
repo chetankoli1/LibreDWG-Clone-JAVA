@@ -1,3 +1,6 @@
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -430,6 +433,18 @@ public class dec_macros {
         }
         return val;
     }
+    static Dwg_Bitcode_3BD FIELD_3BD_BIG(Bit_Chain dat, int dxf) {
+        Dwg_Bitcode_3BD val = new Dwg_Bitcode_3BD();
+        val.x = bits.bit_read_BD(dat);
+        val.y = bits.bit_read_BD(dat);
+        val.z = bits.bit_read_BD(dat);
+        if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y) || bits.bit_isnan(val.z))
+        {
+            System.out.print("DWG_ERR_VALUEOUTOFBOUNDS"+dxf);
+            return null;
+        }
+        return val;
+    }
 
     static Dwg_Bitcode_3RD FIELD_3RD(Bit_Chain dat, int dxf) {
         Dwg_Bitcode_3RD val = new Dwg_Bitcode_3RD();
@@ -559,4 +574,253 @@ public class dec_macros {
        }
         return arr;
     }
+
+    static String FIELD_T16(Bit_Chain dat, String type, int i) {
+        String value = "";
+        if(dat.from_version.ordinal() < DWG_VERSION_TYPE.R_2007.ordinal())
+        {
+            value = bits.bit_read_T16(dat);
+        }
+        else {
+            value = bits.bit_read_TU16(dat);
+        }
+        return value;
+    }
+
+    static int dwg_decode_token(Bit_Chain dat, Dwg_Object obj, String name,
+                                DWG_OBJECT_TYPE type, Bit_Chain hdl_dat, Bit_Chain str_dat)
+    {
+        int error = dwg_setup_token(obj,name,type);
+        if(error != 0)
+        {
+            return error;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            Bit_Chain obj_dat = dat;
+            str_dat = new Bit_Chain(dat);
+            error = dwg_decode_token_private(obj_dat,hdl_dat,str_dat,obj,name);
+        }
+        else {
+            error = dwg_decode_token_private(dat,hdl_dat,dat,obj,name);
+        }
+        return error;
+    }
+
+    static int dwg_decode_token_private(Bit_Chain dat, Bit_Chain hdl_dat,
+                                        Bit_Chain str_dat, Dwg_Object obj, String name)
+    {
+        int error = 0;
+        Object _obj = getObject(name,obj.tio.object);
+        error = decode.dwg_decode_object(dat,hdl_dat,str_dat,obj.tio.object);
+        if(error >= DWG_ERROR.DWG_ERR_CRITICAL || dat._byte > dat.size)
+        {
+            return error;
+        }
+
+        return error;
+    }
+
+    static int dwg_setup_token(Dwg_Object obj, String name, DWG_OBJECT_TYPE type)
+    {
+        obj.tio.object = new Dwg_Object_Object();
+        Object _obj = getObject(name,obj.tio.object);
+
+        obj.supertype = DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT;
+        if(obj.tio.object == null)
+        {
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+        }
+        if(_obj == null)
+        {
+            obj.tio.object = null;
+            obj.fixedtype = DWG_OBJECT_TYPE.DWG_TYPE_FREED;
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+        }
+        if(obj.fixedtype.value == 0)
+        {
+            obj.fixedtype = type;
+            obj.name = name;
+        }
+        if(obj.type == 0 && obj.fixedtype.value <= DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT.value)
+        {
+            obj.type = type.value;
+        }
+        obj.dxfname = name;
+        if((obj.parent.opts & dwg.DWG_OPTS_IN) != 0)
+        {
+            obj.name = obj.dxfname;
+            if((obj.parent.opts & dwg.DWG_OPTS_INJSON) != 0)
+            {
+                obj.name = obj.name;
+            }
+        }
+        if(_obj instanceof ICommon common)
+        {
+            common.getCommon().setParent(obj.tio.object);
+        }
+        else if(_obj instanceof IParent parent)
+        {
+            parent.setParent(obj.tio.object);
+        }
+        else {
+            throw new UnsupportedOperationException("Not implemented for this type");
+        }
+
+        obj.tio.object.dwg = obj.parent;
+        obj.tio.object.objid = obj.index;
+
+        return 0;
+    }
+
+    static Object getObject(String name, Dwg_Object_Object objDwgObject) {
+        switch (name)
+        {
+            case "BLOCK_CONTROL":
+                if (objDwgObject.tio.BLOCK_CONTROL == null)
+                {
+                    objDwgObject.tio.BLOCK_CONTROL = new Dwg_Object_BLOCK_CONTROL();
+                    objDwgObject.tio.BLOCK_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.BLOCK_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.BLOCK_CONTROL;
+            default:
+                throw new IllegalArgumentException("Invalid Type");
+        }
+    }
+
+    static void CONTROL_HANDLE_STREAM(Dwg_Object obj, Bit_Chain hdl_dat, Bit_Chain dat,
+                                      Dwg_Data objDwgData, Dwg_Object_Ref ref)
+
+    {
+        assert obj.supertype == DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT;
+        if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            hdl_dat._byte = dat._byte;
+            hdl_dat.bit = dat.bit;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            ref = dec_macros.VALUE_HANDLE(hdl_dat,ref,4,obj,objDwgData,0);
+            obj.tio.object.ownerhandle = ref;
+            REACTORS(4,obj,hdl_dat,objDwgData);
+            XDICOBJHANDLE(hdl_dat,3,obj,objDwgData);
+        }
+    }
+
+    static void XDICOBJHANDLE(Bit_Chain dat,int code, Dwg_Object obj, Dwg_Data objDwgData) {
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            if(obj.tio.object.is_xdic_missing == 0)
+            {
+                obj.tio.object.xdicobjhandle = new Dwg_Object_Ref();
+                obj.tio.object.xdicobjhandle = VALUE_HANDLE(dat,obj.tio.object.xdicobjhandle,code,obj,objDwgData,360);
+                if(obj.tio.object.xdicobjhandle == null)
+                {
+                    obj.tio.object.is_xdic_missing = 1;
+                }
+            }
+        }else {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                obj.tio.object.xdicobjhandle = new Dwg_Object_Ref();
+                obj.tio.object.xdicobjhandle = VALUE_HANDLE(dat,obj.tio.object.xdicobjhandle,code,obj,objDwgData,360);
+            }
+        }
+    }
+
+    static void REACTORS(int code, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData) {
+        if (obj.tio.object.num_reactors > 0) {
+            _VECTOR_CHKCOUNT(obj.tio.object.num_reactors, TYPE_MAXELEMSIZE("RS"), dat, obj, obj.tio.object.reactors);
+            obj.tio.object.reactors = Arrays.copyOf(obj.tio.object.reactors, (int) obj.tio.object.num_reactors);
+
+            for (int vcount = 0; vcount < obj.tio.object.num_reactors; vcount++) {
+                obj.tio.object.reactors[vcount] = new Dwg_Object_Ref();
+                VALUE_HANDLE_N(dat, code, objDwgData, obj, obj.tio.object.reactors[vcount], 330);
+            }
+        }
+    }
+
+    static void VALUE_HANDLE_N(Bit_Chain dat, int code, Dwg_Data objDwgData,
+                               Dwg_Object obj, Dwg_Object_Ref ref, int dxf)
+    {
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            long size = bits.bit_position(dat);
+           // ref = dwg_decode_preR13_handleref (dat, code, dwg);
+        }else{
+            long size = bits.bit_position(dat);
+            if(code >= 0)
+            {
+                ref = dwg_decode_handleref_with_code(dat,obj,objDwgData,code);
+            }
+            else{
+                ref = dwg_decode_handleref(dat,obj,objDwgData);
+            }
+        }
+    }
+    static Dwg_Object_Ref VALUE_HANDLE_N_SPEC(Bit_Chain dat, int code, Dwg_Data objDwgData,
+                               Dwg_Object obj, int dxf)
+    {
+        Dwg_Object_Ref ref = new Dwg_Object_Ref();
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            long size = bits.bit_position(dat);
+           // ref = dwg_decode_preR13_handleref (dat, code, dwg);
+        }else{
+            long size = bits.bit_position(dat);
+            if(code >= 0)
+            {
+                ref = dwg_decode_handleref_with_code(dat,obj,objDwgData,code);
+            }
+            else{
+                ref = dwg_decode_handleref(dat,obj,objDwgData);
+            }
+        }
+        return ref;
+    }
+
+    static int _VECTOR_CHKCOUNT(long size, int maxelemsize, Bit_Chain dat, Dwg_Object obj,
+                                Dwg_Object_Ref[] nam) {
+        if (size > AVAIL_BITS(dat) || (size * maxelemsize) > AVAIL_BITS(dat)) {
+            // LOG_ERROR("Invalid " + nam + " size " + size + ". Need min. " + (size * maxelemsize) + " bits, have " + AVAIL_BITS(dat, obj) + " for " + SAFEDXFNAME);
+            size = 0;
+            return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+        } else {
+            return 0; // Check here
+        }
+    }
+
+    static Dwg_Object_Ref[] HANDLE_VECTOR(Bit_Chain dat, int sizefield,
+                                          int code, Dwg_Object obj, Dwg_Data objDwgData, int dxf)
+    {
+        VECTOR_CHKCOUNT_LV(dat,sizefield,"BS");
+        Dwg_Object_Ref[] refs = new Dwg_Object_Ref[sizefield];
+        if(sizefield > 0)
+        {
+            for(int vcount = 0; vcount < sizefield; vcount++)
+            {
+               // refs[vcount] = new Dwg_Object_Ref();
+                refs[vcount] = VALUE_HANDLE_N_SPEC(dat,code,objDwgData,obj,0);
+            }
+        }
+        return refs;
+    }
+
+    static void FIELD_HANDLE_N(Bit_Chain dat, int code, Dwg_Data objDwgData, Dwg_Object obj,
+                               Dwg_Object_Ref ref,
+                                int dxf) {
+        ref = new Dwg_Object_Ref();
+        VALUE_HANDLE_N(dat,code,objDwgData,obj,ref,0);
+    }
+
+    static void VECTOR_CHKCOUNT_LV(Bit_Chain dat, int size, String type) {
+        if ((long)(size) > AVAIL_BITS(dat) || ((long) (size) * TYPE_MAXELEMSIZE(type)) > AVAIL_BITS(dat))
+        {
+            size = 0;
+        }
+    }
+
 }
