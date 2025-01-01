@@ -1134,6 +1134,15 @@ class Dwg_Object_Object
     public int objid;
     class Tio{
         public Dwg_Object_BLOCK_CONTROL BLOCK_CONTROL;
+        public Dwg_Object_LAYER_CONTROL LAYER_CONTROL;
+        public Dwg_Object_STYLE_CONTROL STYLE_CONTROL;
+        public Dwg_Object_LTYPE_CONTROL LTYPE_CONTROL;
+        public Dwg_Object_VIEW_CONTROL VIEW_CONTROL;
+        public Dwg_Object_UCS_CONTROL UCS_CONTROL;
+        public Dwg_Object_VPORT_CONTROL VPORT_CONTROL;
+        public Dwg_Object_APPID_CONTROL APPID_CONTROL;
+        public Dwg_Object_DIMSTYLE_CONTROL DIMSTYLE_CONTROL;
+        public Dwg_Object_VX_CONTROL VX_CONTROL;
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -1745,6 +1754,44 @@ class Dwg_Object_BLOCK_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIEL
 {
     public Dwg_Object_Ref model_space;
     public Dwg_Object_Ref paper_space;
+}
+class Dwg_Object_LAYER_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_STYLE_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_LTYPE_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+    public Dwg_Object_Ref bylayer;
+    public Dwg_Object_Ref byblock;
+}
+class Dwg_Object_VIEW_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_UCS_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_VPORT_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_APPID_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
+}
+class Dwg_Object_DIMSTYLE_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+    public int num_morehandles;
+    public Dwg_Object_Ref[] morehandles;
+}
+class Dwg_Object_VX_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
+{
+
 }
 
 class Dwg_AuxHeader

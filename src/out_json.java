@@ -897,6 +897,33 @@ public class out_json {
             case DWG_TYPE_BLOCK_CONTROL:
                 error = dwg_spec.dwg_json_BLOCK_CONTROL("BLOCK_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_CONTROL);
                 break;
+            case DWG_TYPE_LAYER_CONTROL:
+                error = dwg_spec.dwg_json_LAYER_CONTROL("LAYER_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYER_CONTROL);
+                break;
+            case DWG_TYPE_STYLE_CONTROL:
+                error = dwg_spec.dwg_json_STYLE_CONTROL("STYLE_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL);
+                break;
+            case DWG_TYPE_LTYPE_CONTROL:
+                error = dwg_spec.dwg_json_LTYPE_CONTROL("LTYPE_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL);
+                break;
+            case DWG_TYPE_VIEW_CONTROL:
+                error = dwg_spec.dwg_json_VIEW_CONTROL("VIEW_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL);
+                break;
+            case DWG_TYPE_UCS_CONTROL:
+                error = dwg_spec.dwg_json_UCS_CONTROL("UCS_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL);
+                break;
+            case DWG_TYPE_VPORT_CONTROL:
+                error = dwg_spec.dwg_json_VPORT_CONTROL("VPORT_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VPORT_CONTROL);
+                break;
+            case DWG_TYPE_APPID_CONTROL:
+                error = dwg_spec.dwg_json_APPID_CONTROL("APPID_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_APPID_CONTROL);
+                break;
+            case DWG_TYPE_DIMSTYLE_CONTROL:
+                error = dwg_spec.dwg_json_DIMSTYLE_CONTROL("DIMSTYLE_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE_CONTROL);
+                break;
+            case DWG_TYPE_VX_CONTROL:
+                error = dwg_spec.dwg_json_VX_CONTROL("VX_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL);
+                break;
             default:
                 System.out.println("NOt found for writting");
                 break;
@@ -992,7 +1019,10 @@ public class out_json {
 
     static void HANDLE_VECTOR(Bit_Chain dat, Dwg_Object_Ref[] nam, String name,
                               int size, int code, int dxf) throws IOException {
-        HANDLE_VECTOR_N(dat,nam,name,size,code,dxf);
+        if(size > 0)
+        {
+            HANDLE_VECTOR_N(dat,nam,name,size,code,dxf);
+        }
     }
 
     static void HANDLE_VECTOR_N(Bit_Chain dat, Dwg_Object_Ref[] nam, String name,
@@ -1017,6 +1047,15 @@ public class out_json {
             _prefix(dat);
             commonvar.Sw_write("[0, 0, 0]");
         }
+    }
+
+    public static void SUBCLASS(Bit_Chain dat, String name) throws IOException {
+        FIRSTPREFIX(dat);
+        config.streamWriter.write("\"_subclass\": " + "\""+name+"\"");
+    }
+
+    public static void FIELD_RCu(Bit_Chain dat, String name, int value, int dxf) throws IOException {
+        FIELD_RC(name,(char)value,dat,dxf);
     }
 
 //    static void XDICOBJHANDLE(Bit_Chain dat,int code, Dwg_Object obj, Dwg_Data objDwgData) throws IOException {

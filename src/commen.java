@@ -278,6 +278,9 @@ public class commen {
     {
         return dat.version.ordinal() < version.ordinal();
     }
+    static boolean memcmp(String a1, String b1, int length) {
+        return !a1.substring(0, length).equals(b1);
+    }
 
     static dwg_versions[] dwg_versions =
             {

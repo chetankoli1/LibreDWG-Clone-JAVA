@@ -430,7 +430,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 System.out.print("Object-map section size greater than 2040!");
                 return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
             }
-
+            int irs = 0;
             while (dat._byte - startpos < section_size)
             {
                 int prevsize = 0;
@@ -484,11 +484,14 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 added = dwg_decode_add_object(objDwgData,wdat,wdat,last_offset);
                 //dat = new Bit_Chain(wdat);
 
+
                 if(added > 0)
                 {
                     error |= added;
+                    irs++;
                     System.out.print("OBJECT OR ENTITY NOT ADDED!");
                 }
+                System.out.println(irs);
                 if(objDwgData.num_objects != 0)
                 {
                     last_handle = objDwgData.object[objDwgData.num_objects - 1].handle.value;
@@ -806,8 +809,75 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                     }
                 }
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_LAYER_CONTROL:
+                error = dwg_spec.dwg_decode_LAYER_CONTROL("LAYER_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LAYER_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL:
+                error = dwg_spec.dwg_decode_STYLE_CONTROL("STYLE_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL);
+                break;
+
+            case DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL:
+                error = dwg_spec.dwg_decode_LTYPE_CONTROL("LTYPE_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL:
+                error = dwg_spec.dwg_decode_VIEW_CONTROL("VIEW_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL);
+                break;
+
+            case DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL:
+                error = dwg_spec.dwg_decode_UCS_CONTROL("UCS_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_VPORT_CONTROL:
+                error = dwg_spec.dwg_decode_VPORT_CONTROL("VPORT_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VPORT_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_APPID_CONTROL:
+                error = dwg_spec.dwg_decode_APPID_CONTROL("APPID_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_APPID_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE_CONTROL:
+                error = dwg_spec.dwg_decode_DIMSTYLE_CONTROL("DIMSTYLE_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE_CONTROL);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL:
+                error = dwg_spec.dwg_decode_VX_CONTROL("VX_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL);
+                break;
+
             default:
-                System.out.print("not found");
+                if(obj.type == objDwgData.layout_type)
+                {
+                   // error = dwg_decode_LAYOUT("LAYOUT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT);
+                }
+                else if(((error = dwg_decode_variable_type(objDwgData,dat,hdl_dat,obj)) & DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value) != 0)
+                {
+                    int is_entity = 0;
+                    int i = obj.type - 500;
+                    Dwg_Class klass = null;
+
+                    bits.bit_set_position(dat,restartpos);
+                    if(i >= 0 && i < objDwgData.num_classes)
+                    {
+                        klass = objDwgData.dwg_class[i];
+                        is_entity = dwg_class_is_entity(klass);
+                    }
+                    else {
+                        obj.type = 0;
+                        dat = new Bit_Chain(abs_dat);
+                        return error |= DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+                    }
+
+                    if(is_entity == 0)
+                    {
+                        //error |= dwg_decode_UNKNOWN_ENT();
+                    }
+                    else{
+                       // error |= dwg_decode_UNKNOWN_OBJ();
+                    }
+                    if(dat == null)
+                    {
+                        return error;
+                    }
+                    if(error >= DWG_ERROR.DWG_ERR_CRITICAL)
+                    {
+                        dat = new Bit_Chain(abs_dat);
+                    }
+                }
                 break;
 
         }
@@ -1319,5 +1389,105 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             default:
                 return 1;
         }
+    }
+
+    static int dwg_decode_variable_type(Dwg_Data objDwgData, Bit_Chain dat, Bit_Chain hdl_dat,
+                                        Dwg_Object obj)
+    {
+        int error = 0;
+        Dwg_Class klass = null;
+        int i = 0;
+        int is_entity = -1;
+        if(objDwgData == null || obj == null || dat == null)
+        {
+            return DWG_ERROR.DWG_ERR_INTERNALERROR.value;
+        }
+        i = obj.type -  5;
+        if(i < 0 || i >= objDwgData.num_classes)
+        {
+            objDwgData.num_objects--;
+            return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+        }
+        klass = objDwgData.dwg_class[i];
+        if(objDwgData.dwg_class == null || klass.dxfname==null)
+        {
+            return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+        }
+        is_entity = dwg_class_is_entity(klass);
+
+        //error = classes_inc.classes(klass,classes_inc.ACTION[0], obj,get_ClassName_of_Unknown_object(obj.dxfname),dat,objDwgData,obj.dxfname);
+
+        return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+    }
+
+    static String get_ClassName_of_Unknown_object(String dxfname) {
+        switch (dxfname)
+        {
+            case "ACDBDICTIONARYWDFLT":
+                return "DICTIONARYWDFLT";
+            case "ACDBPLACEHOLDER":
+                return "PLACEHOLDER";
+            case "DICTIONARYWDFLT":
+                return "DICTIONARYWDFLT";
+            case "PLACEHOLDER":
+                return "PLACEHOLDER";
+            case "MLEADERSTYLE":
+                return "MLEADERSTYLE";
+            case "SCALE":
+                return "SCALE";
+            case "TABLESTYLE":
+                return "TABLESTYLE";
+            case "DICTIONARYVAR":
+                return "DICTIONARYVAR";
+            case "MATERIAL":
+                return "MATERIAL";
+            case "VISUALSTYLE":
+                return "VISUALSTYLE";
+            case "CELLSTYLEMAP":
+                return "CELLSTYLEMAP";
+            case "ACDBDETAILVIEWSTYLE":
+                return "ACDBDETAILVIEWSTYLE";
+            case "ACDBSECTIONVIEWSTYLE":
+                return "SECTIONVIEWSTYLE";//check here
+            //return "ACDBSECTIONVIEWSTYLE";
+            case "UNKNOWN_ENT":
+                return "UNKNOWN_ENT";
+            case "XRECORD":
+                return "XRECORD";
+            case "LWPOLYLINE":
+                return "LWPOLYLINE";
+            case "HATCH":
+                return "HATCH";
+            //case "ACAD_TABLE":
+            //    return "UNKNOWN_ENT";
+            case "MESH":
+                return "MESH";
+            case "IMAGEDEF":
+                return "IMAGEDEF";
+            case "RASTERVARIABLES":
+                return "RASTERVARIABLES";
+            case "IMAGEDEF_REACTOR":
+                return "IMAGEDEF_REACTOR";
+            case "IMAGE":
+                return "IMAGE";
+            case "WIPEOUTVARIABLES":
+                return "WIPEOUTVARIABLES";
+            case "WIPEOUT":
+                return "WIPEOUT";
+            case "TABLEGEOMETRY":
+                return "TABLEGEOMETRY";
+            case "ARC_DIMENSION":
+                return "ARC_DIMENSION";
+            case "MULTILEADER":
+                return "MULTILEADER";
+            case "":
+                return "";
+            default:
+                return dxfname;
+        }
+    }
+
+    static int dwg_class_is_entity(Dwg_Class klass) {
+        return (klass != null && klass.item_class_id == 0x1f2) ? 1 : 0;
     }
 }

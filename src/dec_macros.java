@@ -685,6 +685,90 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.BLOCK_CONTROL;
+            case "LAYER_CONTROL":
+                if (objDwgObject.tio.LAYER_CONTROL == null)
+                {
+                    objDwgObject.tio.LAYER_CONTROL = new Dwg_Object_LAYER_CONTROL();
+                    objDwgObject.tio.LAYER_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.LAYER_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.LAYER_CONTROL;
+
+            case "STYLE_CONTROL":
+                if (objDwgObject.tio.STYLE_CONTROL == null)
+                {
+                    objDwgObject.tio.STYLE_CONTROL = new Dwg_Object_STYLE_CONTROL();
+                    objDwgObject.tio.STYLE_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.STYLE_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.STYLE_CONTROL;
+
+            case "LTYPE_CONTROL":
+                if (objDwgObject.tio.LTYPE_CONTROL == null)
+                {
+                    objDwgObject.tio.LTYPE_CONTROL = new Dwg_Object_LTYPE_CONTROL();
+                    objDwgObject.tio.LTYPE_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.LTYPE_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.LTYPE_CONTROL;
+
+            case "VIEW_CONTROL":
+                if (objDwgObject.tio.VIEW_CONTROL == null)
+                {
+                    objDwgObject.tio.VIEW_CONTROL = new Dwg_Object_VIEW_CONTROL();
+                    objDwgObject.tio.VIEW_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.VIEW_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.VIEW_CONTROL;
+            case "UCS_CONTROL":
+                if (objDwgObject.tio.UCS_CONTROL == null)
+                {
+                    objDwgObject.tio.UCS_CONTROL = new Dwg_Object_UCS_CONTROL();
+                    objDwgObject.tio.UCS_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.UCS_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.UCS_CONTROL;
+            case "VPORT_CONTROL":
+                if (objDwgObject.tio.VPORT_CONTROL == null)
+                {
+                    objDwgObject.tio.VPORT_CONTROL = new Dwg_Object_VPORT_CONTROL();
+                    objDwgObject.tio.VPORT_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.VPORT_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.VPORT_CONTROL;
+            case "APPID_CONTROL":
+                if (objDwgObject.tio.APPID_CONTROL == null)
+                {
+                    objDwgObject.tio.APPID_CONTROL = new Dwg_Object_APPID_CONTROL();
+                    objDwgObject.tio.APPID_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.APPID_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.APPID_CONTROL;
+            case "DIMSTYLE_CONTROL":
+                if (objDwgObject.tio.DIMSTYLE_CONTROL == null)
+                {
+                    objDwgObject.tio.DIMSTYLE_CONTROL = new Dwg_Object_DIMSTYLE_CONTROL();
+                    objDwgObject.tio.DIMSTYLE_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.DIMSTYLE_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.DIMSTYLE_CONTROL;
+            case "VX_CONTROL":
+                if (objDwgObject.tio.VX_CONTROL == null)
+                {
+                    objDwgObject.tio.VX_CONTROL = new Dwg_Object_VX_CONTROL();
+                    objDwgObject.tio.VX_CONTROL.common.parent = objDwgObject;
+                    return objDwgObject.tio.VX_CONTROL;
+                }
+                else
+                    return objDwgObject.tio.VX_CONTROL;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -856,5 +940,22 @@ public class dec_macros {
         {
             return Math.max(p2, p1);
         }
+    }
+
+    static long VALUE_RLx(Bit_Chain dat, String type, int dxf) {
+        return (long)VALUE(dat,"RL",dxf);
+    }
+
+    static Object VALUE(Bit_Chain dat, String type, int dxf) {
+        switch (type)
+        {
+            case "RL":
+                return bits.bit_read_RL(dat);
+            default: return null;
+        }
+    }
+
+    static int FIELD_RCu(Bit_Chain dat, int dxf) {
+        return (int) bits.bit_read_RC(dat);
     }
 }
