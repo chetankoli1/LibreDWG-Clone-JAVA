@@ -41,6 +41,25 @@ public class dwg_spec {
         Bit_Chain hdl_dat = new Bit_Chain();
         Bit_Chain str_dat = new Bit_Chain(dat);
         out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        Dwg_Object_BLOCK_CONTROL blcckcontroll = obj.tio.object.tio.BLOCK_CONTROL;
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_RS(dat,blcckcontroll.common.num_entries,"num_entries",70);
+            out_json.FIELD_RS(dat,blcckcontroll.common.flags_r11,"flags_r11",70);
+        }
+        else //LATER_VERSIONS
+        {
+            out_json.FIELD_BL(dat,"num_entries",blcckcontroll.common.num_entries,70);
+        }
+        out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
+
+        out_json.HANDLE_VECTOR(dat,blcckcontroll.common.entres,"entries",blcckcontroll.common.num_entries,2,0);
+        out_json.FIELD_HANDLE(dat,"model_space",blcckcontroll.model_space,3,0);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_HANDLE(dat,"paper_space",blcckcontroll.paper_space,3,0);
+        }
         return error;
     }
 }

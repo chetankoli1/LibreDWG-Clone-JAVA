@@ -923,7 +923,44 @@ public class out_json {
         else {
             FIELD_TEXT(dat,"object",name,0);
         }
+        if(!obj.dxfname.isEmpty() && commen.strNE(obj.dxfname,name))
+        {
+            FIELD_TEXT(dat,"dxfname",obj.dxfname,0);
+        }
+        FIELD("index",obj.index,dat,0);
+        FIELD("type",obj.type,dat,0);
+        KEY(dat,"handle");
+        VALUE_H(obj.handle,dat,5);
+        FIELD("size",obj.size,dat,0);
+        FIELD("bitsize",obj.bitsize,dat,0);
+        //error |= json_eed(dat, obj.tio._object, name);
+        error |= json_common_object_handle_data(dat, hdl_dat, obj);
+        if(!name.contains("UNKNOWN_"))
+        {
+            return error | dwg_json_token_private(dat,hdl_dat,str_dat,obj,name);
+        }
+        else {
+            return error | dwg_json_token_private(dat, hdl_dat, str_dat, obj, obj.dxfname);
+        }
+    }
+
+    static int dwg_json_token_private(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat,
+                                      Dwg_Object obj, String dxfname)
+    {
+        int error = 0;
+        Dwg_Data objdwg = obj.parent;
         return error;
+    }
+
+    static int json_common_object_handle_data(Bit_Chain dat, Bit_Chain hdl_dat, Dwg_Object obj)
+            throws IOException {
+        int error = 0;
+        error = common_object_handle_data_spec.common_object_handle_data_spec_write(dat, hdl_dat, obj);
+        return error;
+    }
+
+    static void VALUE_H(Dwg_Handle hdl, Bit_Chain dat, int code) throws IOException {
+        commonvar.Sw_write("[" + (byte)hdl.code + "," + (byte)hdl.size + "," + hdl.value +"]");
     }
 
     static Object getObject(String type, Dwg_Object obj) {
@@ -933,4 +970,87 @@ public class out_json {
             default: return null;
         }
     }
+
+    static void CONTROL_HANDLE_STREAM(Dwg_Object obj, Bit_Chain hdl_dat, Bit_Chain dat,
+                                      Dwg_Data objDwgData, Dwg_Object_Ref ref) throws IOException {
+        assert obj.supertype == DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT;
+        if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            hdl_dat._byte = dat._byte;
+            hdl_dat.bit = dat.bit;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+           // out_json.VALUE_H(ref.handleref,hdl_dat,5);
+            out_json.FIELD_HANDLE(dat,"ownerhandle",ref,4,330);
+          //  ref = dec_macros.VALUE_HANDLE(hdl_dat,ref,4,obj,objDwgData,0);
+           // obj.tio.object.ownerhandle = ref;
+//            REACTORS(4,obj,hdl_dat,objDwgData);
+//            XDICOBJHANDLE(hdl_dat,3,obj,objDwgData);
+        }
+    }
+
+    static void HANDLE_VECTOR(Bit_Chain dat, Dwg_Object_Ref[] nam, String name,
+                              int size, int code, int dxf) throws IOException {
+        HANDLE_VECTOR_N(dat,nam,name,size,code,dxf);
+    }
+
+    static void HANDLE_VECTOR_N(Bit_Chain dat, Dwg_Object_Ref[] nam, String name,
+                                int size, int code, int dxf) throws IOException {
+        KEY(dat,name);
+        ARRAY(dat);
+        for(int i = 0; i < size; i++)
+        {
+            FIELD_HANDLE_N(nam[i],dat,code,dxf);
+        }
+        ENDARRAY(dat);
+    }
+
+    static void FIELD_HANDLE_N(Dwg_Object_Ref nam, Bit_Chain dat, int code, int dxf) throws IOException {
+        PRINTFIRST(dat);
+        if(nam != null)
+        {
+            _prefix(dat);
+            ARGS_HREF11(nam);
+        }
+        else {
+            _prefix(dat);
+            commonvar.Sw_write("[0, 0, 0]");
+        }
+    }
+
+//    static void XDICOBJHANDLE(Bit_Chain dat,int code, Dwg_Object obj, Dwg_Data objDwgData) throws IOException {
+//        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+//        {
+//            if(obj.tio.object.is_xdic_missing == 0)
+//            {
+//                obj.tio.object.xdicobjhandle = new Dwg_Object_Ref();
+//                obj.tio.object.xdicobjhandle = VALUE_HANDLE(dat,obj.tio.object.xdicobjhandle,code,obj,objDwgData,360);
+//                KEY(dat,"xdicobjhandle");
+//                VALUE_H(obj.tio.object.xdicobjhandle,);
+//                if(obj.tio.object.xdicobjhandle == null)
+//                {
+//                    obj.tio.object.is_xdic_missing = 1;
+//                }
+//            }
+//        }else {
+//            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+//            {
+//                obj.tio.object.xdicobjhandle = new Dwg_Object_Ref();
+//                obj.tio.object.xdicobjhandle = VALUE_HANDLE(dat,obj.tio.object.xdicobjhandle,code,obj,objDwgData,360);
+//            }
+//        }
+//    }
+//
+//    static void REACTORS(int code, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData) {
+//        if (obj.tio.object.num_reactors > 0) {
+//            _VECTOR_CHKCOUNT(obj.tio.object.num_reactors, TYPE_MAXELEMSIZE("RS"), dat, obj, obj.tio.object.reactors);
+//            obj.tio.object.reactors = Arrays.copyOf(obj.tio.object.reactors, (int) obj.tio.object.num_reactors);
+//
+//            for (int vcount = 0; vcount < obj.tio.object.num_reactors; vcount++) {
+//                obj.tio.object.reactors[vcount] = new Dwg_Object_Ref();
+//                VALUE_HANDLE_N(dat, code, objDwgData, obj, obj.tio.object.reactors[vcount], 330);
+//            }
+//        }
+//    }
 }

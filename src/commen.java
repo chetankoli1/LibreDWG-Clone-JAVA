@@ -137,6 +137,15 @@ public class commen {
         return Math.abs(offset);
     }
 
+    static boolean strNE(String source, String compare)
+    {
+        if(strcmp(source, compare) != 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
     static enum DWG_SENTINEL
     {
         DWG_SENTINEL_HEADER_END,
@@ -235,6 +244,15 @@ public class commen {
         }
 
         return minLength == n; // True if exactly n characters were compared
+    }
+
+    static int strcmp(String s1, String s2)
+    {
+        if(s1.equals(s2))
+        {
+            return 0;
+        }
+        return 1;
     }
 
     static boolean VERSIONS(DWG_VERSION_TYPE v1,DWG_VERSION_TYPE v2,Bit_Chain dat)
@@ -454,7 +472,7 @@ String[] dwg_bits_name
 // minimal size of type in bits
 // keep in sync with above
 // used by unit-tests
-char[] dwg_bits_size = {
+static char[] dwg_bits_size = {
             0,   //"UNKNOWN",
             8,   //"RC",
             16,  //"RS",
@@ -498,3 +516,50 @@ char[] dwg_bits_size = {
             64,  //"RLLd",
     };
 }
+// keep in sync with common.c dwg_bits_name
+enum DWG_BITS
+{
+    BITS_UNKNOWN,
+    BITS_RC,      /** raw char (not compressed) */
+BITS_RS,      /** raw 2-byte short (not compressed, big-endian) */
+BITS_RL,      /** raw 4-byte long (not compressed, big-endian) */
+BITS_B,       /** bit (1 or 0) */
+BITS_BB,      /** special 2-bit code (entmode in entities, for instance) */
+BITS_3B,      /** special 3-bit code R24+ */
+BITS_4BITS,   /** 4 bits, r2000+ for VIEWMODE */
+BITS_BS,      /** bitshort */
+BITS_BL,      /** bitlong uint32_t */
+BITS_BLd,     /** signed bitlong int32_t */
+BITS_RLL,     /** raw 8-byte long long (not compressed, big-endian) */
+BITS_RD,      /** raw double (not compressed, big-endian) */
+BITS_BD,      /** bitdouble */
+BITS_MC,      /** modular char */
+BITS_UMC,     /** unsigned modular char, max 4 bytes (handlestream_size) */
+BITS_MS,      /** modular short */
+BITS_TV,      /** text value, -r2007 */
+BITS_TU,      /** Unicode text (bitshort character length, followed by
+ UCS-2 string). Unicode text is read from the
+ “string stream” within the object data. r2007+ */
+BITS_T,       /** text, version dependent: TV or TU */
+BITS_TF,      /** fixed-length text */
+BITS_T32,     /** String32 type */
+BITS_TU32,    /** StringU32 type (FileDepList.features) */
+BITS_HANDLE,  /** handle reference (see the HANDLE REFERENCES section) */
+BITS_BE,      /** BitExtrusion */
+BITS_DD,      /** BitDouble With Default */
+BITS_BT,      /** BitThickness */
+BITS_BOT,     /** Bit object type: 2010+ (BB + 1-2RC) */
+BITS_BLL,     /** bitlonglong R24+ */
+BITS_TIMEBLL, /** time long.long */
+BITS_CMC,     /** CmColor value */
+BITS_ENC,     /** Entity CmColor value */
+BITS_2RD,     /** 2 raw doubles **/
+BITS_3RD,     /** 3 raw doubles **/
+BITS_2BD,     /** 2D point (2 bitdoubles) **/
+BITS_3BD,     /** 3D point (3 bitdoubles) **/
+BITS_2DD,     /** 2 doubles with default **/
+BITS_3DD,     /** 3 doubles with default **/
+BITS_CRC,
+    BITS_CRC64,
+    BITS_RLLd
+};

@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class common_object_handle_data_spec {
     static void common_object_handle_data_spec_read(Bit_Chain dat, Bit_Chain hdl_dat,
                                                     Dwg_Object obj, Dwg_Data objDwgData)
@@ -48,5 +50,48 @@ public class common_object_handle_data_spec {
 //        }
 //#endif
 //        }
+    }
+
+    static int common_object_handle_data_spec_write(Bit_Chain dat, Bit_Chain hdlDat, Dwg_Object obj)
+            throws IOException {
+        out_json.FIELD_BL(dat,"num_reactors",obj.tio.object.num_reactors,0);
+        if(macros.IS_DECODER)
+        {
+            if(obj.tio.object.num_reactors + Integer.parseInt(String.valueOf(commen.dwg_bits_size[DWG_BITS.BITS_HANDLE.ordinal()])) >=
+                 dec_macros.AVAIL_BITS(hdlDat))
+            {
+                obj.tio.object.num_reactors = 0;
+                return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004, dat))
+        {
+            out_json.FIELD_B(dat,"is_xdic_missing",obj.tio.object.is_xdic_missing,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2013, dat))
+        {
+            out_json.FIELD_B(dat,"has_ds_data",obj.tio.object.has_ds_data,0);
+        }
+//        if(macros.IS_DXF)
+//        {
+//            out_json.XDICOBJHANDLE(dat,obj,3);
+//            out_json.REACTORS(dat,obj,4);
+//        }
+//        if(commen.SINCE(DWG_VERSION_TYPE.R_13, dat))
+//        {
+//            out_json.FIELD_HANDLE(dat,"ownerhandle", obj.tio.object.ownerhandle,4,330);
+//        }
+        //#if IS_DXF
+//        if (!macros.IS_DXF)
+//        {
+//            if (dec_macros.SINCE((int)DWG_VERSION_TYPE.R_13, dat))
+//            {
+//                out_json.REACTORS(dat, obj, 4);
+//                out_json.XDICOBJHANDLE(dat, obj, 3);
+//            }
+//        }
+        //#endif
+        return 0;
     }
 }
