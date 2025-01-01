@@ -1,4 +1,5 @@
 public class specs {
+    static boolean IS_JSON = false;
     static boolean DECODER = false;
     static boolean ENCODER = false;
     static final boolean PRINT = false;

@@ -1071,7 +1071,13 @@ class Bit_Chain {
     public int codepages;
 
     Bit_Chain(Bit_Chain dat) {
-        this.chain = dat.chain;
+        if (dat.chain != null) {
+            this.chain = new char[dat.chain.length];
+            System.arraycopy(dat.chain, 0, this.chain, 0, dat.chain.length);
+        } else {
+            this.chain = null;
+        }
+
         this.size = dat.size;
         this._byte = dat._byte;
         this.bit = dat.bit;

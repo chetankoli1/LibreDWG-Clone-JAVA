@@ -9,6 +9,7 @@ public class out_json {
 
     public static int dwg_write_json(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         Dwg_Header obj = objDwgData.header;
+        specs.IS_JSON = true;
         int error = 0;
 
         if (dat.version == null) {
@@ -35,10 +36,10 @@ public class out_json {
                 return 1;
             }
         }
-        //
-
-        //
-
+        if(json_objects_write(dat,objDwgData) >= DWG_ERROR.DWG_ERR_CRITICAL)
+        {
+            return 1;
+        }
         if (dat.version.ordinal() >= DWG_VERSION_TYPE.R_13b1.ordinal()) {
             if (json_thumbnail_write(dat, objDwgData) >= DWG_ERROR.DWG_ERR_CRITICAL) {
                 return 1;
@@ -61,6 +62,24 @@ public class out_json {
         }
         config.streamWriter.write("}");
         config.streamWriter.write("\n");
+        return 0;
+    }
+
+    static int json_objects_write(Bit_Chain dat, Dwg_Data objDwgData) throws IOException
+    {
+        CLEARFIRST(dat);
+        SECTION(dat,"OBJECTS");
+        for(int i = 0; i < objDwgData.num_objects; i++)
+        {
+            int error = 0;
+            Dwg_Object obj = objDwgData.object[i];
+            FIRSTPREFIX(dat); HASH(dat);
+            error = dwg_json_object(dat,obj,objDwgData);
+            ENDHASH(dat);
+            CLEARFIRST(dat);
+
+        }
+        ENDSEC(dat);
         return 0;
     }
 
@@ -863,5 +882,55 @@ public class out_json {
 
     static void FIELD_T16(Bit_Chain dat, String name, String value, int dxf) throws IOException {
         FIELD_T(dat,name,value,dxf);
+    }
+
+    static int dwg_json_object(Bit_Chain dat, Dwg_Object obj, Dwg_Data objDwgData) throws IOException {
+        int error = 0;
+
+        if(obj == null || obj.parent == null){
+            return DWG_ERROR.DWG_ERR_INTERNALERROR.value;
+        }
+        int type = obj.fixedtype.value;
+
+        switch (obj.fixedtype)
+        {
+            case DWG_TYPE_BLOCK_CONTROL:
+                error = dwg_spec.dwg_json_BLOCK_CONTROL("BLOCK_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_CONTROL);
+                break;
+            default:
+                System.out.println("NOt found for writting");
+                break;
+        }
+
+        return error;
+    }
+
+    static int dwg_json_token(Bit_Chain dat, Dwg_Object obj,
+                               String name,DWG_OBJECT_TYPE type, Bit_Chain hdl_dat, Bit_Chain str_dat) throws IOException {
+        int error = 0;
+        Object _obj = new Object();
+        if(!name.contains("UNKNOWN_"))
+        {
+            _obj = getObject(name,obj);
+        }
+        else {
+            _obj = getObject(obj.dxfname,obj);
+        }
+        if(name.charAt(0) == '_')
+        {
+            FIELD_TEXT(dat,"object", String.valueOf(name.charAt(1)),0);
+        }
+        else {
+            FIELD_TEXT(dat,"object",name,0);
+        }
+        return error;
+    }
+
+    static Object getObject(String type, Dwg_Object obj) {
+        switch (type)
+        {
+            case "BLOCK_CONTROL": return obj.tio.object.tio.BLOCK_CONTROL;
+            default: return null;
+        }
     }
 }

@@ -124,7 +124,7 @@ enum DWG_OBJECT_TYPE {
     DWG_TYPE_ACDSRECORD(500),
 
     DWG_TYPE_ACDSSCHEMA(501),
-    DWG_TYPE_ACMECOMMANDHISTORY(501),
+    DWG_TYPE_ACMECOMMANDHISTORY(502),
     DWG_TYPE_ACMESCOPE(501),
     DWG_TYPE_ACMESTATEMGR(501),
     DWG_TYPE_ACSH_BOOLEAN_CLASS(501),
@@ -1187,6 +1187,8 @@ class dwg_inthash{
     public _hashbucket[] array;
     public long size;
     public int elems;
+    dwg_inthash(){}
+
 }
 class _hashbucket{
     public long key = 0;

@@ -823,4 +823,38 @@ public class dec_macros {
         }
     }
 
+
+    static int DWG_OBJECT_END(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat,
+                              Dwg_Object obj, int error) {
+        return DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int DWG_ENTITY_END(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat,
+                              Dwg_Object obj, int error)
+    {
+        long pos = obj_stream_position(dat,hdl_dat,str_dat);
+        long padding = (obj.size * 8L) - pos;
+        bits.bit_set_position(dat,pos);
+
+        return error & ~DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+    }
+
+    private static long obj_stream_position(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat)
+    {
+        long p1 = bits.bit_position(dat);
+        long p2 = bits.bit_position(hdl_dat);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            long p3 = bits.bit_position(str_dat);
+            if (p2 > p1)
+                return Math.max(p3, p2);
+            else
+                return Math.max(p3, p1);
+        }
+        else
+        {
+            return Math.max(p2, p1);
+        }
+    }
 }

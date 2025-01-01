@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class dwg_spec {
     static int dwg_decode_BLOCK_CONTROL(String name, Dwg_Object obj, Bit_Chain dat,
                                         Dwg_Data objDwgData,DWG_OBJECT_TYPE type)
@@ -30,6 +32,15 @@ public class dwg_spec {
         {
             blcckcontroll.paper_space = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
         }
+        return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
+    }
+
+    static int dwg_json_BLOCK_CONTROL(String name, Dwg_Object obj, Bit_Chain dat,
+                                       Dwg_Data objDwgData, DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
         return error;
     }
 }

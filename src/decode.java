@@ -110,6 +110,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
     public static int MAX_HEADER_SIZE = 2048;
 
     private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) {
+        dat = new Bit_Chain(dat);
         int error = 0;
         int section_size = 0;
         int crc, crc2;
@@ -479,7 +480,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 if(object_begin > last_offset)
                     object_begin = last_offset;
 
-                added = dwg_decode_add_object(objDwgData,dat,dat,last_offset);
+                Bit_Chain wdat = new Bit_Chain(dat);
+                added = dwg_decode_add_object(objDwgData,wdat,wdat,last_offset);
+                //dat = new Bit_Chain(wdat);
 
                 if(added > 0)
                 {
@@ -783,6 +786,10 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         restartpos = bits.bit_position(dat);
 
         DWG_OBJECT_TYPE type = DWG_OBJECT_TYPE.fromValue(obj.type);
+        if (type == null) {
+            System.out.println("Error: Invalid DWG object type (null).");
+            return error = DWG_ERROR.DWG_ERR_INVALIDTYPE.value;
+        }
         switch (type)
         {
             case DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_CONTROL:
@@ -799,11 +806,14 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                     }
                 }
                 break;
+            default:
+                System.out.print("not found");
+                break;
 
         }
         if(obj.handle.value != 0)
         {
-            //hash.hash_set(objDwgData.object_map,obj.handle.value,num);
+            hash.hash_set(objDwgData.object_map,obj.handle.value,num);
         }
         if(dat._byte > 8 * dat.size)
         {
