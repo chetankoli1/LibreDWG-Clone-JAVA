@@ -269,6 +269,7 @@ public class out_json {
 
         _prefix(dat);
         config.streamWriter.write("}");
+        ISFIRST = 1;
     }
 
     static void RECORD(Bit_Chain dat, String name) throws IOException {
@@ -931,10 +932,51 @@ public class out_json {
                 error = dwg_spec.dwg_json_DICTIONARY("DICTIONARY", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY);
                 break;
             default:
-                System.out.println("NOt found for writting");
+                if(obj.type != 0 && obj.type == obj.parent.layout_type)
+                {
+                    //return dwg_json_LAYOUT();
+                }
+                else if((DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value & (error = dwg_json_variable_type(obj.parent,dat,obj))) != 0)
+                {
+
+                }
+
                 break;
         }
 
+        return error;
+    }
+
+    static int dwg_json_variable_type(Dwg_Data dwgdata, Bit_Chain dat, Dwg_Object obj)
+            throws IOException {
+        int error = 0;
+        Dwg_Class klass = null;
+        int is_entity = -1;
+        int i = obj.type - 500;
+
+        if(i < 0 || i >= dwgdata.num_classes)
+        {
+            return DWG_ERROR.DWG_ERR_INVALIDTYPE.value;
+        }
+        if(obj.fixedtype == DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_ENT ||
+            obj.fixedtype == DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_OBJ)
+        {
+            return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+        }
+        klass = dwgdata.dwg_class[i];
+        if(klass == null || klass.dxfname == null)
+        {
+            return DWG_ERROR.DWG_ERR_INTERNALERROR.value;
+        }
+
+        is_entity = dwg.dwg_class_is_entity(klass);
+
+        String strClassName = decode.get_ClassName_of_Unknown_object(obj.dxfname.trim());
+        error  = classes_inc.classes(klass,classes_inc.ACTION[2],obj,strClassName,dat,dwgdata,obj.dxfname.trim());
+        if(error != 0)
+        {
+            return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
+        }
         return error;
     }
 
@@ -994,6 +1036,22 @@ public class out_json {
 
     static void VALUE_H(Dwg_Handle hdl, Bit_Chain dat, int code) throws IOException {
         commonvar.Sw_write("[" + (byte)hdl.code + "," + (byte)hdl.size + "," + hdl.value +"]");
+    }
+
+    static void VALUE_HANDLE(Bit_Chain dat, Dwg_Object_Ref ref) throws IOException {
+        if(ref != null)
+        {
+            ARGS_HREF(ref, dat);
+        }
+        else {
+            config.streamWriter.write("[0, 0, 0]");
+        }
+    }
+
+    static void ARGS_HREF(Dwg_Object_Ref ref, Bit_Chain dat) throws IOException {
+        commonvar.Sw_write("["+(byte)ref.handleref.code+", "+
+                (byte)ref.handleref.size+ ", "+ ref.handleref.value+", "+
+                ref.absolute_ref + "]");
     }
 
     static Object getObject(String type, Dwg_Object obj) {

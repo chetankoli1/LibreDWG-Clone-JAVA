@@ -52,6 +52,7 @@ public class Main {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
                     config.streamWriter = writer;
                     specs.DECODER = false;
+                    macros.IS_JSON = true;
                     error = out_json.dwg_write_json(dat, objDwgData);
                     config.streamWriter.close();
                     System.out.println("JSON file is Genarated Succesfully");

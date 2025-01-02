@@ -663,15 +663,156 @@ public class dwg_spec {
             }
         }
 
-        out_json.RECORD(dat,"items");
-        for(int i = 0; i < dictionary.numitems; i++)
+       if(macros.IS_JSON)
+       {
+           out_json.RECORD(dat,"items");
+           for(int i = 0; i < dictionary.numitems; i++)
+           {
+               out_json.FIRSTPREFIX(dat);
+               out_json.VALUE_TEXT(dat,dictionary.texts[i]);
+               config.streamWriter.write(": ");
+               out_json.VALUE_HANDLE(dat,dictionary.itemhandles[i]);
+           }
+           out_json.ENDRECORD(dat);
+       }
+//       else {
+//           out_json.FIELD_V
+//       }
+
+        return error;
+    }
+
+    static int dwg_decode_DICTIONARYWDFLTL(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        Dwg_Object_DICTIONARYWDFLT dictionarywdflt = obj.tio.object.tio.DICTIONARYWDFLT;
+        if(macros.IS_DXF)
         {
-            out_json.FIRSTPREFIX(dat);
-            out_json.VALUE_TEXT(dat,dictionary.texts[i]);
-            config.streamWriter.write(": ");
-            out_json.ARGS_HREF11(dictionary.itemhandles[i]);
+            if(dictionarywdflt.is_hardowner != 0)
+            {
+                dictionarywdflt.is_hardowner = bits.bit_read_RC(dat);
+            }
+            dictionarywdflt.cloning = bits.bit_read_BS(dat);
         }
-        out_json.ENDRECORD(dat);
+        else {
+            dictionarywdflt.numitems = bits.bit_read_BL(dat);
+            dictionarywdflt.cloning = bits.bit_read_BS(dat);
+            dictionarywdflt.is_hardowner = bits.bit_read_RC(dat);
+        }
+
+       if(macros.IS_DXF)
+       {
+           if(dictionarywdflt.numitems > 0 && dictionarywdflt.numitems < 10000)
+           {
+
+           }
+       }
+
+       if(macros.IS_JSON)
+       {
+
+       }
+       else{
+           if(dictionarywdflt.texts == null)
+           {
+               dictionarywdflt.texts = new String[(int)dictionarywdflt.numitems];
+           }
+           dictionarywdflt.texts = dec_macros.FIELD_VECTOR_T(dat,"T",dictionarywdflt.numitems,3);
+       }
+       dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+
+       if(!macros.IS_DXF && !macros.IS_JSON)
+       {
+           if(dictionarywdflt.itemhandles == null)
+           {
+               dictionarywdflt.itemhandles = new Dwg_Object_Ref[(int)dictionarywdflt.numitems];
+           }
+           dictionarywdflt.itemhandles = dec_macros.HANDLE_VECTOR(hdl_dat,(int)dictionarywdflt.numitems,2,obj,objDwgData,0);
+       }
+
+       dictionarywdflt.defaultid = new Dwg_Object_Ref();
+       dictionarywdflt.defaultid = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,340);
+
         return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
+    }
+    static int dwg_json_DICTIONARYWDFLTL(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+            throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        Dwg_Object_DICTIONARYWDFLT dictionarywdflt = obj.tio.object.tio.DICTIONARYWDFLT;
+        if(macros.IS_DXF)
+        {
+            if(dictionarywdflt.is_hardowner != 0)
+            {
+                out_json.FIELD_RC("is_hardowner",dictionarywdflt.is_hardowner,dat,0);
+            }
+            out_json.FIELD_BS(dat,"cloning",dictionarywdflt.cloning,0);
+        }
+        else {
+            out_json.FIELD_BL(dat,"numitems",dictionarywdflt.numitems,0);
+            out_json.FIELD_BS(dat,"cloning",dictionarywdflt.cloning,0);
+            out_json.FIELD_RC("is_hardowner",dictionarywdflt.is_hardowner,dat,0);
+        }
+
+        if(macros.IS_DXF)
+        {
+            if(dictionarywdflt.numitems > 0 && dictionarywdflt.numitems < 10000)
+            {
+
+            }
+        }
+
+        if(macros.IS_JSON)
+        {
+            out_json.RECORD(dat,"items");
+            for(int i = 0; i < dictionarywdflt.numitems; i++)
+            {
+                out_json.FIRSTPREFIX(dat);
+                out_json.VALUE_TEXT(dat,dictionarywdflt.texts[i]);
+                config.streamWriter.write(": ");
+                out_json.VALUE_HANDLE(dat,dictionarywdflt.itemhandles[i]);
+            }
+            out_json.ENDRECORD(dat);
+        }
+        else{
+          //  dictionarywdflt.texts = dec_macros.FIELD_VECTOR_T(dat,"T",dictionarywdflt.numitems,3);
+        }
+       // dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+
+        if(!macros.IS_DXF && !macros.IS_JSON)
+        {
+
+            out_json.HANDLE_VECTOR(dat,dictionarywdflt.itemhandles,"itemhandles",(int)dictionarywdflt.numitems,5,340);
+        }
+        out_json.SUBCLASS(dat,"AcDbDictionaryWithDefault");
+        out_json.FIELD_HANDLE(dat,"defaultid",dictionarywdflt.defaultid,5,340);
+        return error;
+    }
+
+    static int dwg_decode_PLACEHOLDER(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+    static int dwg_json_PLACEHOLDER(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                    DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        return error;
     }
 }

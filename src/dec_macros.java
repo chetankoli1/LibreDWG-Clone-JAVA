@@ -651,7 +651,10 @@ public class dec_macros {
         {
             obj.type = type.value;
         }
-        obj.dxfname = name;
+        if(obj.dxfname == null)
+        {
+            obj.dxfname = name;
+        }
         if((obj.parent.opts & dwg.DWG_OPTS_IN) != 0)
         {
             obj.name = obj.dxfname;
@@ -784,6 +787,24 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.DICTIONARY;
+            case "DICTIONARYWDFLT":
+                if (objDwgObject.tio.DICTIONARYWDFLT == null)
+                {
+                    objDwgObject.tio.DICTIONARYWDFLT = new Dwg_Object_DICTIONARYWDFLT();
+                    objDwgObject.tio.DICTIONARYWDFLT.setParent(objDwgObject);
+                    return objDwgObject.tio.DICTIONARYWDFLT;
+                }
+                else
+                    return objDwgObject.tio.DICTIONARYWDFLT;
+            case "PLACEHOLDER":
+                if (objDwgObject.tio.PLACEHOLDER == null)
+                {
+                    objDwgObject.tio.PLACEHOLDER = new Dwg_Object_PLACEHOLDER();
+                    objDwgObject.tio.PLACEHOLDER.setParent(objDwgObject);
+                    return objDwgObject.tio.PLACEHOLDER;
+                }
+                else
+                    return objDwgObject.tio.PLACEHOLDER;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }

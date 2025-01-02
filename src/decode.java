@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -5,7 +6,7 @@ import java.util.Arrays;
 public class decode {
 
     static int loglevel;
-    public static int dwg_decode(Bit_Chain dat, Dwg_Data objDwgData) {
+    public static int dwg_decode(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         int error = 0;
         char[] magic = new char[11];
         objDwgData.num_object_refs = 0;
@@ -109,7 +110,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
     }
     public static int MAX_HEADER_SIZE = 2048;
 
-    private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) {
+    private static int decode_R13_R2000(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         dat = new Bit_Chain(dat);
         int error = 0;
         int section_size = 0;
@@ -730,7 +731,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
 
 
     static int dwg_decode_add_object(Dwg_Data objDwgData, Bit_Chain dat,
-                                     Bit_Chain hdl_dat, long address) {
+                                     Bit_Chain hdl_dat, long address) throws IOException {
         int error = 0;
         long objpos = 0, restartpos = 0;
         Bit_Chain abs_dat = null;
@@ -851,7 +852,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                     Dwg_Class klass = null;
 
                     bits.bit_set_position(dat,restartpos);
-                    if(i >= 0 && i < objDwgData.num_classes)
+                    if(i < 0 && i >= objDwgData.num_classes)
                     {
                         klass = objDwgData.dwg_class[i];
                         is_entity = dwg.dwg_class_is_entity(klass);
@@ -1392,8 +1393,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
     }
 
     static int dwg_decode_variable_type(Dwg_Data objDwgData, Bit_Chain dat, Bit_Chain hdl_dat,
-                                        Dwg_Object obj)
-    {
+                                        Dwg_Object obj) throws IOException {
         int error = 0;
         Dwg_Class klass = null;
         int i = 0;
@@ -1402,7 +1402,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         {
             return DWG_ERROR.DWG_ERR_INTERNALERROR.value;
         }
-        i = obj.type -  5;
+        i = obj.type -  500;
         if(i < 0 || i >= objDwgData.num_classes)
         {
             objDwgData.num_objects--;
@@ -1413,15 +1413,21 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         {
             return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
         }
+        obj.dxfname = new String(klass.dxfname);
         is_entity = dwg.dwg_class_is_entity(klass);
 
-        //error = classes_inc.classes(klass,classes_inc.ACTION[0], obj,get_ClassName_of_Unknown_object(obj.dxfname),dat,objDwgData,obj.dxfname);
+        String name = get_ClassName_of_Unknown_object(obj.dxfname);
 
+        error = classes_inc.classes(klass,classes_inc.ACTION[0], obj,name,dat,objDwgData,obj.dxfname);
+        if(error == 0)
+        {
+            return error;
+        }
         return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
     }
 
     static String get_ClassName_of_Unknown_object(String dxfname) {
-        switch (dxfname)
+        switch (dxfname.trim())
         {
             case "ACDBDICTIONARYWDFLT":
                 return "DICTIONARYWDFLT";

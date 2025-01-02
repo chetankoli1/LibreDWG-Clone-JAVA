@@ -1159,6 +1159,8 @@ class Dwg_Object_Object
         public Dwg_Object_DIMSTYLE_CONTROL DIMSTYLE_CONTROL;
         public Dwg_Object_VX_CONTROL VX_CONTROL;
         public Dwg_Object_DICTIONARY DICTIONARY;
+        public Dwg_Object_DICTIONARYWDFLT DICTIONARYWDFLT;
+        public Dwg_Object_PLACEHOLDER PLACEHOLDER;
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -1817,6 +1819,38 @@ class Dwg_Object_DICTIONARY implements IParent {
     public int cloning;
     public String[] texts;
     public Dwg_Object_Ref[] itemhandles;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+}
+
+class Dwg_Object_DICTIONARYWDFLT implements IParent{
+    public Dwg_Object_Object parent;
+    public long numitems;
+    public char is_hardowner;
+    public int cloning;
+    public String[] texts;
+    public Dwg_Object_Ref[] itemhandles;
+    public Dwg_Object_Ref defaultid;
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+}
+class Dwg_Object_PLACEHOLDER implements IParent {
+    public Dwg_Object_Object parent;
 
     @Override
     public Dwg_Object_Object getParent() {
