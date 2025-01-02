@@ -50,6 +50,15 @@ public class common_object_handle_data_spec {
 //        }
 //#endif
 //        }
+        if(!dwg.dwg_obj_is_control(obj))
+        {
+            obj.tio.object.ownerhandle = dec_macros.VALUE_HANDLE(hdl_dat,obj.tio.object.ownerhandle,4,obj,objDwgData,0);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                dec_macros.REACTORS(4,obj,hdl_dat,objDwgData);
+                dec_macros.XDICOBJHANDLE(hdl_dat,3,obj,objDwgData);
+            }
+        }
     }
 
     static int common_object_handle_data_spec_write(Bit_Chain dat, Bit_Chain hdlDat, Dwg_Object obj)
@@ -82,6 +91,13 @@ public class common_object_handle_data_spec {
 //        {
 //            out_json.FIELD_HANDLE(dat,"ownerhandle", obj.tio.object.ownerhandle,4,330);
 //        }
+        if(!dwg.dwg_obj_is_control(obj))
+        {
+            out_json.FIELD_HANDLE(dat,"ownerhandle", obj.tio.object.ownerhandle,4,330);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat)){
+                out_json.REACTOR(4,dat,obj);
+            }
+        }
         //#if IS_DXF
 //        if (!macros.IS_DXF)
 //        {

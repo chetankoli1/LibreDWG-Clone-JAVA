@@ -580,4 +580,98 @@ public class dwg_spec {
         out_json.HANDLE_VECTOR(dat,vxControl.common.entres,"entries",vxControl.common.num_entries,2,0);
         return error;
     }
+
+    static int dwg_decode_DICTIONARY(String name, Dwg_Object obj, Bit_Chain dat,
+                                     Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_DICTIONARY dictionary = obj.tio.object.tio.DICTIONARY;
+
+        if(macros.IS_DXF)
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13c3,dat))
+            {
+                dictionary.is_hardowner = dec_macros.FIELD_RC0(dat,"RC",280);
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                dictionary.cloning = dec_macros.FIELD_RC0(dat,"RC",281);
+            }
+        }
+        dictionary.numitems = dec_macros.FIELD_BL(dat,"BL",0);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13c3,dat))
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                dictionary.cloning = dec_macros.FIELD_BS(dat,"BS",281);
+            }
+            if(dat.version.ordinal() != DWG_VERSION_TYPE.R_13c3.ordinal() || objDwgData.header.is_maint > 4)
+            {
+                dictionary.is_hardowner = dec_macros.FIELD_RC(dat,"RC",280);
+            }
+        }
+        if(dictionary.texts == null)
+        {
+            dictionary.texts = new String[(int)dictionary.numitems];
+        }
+        dictionary.texts = dec_macros.FIELD_VECTOR_T(dat,"T",dictionary.numitems,3);
+        dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+
+        if(dictionary.itemhandles == null)
+        {
+            dictionary.itemhandles = new Dwg_Object_Ref[(int)dictionary.numitems];
+        }
+        dictionary.itemhandles = dec_macros.HANDLE_VECTOR(hdl_dat,(int)dictionary.numitems,2,obj,objDwgData,350);
+        return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
+    }
+
+    static int dwg_json_DICTIONARY(String name, Dwg_Object obj, Bit_Chain dat,
+                                     Dwg_Data objDwgData, DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_DICTIONARY dictionary = obj.tio.object.tio.DICTIONARY;
+
+       // out_json.SUBCLASS(dat,"AcDbDictionary");
+        if(macros.IS_DXF)
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13c3,dat))
+            {
+                out_json.FIELD_RC0("is_hardowner",dictionary.is_hardowner,dat,280);
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                out_json.FIELD_RC0("cloning",(char)dictionary.cloning,dat,281);
+            }
+        }
+
+        out_json.FIELD_BL(dat,"numitems",dictionary.numitems,0);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13c3,dat))
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                out_json.FIELD_BS(dat,"cloning",dictionary.cloning,281);
+            }
+            if(dat.version.ordinal() != DWG_VERSION_TYPE.R_13c3.ordinal() || objDwgData.header.is_maint > 4)
+            {
+                dictionary.is_hardowner = dec_macros.FIELD_RC(dat,"RC",280);
+                out_json.FIELD_RC("is_hardowner",dictionary.is_hardowner, dat,280);
+            }
+        }
+
+        out_json.RECORD(dat,"items");
+        for(int i = 0; i < dictionary.numitems; i++)
+        {
+            out_json.FIRSTPREFIX(dat);
+            out_json.VALUE_TEXT(dat,dictionary.texts[i]);
+            config.streamWriter.write(": ");
+            out_json.ARGS_HREF11(dictionary.itemhandles[i]);
+        }
+        out_json.ENDRECORD(dat);
+        return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
+    }
 }

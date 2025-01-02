@@ -339,6 +339,9 @@ public class out_json {
     static void FIELD_RC(String nam, char val, Bit_Chain dat, int dxf) throws IOException {
         FIELD(nam, val, dat, dxf);
     }
+    static void FIELD_RC0(String nam, char val, Bit_Chain dat, int dxf) throws IOException {
+        FIELD(nam, val, dat, dxf);
+    }
 
     static void FIELD(String nam, Object val, Bit_Chain dat, int dxf) throws IOException {
         // Regular expression for an integer number
@@ -643,7 +646,7 @@ public class out_json {
     private static final String FORMAT_RLL = PRIu64;
     private static final String FORMAT_HREF11 = "[%d,%d," + FORMAT_RLL + "]";
     private static final String JSON_KEY = "\"%s\":%s";
-    private static void ARGS_HREF11(Dwg_Object_Ref ref) throws IOException {
+    static void ARGS_HREF11(Dwg_Object_Ref ref) throws IOException {
         commonvar.Sw_write("["+(byte)ref.handleref.code+","+(byte)ref.handleref.size
                 +","+ref.handleref.value+","+ref.absolute_ref+"]");
     }
@@ -924,6 +927,9 @@ public class out_json {
             case DWG_TYPE_VX_CONTROL:
                 error = dwg_spec.dwg_json_VX_CONTROL("VX_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL);
                 break;
+            case DWG_TYPE_DICTIONARY:
+                error = dwg_spec.dwg_json_DICTIONARY("DICTIONARY", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY);
+                break;
             default:
                 System.out.println("NOt found for writting");
                 break;
@@ -1056,6 +1062,22 @@ public class out_json {
 
     public static void FIELD_RCu(Bit_Chain dat, String name, int value, int dxf) throws IOException {
         FIELD_RC(name,(char)value,dat,dxf);
+    }
+
+    static void REACTOR(int code, Bit_Chain dat, Dwg_Object obj) throws IOException {
+        if(dat.version.ordinal() >= DWG_VERSION_TYPE.R_13b1.ordinal() &&
+        obj.tio.object.num_reactors != 0 && obj.tio.object.reactors != null)
+        {
+            KEY(dat,"reactors");
+            ARRAY(dat);
+            for(int vcount = 0; vcount < obj.tio.object.num_reactors; vcount++)
+            {
+                FIRSTPREFIX(dat);
+                ARGS_HREF11(obj.tio.object.reactors[vcount]);
+            }
+            ENDARRAY(dat);
+        }
+
     }
 
 //    static void XDICOBJHANDLE(Bit_Chain dat,int code, Dwg_Object obj, Dwg_Data objDwgData) throws IOException {

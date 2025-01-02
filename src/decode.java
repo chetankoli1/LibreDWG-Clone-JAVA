@@ -815,14 +815,12 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL:
                 error = dwg_spec.dwg_decode_STYLE_CONTROL("STYLE_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL);
                 break;
-
             case DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL:
                 error = dwg_spec.dwg_decode_LTYPE_CONTROL("LTYPE_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL);
                 break;
             case DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL:
                 error = dwg_spec.dwg_decode_VIEW_CONTROL("VIEW_CONTROL",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL);
                 break;
-
             case DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL:
                 error = dwg_spec.dwg_decode_UCS_CONTROL("UCS_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL);
                 break;
@@ -838,7 +836,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL:
                 error = dwg_spec.dwg_decode_VX_CONTROL("VX_CONTROL", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL);
                 break;
-
+            case DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY:
+                error = dwg_spec.dwg_decode_DICTIONARY("DICTIONARY", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {
@@ -854,7 +854,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                     if(i >= 0 && i < objDwgData.num_classes)
                     {
                         klass = objDwgData.dwg_class[i];
-                        is_entity = dwg_class_is_entity(klass);
+                        is_entity = dwg.dwg_class_is_entity(klass);
                     }
                     else {
                         obj.type = 0;
@@ -1413,7 +1413,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         {
             return DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value;
         }
-        is_entity = dwg_class_is_entity(klass);
+        is_entity = dwg.dwg_class_is_entity(klass);
 
         //error = classes_inc.classes(klass,classes_inc.ACTION[0], obj,get_ClassName_of_Unknown_object(obj.dxfname),dat,objDwgData,obj.dxfname);
 
@@ -1487,7 +1487,5 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         }
     }
 
-    static int dwg_class_is_entity(Dwg_Class klass) {
-        return (klass != null && klass.item_class_id == 0x1f2) ? 1 : 0;
-    }
+
 }

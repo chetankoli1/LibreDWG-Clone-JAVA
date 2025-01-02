@@ -579,7 +579,7 @@ public class dwg {
         return 0;
     }
 
-    private static int dat_read_file(Bit_Chain dat, String filename) throws IOException {
+    static int dat_read_file(Bit_Chain dat, String filename) throws IOException {
         byte[] fileBytes = Files.readAllBytes(Path.of(filename));
         int[] arr = new int[fileBytes.length];
 
@@ -612,7 +612,22 @@ public class dwg {
         }
         return 256;
     }
+    static int dwg_class_is_entity(Dwg_Class klass) {
+        return (klass != null && klass.item_class_id == 0x1f2) ? 1 : 0;
+    }
 
+    static boolean dwg_obj_is_control(Dwg_Object obj)
+    {
+        DWG_OBJECT_TYPE type = obj.fixedtype;
+        return (obj.supertype == DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT) &&
+                (type == DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_CONTROL || type == DWG_OBJECT_TYPE.DWG_TYPE_LAYER_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_STYLE_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_LTYPE_CONTROL || type == DWG_OBJECT_TYPE.DWG_TYPE_VIEW_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_UCS_CONTROL || type == DWG_OBJECT_TYPE.DWG_TYPE_VPORT_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_APPID_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE_CONTROL
+                        || type == DWG_OBJECT_TYPE.DWG_TYPE_VX_CONTROL);
+    }
     static Dwg_RGB_Palette[] rgb_palettes = {
          new Dwg_RGB_Palette(0x00, 0x00, 0x00),//0
          new Dwg_RGB_Palette(0xFF, 0x00, 0x00),//1
@@ -1143,6 +1158,7 @@ class Dwg_Object_Object
         public Dwg_Object_APPID_CONTROL APPID_CONTROL;
         public Dwg_Object_DIMSTYLE_CONTROL DIMSTYLE_CONTROL;
         public Dwg_Object_VX_CONTROL VX_CONTROL;
+        public Dwg_Object_DICTIONARY DICTIONARY;
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -1792,6 +1808,25 @@ class Dwg_Object_DIMSTYLE_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_F
 class Dwg_Object_VX_CONTROL extends Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS
 {
 
+}
+
+class Dwg_Object_DICTIONARY implements IParent {
+    public Dwg_Object_Object parent;
+    public long numitems;
+    public char is_hardowner;
+    public int cloning;
+    public String[] texts;
+    public Dwg_Object_Ref[] itemhandles;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
 }
 
 class Dwg_AuxHeader

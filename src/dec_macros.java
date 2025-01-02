@@ -14,6 +14,11 @@ public class dec_macros {
         return bits.bit_read_RC(dat);
         //FIELD_G_TRACE (nam, type, dxf);
     }
+    static char FIELD_RC0(Bit_Chain dat, String type, int dxf)
+    {
+        return bits.bit_read_RC(dat);
+        //FIELD_G_TRACE (nam, type, dxf);
+    }
 
     static int FIELD_RS(Bit_Chain dat, String type, int dxf) {
         return bits.bit_read_RS(dat);
@@ -769,6 +774,16 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.VX_CONTROL;
+            case "DICTIONARY":
+                if (objDwgObject.tio.DICTIONARY == null)
+                {
+                    objDwgObject.tio.DICTIONARY = new Dwg_Object_DICTIONARY();
+                    //objDwgObject.tio.DICTIONARY.parent = objDwgObject;
+                    objDwgObject.tio.DICTIONARY.setParent(objDwgObject);
+                    return objDwgObject.tio.DICTIONARY;
+                }
+                else
+                    return objDwgObject.tio.DICTIONARY;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -817,11 +832,11 @@ public class dec_macros {
     static void REACTORS(int code, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData) {
         if (obj.tio.object.num_reactors > 0) {
             _VECTOR_CHKCOUNT(obj.tio.object.num_reactors, TYPE_MAXELEMSIZE("RS"), dat, obj, obj.tio.object.reactors);
-            obj.tio.object.reactors = Arrays.copyOf(obj.tio.object.reactors, (int) obj.tio.object.num_reactors);
-
+            //obj.tio.object.reactors = Arrays.copyOf(obj.tio.object.reactors, (int) obj.tio.object.num_reactors);
+            obj.tio.object.reactors = new Dwg_Object_Ref[(int)obj.tio.object.num_reactors];
             for (int vcount = 0; vcount < obj.tio.object.num_reactors; vcount++) {
                 obj.tio.object.reactors[vcount] = new Dwg_Object_Ref();
-                VALUE_HANDLE_N(dat, code, objDwgData, obj, obj.tio.object.reactors[vcount], 330);
+                obj.tio.object.reactors[vcount] = VALUE_HANDLE_N_SPEC(dat,code,objDwgData,obj,330);
             }
         }
     }
@@ -957,5 +972,40 @@ public class dec_macros {
 
     static int FIELD_RCu(Bit_Chain dat, int dxf) {
         return (int) bits.bit_read_RC(dat);
+    }
+
+    public static String[] FIELD_VECTOR_T(Bit_Chain dat, String type, long size, int dxf) {
+        String[] str = new String[(int)size];
+        if(size > 0)
+        {
+            for(int i = 0 ; i < size; i++)
+            {
+                if(commen.PRE(DWG_VERSION_TYPE.R_2007a,dat))
+                {
+                    str[i] = bits.bit_read_TV(dat);
+                }
+                else {
+                    str[i] = bits.bit_read_T(dat);
+                }
+            }
+        }
+        return str;
+    }
+
+    static void START_OBJECT_HANDLE_STREAM(Bit_Chain dat, Dwg_Object obj) {
+        START_HANDLE_STREAM(dat,obj);
+        assert obj.supertype == DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT;
+    }
+
+    static void START_HANDLE_STREAM(Bit_Chain dat, Dwg_Object obj) {
+        long vcount = bits.bit_position(dat);
+        if(dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2007.ordinal())
+        {
+            vcount++;
+        }
+        if(obj.hdlpos != vcount)
+        {
+            bits.bit_set_position(dat,obj.hdlpos);
+        }
     }
 }
