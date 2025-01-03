@@ -488,6 +488,13 @@ public class out_json {
             _VALUE_BD(val, dat, dxf);
         }
     }
+    static void FIELD_RD(Bit_Chain dat, String name, double val, int dxf) throws IOException {
+        if (!bits.bit_isnan(val)) {
+            FIRSTPREFIX(dat);
+            config.streamWriter.write("\"" + _path_field(name) + "\": ");
+            _VALUE_BD(val, dat, dxf);
+        }
+    }
 
     static void _VALUE_RD(double value, Bit_Chain dat, int dxf) throws IOException {
         StringBuilder buffer = new StringBuilder();
@@ -945,6 +952,15 @@ public class out_json {
             case DWG_TYPE_LAYER:
                 error = dwg_spec.dwg_json_LAYER("LAYER", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYER);
                 break;
+            case DWG_TYPE_STYLE:
+                error = dwg_spec.dwg_json_STYLE("STYLE", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_STYLE);
+                break;
+            case DWG_TYPE_APPID:
+                error = dwg_spec.dwg_json_APPID("APPID",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_APPID);
+                break;
+            case DWG_TYPE_LTYPE:
+                error = dwg_spec.dwg_json_LTYPE("LTYPE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {
@@ -952,7 +968,49 @@ public class out_json {
                 }
                 else if((DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value & (error = dwg_json_variable_type(obj.parent,dat,obj))) != 0)
                 {
+                    Dwg_Data dwgObj = obj.parent;
+                    int is_entity = 0;
+                    int i = obj.type - 500;
+                    Dwg_Class klass = null;
+                    int num_bytes = obj.num_unknown_bits / 8;
+                    if((obj.num_unknown_bits & 8)!=0)
+                    {
+                        num_bytes++;
+                    }
+                    if(obj.fixedtype == DWG_OBJECT_TYPE.DWG_TYPE_FREED)
+                    {
+                        out_json.FIELD_TEXT(dat,"name",obj.name,0);
+                        if(!obj.dxfname.isEmpty() && commen.strNE(obj.dxfname.trim(),obj.dxfname.trim()))
+                        {
+                            out_json.FIELD_TEXT(dat,"dxfname",obj.dxfname,0);
+                        }
+                        out_json.FIELD("index",obj.index,dat,0);
+                        out_json.FIELD("type",obj.type,dat,0);
+                        out_json.KEY(dat,"handle");
+                        VALUE_H(obj.handle,dat,5);
+                        out_json.FIELD("size",obj.size,dat,0);
+                        out_json.FIELD("bitsize",obj.bitsize,dat,0);
+                        return DWG_ERROR.DWG_ERR_INVALIDTYPE.value;
+                    }
+                    if(i >= 0 && i < objDwgData.num_classes && obj.fixedtype.value == DWG_OBJECT_TYPE.DWG_TYPE_FREED.value)
+                    {
+                        klass = dwgObj.dwg_class[i];
+                        is_entity = dwg.dwg_class_is_entity(klass);
+                    }
+                    else {
+                        if(obj.fixedtype.value == DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_ENT.value)
+                            is_entity = 1;
+                    }
 
+                    if(is_entity == 0)
+                    {
+                        error |= dwg_spec.dwg_json_UNKNOWN_OBJ("UNKNOWN_OBJ", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_OBJ);
+                        return error;
+                    }
+                    else {
+                        error |= dwg_spec.dwg_json_UNKNOWN_ENT("UNKNOWN_ENT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_ENT);
+                        return error;
+                    }
                 }
 
                 break;
@@ -1217,5 +1275,31 @@ public class out_json {
             out_json.FIELD_HANDLE(hdlDat,"xref",acdbname.xref,5,0);
         }
         commen.RESET_VER(dat);
+    }
+
+    static void VALUE_RL(Bit_Chain dat, int bits_size, int dxf) throws IOException {
+        config.streamWriter.write(_path_field(String.valueOf(bits_size)));
+    }
+
+    static void VALUE_BINARY(Bit_Chain dat, String buf, int len, int dxf) throws IOException {
+        config.streamWriter.write("\"");
+//        if (buf != null && len > 0) {
+//            for (int j = 0; j < len; j++) {
+//                config.streamWriter.write(String.format("%02X", (int) buf.charAt(j)));
+//            }
+//        }
+        config.streamWriter.write(String.valueOf(buf.getBytes("UTF-8")));
+        config.streamWriter.write("\"");
+    }
+
+    static void FIELD_BINARY(Bit_Chain dat,String name, String buf, int len, int dxf) throws IOException {
+        KEY(dat,name);
+        config.streamWriter.write("\"");
+        if (buf != null && len > 0) {
+            for (int j = 0; j < len; j++) {
+                config.streamWriter.write(String.format("%02X", (int) buf.charAt(j)));
+            }
+        }
+        config.streamWriter.write("\"");
     }
 }

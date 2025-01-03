@@ -98,6 +98,54 @@ public class dec_macros {
         return arr;
     }
 
+    static Object[] FIELD_VECTOR_INL(Bit_Chain dat, String type, int size, int dxf)
+    {
+        Object[] arr = new Object[size];
+        if(size > 0)
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                for(int vcount = 0; vcount < size; vcount++)
+                {
+                    switch (type)
+                    {
+                        case "RD":
+                            arr[vcount] = bits.bit_read_RD(dat);
+                            break;
+                        default:
+                            arr[vcount] = null;
+
+                    }
+                }
+            }
+        }
+        return arr;
+    }
+
+    static Object[] FIELD_VECTOR_N(Bit_Chain dat, String type, int size, int dxf)
+    {
+        Object[] arr = new Object[size];
+        if(size > 0)
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                for(int vcount = 0; vcount < size; vcount++)
+                {
+                    switch (type)
+                    {
+                        case "RD":
+                            arr[vcount] = bits.bit_read_RD(dat);
+                            break;
+                        default:
+                            arr[vcount] = null;
+
+                    }
+                }
+            }
+        }
+        return arr;
+    }
+
     static Dwg_Bitcode_TimeRLL FIELD_TIMERLL(Bit_Chain dat, int dxf) {
         Dwg_Bitcode_TimeRLL time = new Dwg_Bitcode_TimeRLL();
         time = bits.bit_read_TIMERLL(dat);
@@ -783,6 +831,42 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.LAYER;
+            case "STYLE":
+                if (objDwgObject.tio.STYLE == null)
+                {
+                    objDwgObject.tio.STYLE = new Dwg_Object_STYLE();
+                    objDwgObject.tio.STYLE.common.setParent(objDwgObject);
+                    return objDwgObject.tio.STYLE;
+                }
+                else
+                    return objDwgObject.tio.STYLE;
+            case "APPID":
+                if (objDwgObject.tio.APPID == null)
+                {
+                    objDwgObject.tio.APPID = new Dwg_Object_APPID();
+                    objDwgObject.tio.APPID.common.setParent(objDwgObject);
+                    return objDwgObject.tio.APPID;
+                }
+                else
+                    return objDwgObject.tio.APPID;
+            case "LTYPE":
+                if (objDwgObject.tio.LTYPE == null)
+                {
+                    objDwgObject.tio.LTYPE = new Dwg_Object_LTYPE();
+                    objDwgObject.tio.LTYPE.common.setParent(objDwgObject);
+                    return objDwgObject.tio.LTYPE;
+                }
+                else
+                    return objDwgObject.tio.LTYPE;
+            case "UNKNOWN_OBJ":
+                if (objDwgObject.tio.UNKNOWN_OBJ == null)
+                {
+                    objDwgObject.tio.UNKNOWN_OBJ = new Dwg_Object_UNKNOWN_OBJ();
+                    objDwgObject.tio.UNKNOWN_OBJ.setParent(objDwgObject);
+                    return objDwgObject.tio.UNKNOWN_OBJ;
+                }
+                else
+                    return objDwgObject.tio.UNKNOWN_OBJ;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -1069,5 +1153,18 @@ public class dec_macros {
 
     static String FIELD_TFv(Bit_Chain dat, int size, int dxf) {
         return bits.bit_read_TF(dat,size);
+    }
+
+    public static double FIELD_RD(Bit_Chain dat, String type, int dxf) {
+        return bits.bit_read_RD(dat);
+    }
+
+    public static double SUB_FIELD_BD(Bit_Chain dat, String type, int dxf)
+    {
+        return FIELD_BD(dat,type,dxf);
+    }
+
+    public static int SUB_FIELD_BS(Bit_Chain dat, String type, int dxf) {
+        return (int)FIELDG(dat,type,dxf);
     }
 }

@@ -31,6 +31,10 @@ public class Main {
                 NewFile(path);
 
                 specs.DECODER = true;
+                macros.IS_DECODER = true;
+                macros.IS_JSON = false;
+                macros.IS_ENCODER = false;
+                specs.DECODER_OR_ENCODER = true;
                 error = dwg.dwg_read_file(dwgFilePath,objDwgData);
 
                 if(!config.outFilePath.isEmpty())
@@ -52,6 +56,9 @@ public class Main {
                     BufferedWriter writer = new BufferedWriter(new FileWriter(path, true));
                     config.streamWriter = writer;
                     specs.DECODER = false;
+                    macros.IS_DECODER = false;
+                    macros.IS_ENCODER = false;
+                    specs.DECODER_OR_ENCODER = false;
                     specs.JSON = true;
                     macros.IS_JSON = true;
                     error = out_json.dwg_write_json(dat, objDwgData);

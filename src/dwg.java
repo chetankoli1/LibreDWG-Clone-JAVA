@@ -1162,6 +1162,10 @@ class Dwg_Object_Object
         public Dwg_Object_DICTIONARYWDFLT DICTIONARYWDFLT;
         public Dwg_Object_PLACEHOLDER PLACEHOLDER;
         public Dwg_Object_LAYER LAYER;
+        public Dwg_Object_STYLE STYLE;
+        public Dwg_Object_APPID APPID;
+        public Dwg_Object_LTYPE LTYPE;
+        public Dwg_Object_UNKNOWN_OBJ UNKNOWN_OBJ;
 
     }
     Tio tio = new Tio();
@@ -1877,6 +1881,63 @@ class Dwg_Object_LAYER extends Dwg_Object_With_COMMON_TABLE_FIELDS {
     public Dwg_Object_Ref material;
     public Dwg_Object_Ref ltype;
     public Dwg_Object_Ref visualstyle;
+}
+
+class Dwg_Object_UNKNOWN_OBJ implements IParent {
+    public Dwg_Object_Object parent;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+}
+
+class Dwg_Object_STYLE extends Dwg_Object_With_COMMON_TABLE_FIELDS {
+    public char is_shape;
+    public char is_vertical;
+    public double text_size;
+    public double width_factor;
+    public double oblique_angle;
+    public char generation;
+    public double last_height;
+    public String font_file;
+    public String bigfont_file;
+}
+
+class Dwg_Object_APPID extends Dwg_Object_With_COMMON_TABLE_FIELDS {
+    public char unknown;
+}
+
+class Dwg_Object_LTYPE extends Dwg_Object_With_COMMON_TABLE_FIELDS{
+    public String description;
+    public double pattern_len;
+    public char alignment;
+    public char numdashes;
+    public Dwg_LTYPE_dash[] dashes;
+    public double[] dashes_r11 = new double[12];
+    public char has_string_area;
+    public String string_area;
+    public char unknown_r11;
+    public char unknown_r13;
+}
+
+class Dwg_LTYPE_dash {
+    public Dwg_Object_Object parent;
+    public double length;
+    public int complex_shapecode;
+    public Dwg_Object_Ref style;
+    public double x_offset;
+    public double y_offset;
+    public double scale;
+    public double rotation;
+    public int shape_flag;
+
+    public String text;
 }
 
 class Dwg_AuxHeader

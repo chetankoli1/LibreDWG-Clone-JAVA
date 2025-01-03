@@ -843,7 +843,15 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_LAYER:
                 error = dwg_spec.dwg_decode_LAYER("LAYER", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYER);
                 break;
-
+            case DWG_OBJECT_TYPE.DWG_TYPE_STYLE:
+                error = dwg_spec.dwg_decode_STYLE("STYLE", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_STYLE);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_APPID:
+                error = dwg_spec.dwg_decode_APPID("APPID",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_APPID);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_LTYPE:
+                error = dwg_spec.dwg_decode_LTYPE("LTYPE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {
@@ -867,12 +875,12 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                         return error |= DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
                     }
 
-                    if(is_entity == 0)
+                    if(is_entity != 0)
                     {
-                        //error |= dwg_decode_UNKNOWN_ENT();
+                        error |= dwg_spec.dwg_decode_UNKNOWN_ENT("UNKNOWN_ENT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_ENT);
                     }
                     else{
-                       // error |= dwg_decode_UNKNOWN_OBJ();
+                        error |= dwg_spec.dwg_decode_UNKNOWN_OBJ("UNKNOWN_OBJ", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_UNKNOWN_OBJ);
                     }
                     if(dat == null)
                     {

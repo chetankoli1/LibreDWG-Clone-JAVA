@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 public class dwg_spec {
     static int dwg_decode_BLOCK_CONTROL(String name, Dwg_Object obj, Bit_Chain dat,
@@ -1101,5 +1103,266 @@ public class dwg_spec {
         return error;
     }
 
+    static int dwg_decode_UNKNOWN_OBJ(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                    DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        specs.HANDLE_UNKNOWN_BITS(dat,obj,objDwgData);
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
 
+    static int dwg_json_UNKNOWN_OBJ(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                    DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        specs.HANDLE_UNKNOWN_BITS(dat,obj,objDwgData);
+        return error;
+    }
+
+    static int dwg_json_UNKNOWN_ENT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                    DWG_OBJECT_TYPE type) throws IOException {
+        return 0;
+    }
+
+    public static int dwg_decode_UNKNOWN_ENT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                             DWG_OBJECT_TYPE type)
+    {
+        return 0;
+    }
+
+    static int dwg_decode_STYLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type) {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        Dwg_Object_STYLE style = obj.tio.object.tio.STYLE;
+
+        style.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            style.is_shape = dec_macros.FIELD_B(dat,"B",0);
+            style.is_vertical = dec_macros.FIELD_B(dat,"B",0);
+            if(specs.DECODER_OR_ENCODER)
+            {
+                style.common.flag |= (style.is_vertical != 0 ? 4 : 0) +
+                        (style.is_shape != 0 ? 1 : 0);
+            }
+        }
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            style.text_size = dec_macros.FIELD_RD(dat,"RD",40);
+            style.width_factor = dec_macros.FIELD_RD(dat,"RD",41);
+            style.oblique_angle = dec_macros.FIELD_RD(dat,"RD",50);
+            style.generation = dec_macros.FIELD_RC(dat,"RC",71);
+            style.last_height = dec_macros.FIELD_RD(dat,"RD",42);
+            style.font_file = dec_macros.FIELD_TFv(dat,64, 3);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2_4,dat))
+                style.bigfont_file = dec_macros.FIELD_TFv(dat,64,4);
+            if(specs.DECODER)
+            {
+                style.is_shape = (char)(style.common.flag & 4);
+                style.is_vertical = (char)(style.common.flag & 1);
+            }
+        }
+        else {
+            style.text_size = dec_macros.FIELD_BD(dat,"BD",40);
+            style.width_factor = dec_macros.FIELD_BD(dat,"BD",41);
+            style.oblique_angle = dec_macros.FIELD_BD(dat,"BD",50);
+            style.generation = dec_macros.FIELD_RC(dat,"RC",71);
+            style.last_height = dec_macros.FIELD_BD(dat,"BD",42);
+            style.font_file = dec_macros.FIELD_T(dat,obj,"T",3);
+            style.bigfont_file = dec_macros.FIELD_T(dat,obj,"T",4);
+        }
+        dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_STYLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                              DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        Dwg_Object_STYLE style = obj.tio.object.tio.STYLE;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,style.common);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_B(dat,"is_shape",style.is_shape,0);
+            out_json.FIELD_B(dat,"is_vertical",style.is_vertical,0);
+            if(specs.DECODER_OR_ENCODER)
+            {
+                style.common.flag |= (style.is_vertical != 0 ? 4 : 0) +
+                        (style.is_shape != 0 ? 1 : 0);
+            }
+        }
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_RD(dat,"text_size",style.text_size,40);
+            out_json.FIELD_RD(dat,"width_factor",style.width_factor,41);
+            out_json.FIELD_RD(dat,"oblique_angle",style.oblique_angle,50);
+            out_json.FIELD_RC("generation",style.generation,dat,71);
+            out_json.FIELD_RD(dat,"last_height",style.last_height,50);
+            out_json.FIELD_TFv(dat,"font_file",style.font_file,3);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2_4,dat))
+                out_json.FIELD_TFv(dat,"bigfont_file",style.bigfont_file,3);
+            if(specs.DECODER)
+            {
+                style.is_shape = (char)(style.common.flag & 4);
+                style.is_vertical = (char)(style.common.flag & 1);
+            }
+        }
+        else {
+            out_json.FIELD_BD(dat,"text_size",style.text_size,40);
+            out_json.FIELD_BD(dat,"width_factor",style.width_factor,41);
+            out_json.FIELD_BD(dat,"oblique_angle",style.oblique_angle,50);
+            out_json.FIELD_RC("generation",style.generation,dat,71);
+            out_json.FIELD_BD(dat,"last_height",style.last_height,50);
+            out_json.FIELD_T(dat,"font_file",style.font_file,3);
+            out_json.FIELD_T(dat,"bigfont_file",style.bigfont_file,4);
+        }
+        return error;
+    }
+    static int dwg_decode_APPID(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_APPID appid = obj.tio.object.tio.APPID;
+
+        appid.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            if(specs.DXF)
+            {
+                appid.unknown = (char)dec_macros.FIELD_RS(dat,"RS",71);
+            }
+            else {
+                appid.unknown = dec_macros.FIELD_RC(dat,"RC",71);
+            }
+            dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        }
+
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_APPID(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_APPID appid = obj.tio.object.tio.APPID;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,appid.common);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            if(specs.DXF)
+            {
+                out_json.FIELD_RS(dat,appid.unknown,"unknown",71);
+            }
+            else {
+                out_json.FIELD_RC("unknown",appid.unknown,dat,71);
+            }
+        }
+
+        return error;
+    }
+
+    static int dwg_decode_LTYPE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LTYPE ltype = obj.tio.object.tio.LTYPE;
+
+        ltype.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            ltype.description = dec_macros.FIELD_TFv(dat,48,3);
+        }
+        else {
+            ltype.description = dec_macros.FIELD_T(dat,obj,"T",3);
+            ltype.pattern_len = dec_macros.FIELD_BD(dat,"BD",0);
+        }
+        ltype.alignment = dec_macros.FIELD_RC(dat,"RC",72);
+        ltype.numdashes = (char)dec_macros.FIELD_RCu(dat,73);
+        if(specs.DXF)
+        {
+            ltype.pattern_len = dec_macros.FIELD_BD(dat,"BD",40);
+        }
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            ltype.pattern_len = dec_macros.FIELD_RD(dat,"RD",40);
+            if(macros.IS_JSON){
+                ltype.dashes_r11 = Arrays.stream(dec_macros.FIELD_VECTOR_INL(dat,"RD",12,49))
+                        .mapToDouble(_obj -> (Double) _obj).toArray();
+            }else{
+                ltype.dashes_r11 = Arrays.stream(dec_macros.FIELD_VECTOR_N(dat,"RD",12,49))
+                        .mapToDouble(_obj -> (Double) _obj).toArray();
+            }
+            if(commen.PRE(DWG_VERSION_TYPE.R_14,dat))
+            {
+                if(obj.size > 187)
+                {
+                    ltype.unknown_r11 = dec_macros.FIELD_RC(dat,"RC",0);
+                }
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            if(ltype.dashes == null){
+                ltype.dashes = new Dwg_LTYPE_dash[(int)ltype.numdashes];
+            }
+
+            for(int i = 0; i < (int)ltype.numdashes; i++)
+            {
+                Dwg_LTYPE_dash dash = ltype.dashes[i];
+                dash.length = dec_macros.SUB_FIELD_BD(dat,"BD",49);
+                if(specs.DXF)
+                {
+                    dash.shape_flag = dec_macros.SUB_FIELD_BS(dat,"BS",74);
+                    if(dash.shape_flag != 0)
+                    {
+                        dash.complex_shapecode = dec_macros.SUB_FIELD_BS(dat,"BS",75);
+                    }
+                }
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        }
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_LTYPE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LTYPE ltype = obj.tio.object.tio.LTYPE;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,ltype.common);
+
+
+        return error;
+    }
 }

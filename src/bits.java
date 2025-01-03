@@ -67,6 +67,7 @@ enum DWG_VERSION_TYPE {
 
 public class bits {
 
+    private static final int UINT_MAX =  0xffffffff;
     private static int loglevel;
 
     public static char bit_read_RC(Bit_Chain dat) {
@@ -1095,6 +1096,39 @@ public class bits {
             dest = new String(temp);
         }
         return dest;
+    }
+
+    /** Read fixed text with zero-termination.
+     *  After usage, the allocated memory must be properly freed.
+     *  preR11
+     */
+    static String bit_read_bits(Bit_Chain dat, long bits) {
+        String strBits = "";
+        int bytes = (int)(bits / 8) & UINT_MAX;
+        int rest = (int)(bits  % 8);
+        strBits = bit_read_fixed(dat,bytes);
+        if(strBits.isEmpty())
+        {
+            return "";
+        }
+
+        if(rest != 0)
+        {
+            dat.size++;
+            char[] arr = new char[bytes + (rest > 0 ? 1 : 0)];
+
+            for(int i = 0; i < rest; i++)
+            {
+                char last = (char)bit_read_B(dat);
+                arr[bytes] |= last << i;
+            }
+            dat.size--;
+
+            String arrs = new String(arr);
+            strBits.concat(arrs).trim();
+        }
+
+        return strBits;
     }
 }
 class Bit_Chain {
