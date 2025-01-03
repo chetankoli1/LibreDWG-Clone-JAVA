@@ -1161,6 +1161,8 @@ class Dwg_Object_Object
         public Dwg_Object_DICTIONARY DICTIONARY;
         public Dwg_Object_DICTIONARYWDFLT DICTIONARYWDFLT;
         public Dwg_Object_PLACEHOLDER PLACEHOLDER;
+        public Dwg_Object_LAYER LAYER;
+
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -1862,6 +1864,20 @@ class Dwg_Object_PLACEHOLDER implements IParent {
         this.parent = parent;
     }
 }
+class Dwg_Object_LAYER extends Dwg_Object_With_COMMON_TABLE_FIELDS {
+    public int flag0;
+    public char frozen;
+    public char on;
+    public char frozen_in_new;
+    public char locked;
+    public char plotflag;
+    public char linewt;
+    public Dwg_Color color = new Dwg_Color();
+    public Dwg_Object_Ref plotstyle;
+    public Dwg_Object_Ref material;
+    public Dwg_Object_Ref ltype;
+    public Dwg_Object_Ref visualstyle;
+}
 
 class Dwg_AuxHeader
 {
@@ -2009,13 +2025,43 @@ class Dwg_Object_With_COMMON_TABLE_CONTROL_FIELDS implements ICommon {
     }
 }
 
+class Dwg_Object_With_COMMON_TABLE_FIELDS implements ICommon {
+    public COMMON_TABLE_FIELDS common = new COMMON_TABLE_FIELDS();
+
+    @Override
+    public IParent getCommon() {
+        return common;
+    }
+}
+
 class COMMON_TABLE_CONTROL_FIELDS implements IParent
 {
     public Dwg_Object_Object parent;
     public int num_entries;
-    public Dwg_Object_Ref[] entres;
+    public Dwg_Object_Ref[] entries;
     public int objid;
     public int flags_r11;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+}
+
+class COMMON_TABLE_FIELDS implements IParent {
+    public Dwg_Object_Object parent;
+    public int flag;
+    public String name;
+    public short used;
+    public char is_xref_ref;
+    public int is_xref_resolved;
+    public char is_xref_dep;
+    public Dwg_Object_Ref xref;
 
     @Override
     public Dwg_Object_Object getParent() {

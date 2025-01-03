@@ -23,10 +23,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( blcckcontroll.common.entres == null){
-            blcckcontroll.common.entres = new Dwg_Object_Ref[ blcckcontroll.common.num_entries];
+        if( blcckcontroll.common.entries == null){
+            blcckcontroll.common.entries = new Dwg_Object_Ref[ blcckcontroll.common.num_entries];
         }
-        blcckcontroll.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,blcckcontroll.common.num_entries,2,obj,objDwgData,0);
+        blcckcontroll.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,blcckcontroll.common.num_entries,2,obj,objDwgData,0);
         blcckcontroll.model_space = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
@@ -55,7 +55,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,blcckcontroll.common.entres,"entries",blcckcontroll.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,blcckcontroll.common.entries,"entries",blcckcontroll.common.num_entries,2,0);
         out_json.FIELD_HANDLE(dat,"model_space",blcckcontroll.model_space,3,0);
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
@@ -88,10 +88,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( layerControl.common.entres == null){
-            layerControl.common.entres = new Dwg_Object_Ref[ layerControl.common.num_entries];
+        if( layerControl.common.entries == null){
+            layerControl.common.entries = new Dwg_Object_Ref[ layerControl.common.num_entries];
         }
-        layerControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,layerControl.common.num_entries,2,obj,objDwgData,0);
+        layerControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,layerControl.common.num_entries,2,obj,objDwgData,0);
         return error;
     }
 
@@ -115,7 +115,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,layerControl.common.entres,"entries",layerControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,layerControl.common.entries,"entries",layerControl.common.num_entries,2,0);
         return error;
     }
 
@@ -143,10 +143,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( styleControl.common.entres == null){
-            styleControl.common.entres = new Dwg_Object_Ref[ styleControl.common.num_entries];
+        if( styleControl.common.entries == null){
+            styleControl.common.entries = new Dwg_Object_Ref[ styleControl.common.num_entries];
         }
-        styleControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,styleControl.common.num_entries,2,obj,objDwgData,0);
+        styleControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,styleControl.common.num_entries,2,obj,objDwgData,0);
         return error;
     }
 
@@ -170,7 +170,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,styleControl.common.entres,"entries",styleControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,styleControl.common.entries,"entries",styleControl.common.num_entries,2,0);
         return error;
     }
 
@@ -196,10 +196,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( ltypeControl.common.entres == null){
-            ltypeControl.common.entres = new Dwg_Object_Ref[ ltypeControl.common.num_entries];
+        if( ltypeControl.common.entries == null){
+            ltypeControl.common.entries = new Dwg_Object_Ref[ ltypeControl.common.num_entries];
         }
-        ltypeControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,ltypeControl.common.num_entries,2,obj,objDwgData,0);
+        ltypeControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,ltypeControl.common.num_entries,2,obj,objDwgData,0);
 
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
@@ -229,7 +229,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,ltypeControl.common.entres,"entries",ltypeControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,ltypeControl.common.entries,"entries",ltypeControl.common.num_entries,2,0);
 
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
@@ -263,10 +263,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( viewControl.common.entres == null){
-            viewControl.common.entres = new Dwg_Object_Ref[ viewControl.common.num_entries];
+        if( viewControl.common.entries == null){
+            viewControl.common.entries = new Dwg_Object_Ref[ viewControl.common.num_entries];
         }
-        viewControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,viewControl.common.num_entries,2,obj,objDwgData,0);
+        viewControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,viewControl.common.num_entries,2,obj,objDwgData,0);
         return error;
     }
 
@@ -290,7 +290,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,viewControl.common.entres,"entries",viewControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,viewControl.common.entries,"entries",viewControl.common.num_entries,2,0);
         return error;
     }
     static int dwg_decode_UCS_CONTROL(String name, Dwg_Object obj, Bit_Chain dat,
@@ -317,10 +317,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( ucsControl.common.entres == null){
-            ucsControl.common.entres = new Dwg_Object_Ref[ ucsControl.common.num_entries];
+        if( ucsControl.common.entries == null){
+            ucsControl.common.entries = new Dwg_Object_Ref[ ucsControl.common.num_entries];
         }
-        ucsControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,ucsControl.common.num_entries,2,obj,objDwgData,0);
+        ucsControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,ucsControl.common.num_entries,2,obj,objDwgData,0);
         return error;
     }
 
@@ -344,7 +344,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,ucsControl.common.entres,"entries",ucsControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,ucsControl.common.entries,"entries",ucsControl.common.num_entries,2,0);
         return error;
     }
 
@@ -370,10 +370,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( vportControl.common.entres == null){
-            vportControl.common.entres = new Dwg_Object_Ref[ vportControl.common.num_entries];
+        if( vportControl.common.entries == null){
+            vportControl.common.entries = new Dwg_Object_Ref[ vportControl.common.num_entries];
         }
-        vportControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,vportControl.common.num_entries,2,obj,objDwgData,0);
+        vportControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,vportControl.common.num_entries,2,obj,objDwgData,0);
         return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
     }
 
@@ -397,7 +397,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,vportControl.common.entres,"entries",vportControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,vportControl.common.entries,"entries",vportControl.common.num_entries,2,0);
         return error;
     }
 
@@ -423,10 +423,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( appidControl.common.entres == null){
-            appidControl.common.entres = new Dwg_Object_Ref[ appidControl.common.num_entries];
+        if( appidControl.common.entries == null){
+            appidControl.common.entries = new Dwg_Object_Ref[ appidControl.common.num_entries];
         }
-        appidControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,appidControl.common.num_entries,2,obj,objDwgData,0);
+        appidControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,appidControl.common.num_entries,2,obj,objDwgData,0);
         return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
     }
 
@@ -450,7 +450,7 @@ public class dwg_spec {
         }
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        out_json.HANDLE_VECTOR(dat,appidControl.common.entres,"entries",appidControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,appidControl.common.entries,"entries",appidControl.common.num_entries,2,0);
         return error;
     }
 
@@ -481,10 +481,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( dimstyleControl.common.entres == null){
-            dimstyleControl.common.entres = new Dwg_Object_Ref[ dimstyleControl.common.num_entries];
+        if( dimstyleControl.common.entries == null){
+            dimstyleControl.common.entries = new Dwg_Object_Ref[ dimstyleControl.common.num_entries];
         }
-        dimstyleControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,dimstyleControl.common.num_entries,2,obj,objDwgData,0);
+        dimstyleControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,dimstyleControl.common.num_entries,2,obj,objDwgData,0);
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
             dimstyleControl.morehandles = dec_macros.HANDLE_VECTOR(hdl_dat,dimstyleControl.num_morehandles,5,obj,objDwgData,71);
@@ -518,7 +518,7 @@ public class dwg_spec {
             out_json.FIELD_RCu(dat,"num_morehandles",dimstyleControl.num_morehandles,0);
         }
 
-        out_json.HANDLE_VECTOR(dat,dimstyleControl.common.entres,"entries",dimstyleControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,dimstyleControl.common.entries,"entries",dimstyleControl.common.num_entries,2,0);
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
             out_json.HANDLE_VECTOR(dat,dimstyleControl.morehandles,"morehandles",dimstyleControl.num_morehandles,5,0);
@@ -547,10 +547,10 @@ public class dwg_spec {
         obj.tio.object.ownerhandle = new Dwg_Object_Ref();
         dec_macros.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
 
-        if( vxControl.common.entres == null){
-            vxControl.common.entres = new Dwg_Object_Ref[ vxControl.common.num_entries];
+        if( vxControl.common.entries == null){
+            vxControl.common.entries = new Dwg_Object_Ref[ vxControl.common.num_entries];
         }
-        vxControl.common.entres = dec_macros.HANDLE_VECTOR(hdl_dat,vxControl.common.num_entries,2,obj,objDwgData,0);
+        vxControl.common.entries = dec_macros.HANDLE_VECTOR(hdl_dat,vxControl.common.num_entries,2,obj,objDwgData,0);
 
         return dec_macros.DWG_OBJECT_END(dat, hdl_dat, str_dat, obj, error);
     }
@@ -577,7 +577,7 @@ public class dwg_spec {
         out_json.CONTROL_HANDLE_STREAM(obj, hdl_dat, dat, objDwgData,obj.tio.object.ownerhandle);
         out_json.SUBCLASS(dat,"AcDbVXTable");
 
-        out_json.HANDLE_VECTOR(dat,vxControl.common.entres,"entries",vxControl.common.num_entries,2,0);
+        out_json.HANDLE_VECTOR(dat,vxControl.common.entries,"entries",vxControl.common.num_entries,2,0);
         return error;
     }
 
@@ -815,4 +815,291 @@ public class dwg_spec {
 
         return error;
     }
+
+    static int dwg_decode_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat,
+                                 Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LAYER layer = obj.tio.object.tio.LAYER;
+
+        return error;
+    }
+
+    static int dwg_decode_LAYER(String name, Dwg_Object obj, Bit_Chain dat,
+                                 Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LAYER layer = obj.tio.object.tio.LAYER;
+
+        layer.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            layer.color = dec_macros.FIELD_CMC(dat,str_dat,62);
+
+            layer.ltype = new Dwg_Object_Ref();
+            layer.ltype = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,2,6);
+
+            if(obj.size == 38){
+                layer.flag0 = (char)dec_macros.FIELD_CAST(dat,"BS",0);
+            }
+            if(specs.DECODER)
+            {
+                layer.on = layer.color.index >= 0 ? '1' : 0;
+                layer.frozen = (char)(layer.common.flag & 1);
+                layer.frozen_in_new = (char)(layer.common.flag & 2);
+                layer.locked = (char)(layer.common.flag & 4);
+            }
+        }
+
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            layer.frozen = dec_macros.FIELD_B(dat,"B",0);
+            layer.on = dec_macros.FIELD_B(dat,"B",0);
+            layer.frozen_in_new = dec_macros.FIELD_B(dat,"B",0);
+            layer.locked = dec_macros.FIELD_B(dat,"B",0);
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            int flag0 = layer.flag0;
+            layer.flag0 = dec_macros.FIELD_BSx(dat,"BS",0);
+            flag0 = layer.flag0;
+
+            layer.frozen = (char) (flag0 & 1);
+            layer.on = (char) ((flag0 & 2) == 0 ? 1 : 0);
+            layer.frozen_in_new = (char) ((flag0 & 4) != 0 ? 1 : 0);
+            layer.locked = (char) ((flag0 & 8) != 0 ? 1 : 0);
+            layer.plotflag = (char) ((flag0 & 16) != 0 ? 1 : 0);
+            layer.linewt = (char) ((flag0 & 0x03E0) >> 5);
+
+            layer.common.flag |= (layer.frozen) |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    (layer.common.is_xref_ref << 3) |
+                    ((layer.common.is_xref_resolved != 0 ? 1 : 0) << 4) |
+                    (layer.common.is_xref_dep << 5);
+
+            if(specs.JSON)
+            {
+                layer.linewt = dec_macros.FIELD_RC(dat,"RC", 370);
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            layer.color = dec_macros.FIELD_CMC(dat,str_dat,0);
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            // For DWG
+            layer.flag0 |= layer.frozen |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    ((layer.color.index < 0 ? 32 : 0));
+            // For DXF
+            layer.common.flag |= layer.frozen |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    ((layer.color.index < 0 ? 32 : 0));
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            layer.plotstyle = new Dwg_Object_Ref();
+            layer.plotstyle = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            layer.material = new Dwg_Object_Ref();
+            layer.material = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            layer.ltype = new Dwg_Object_Ref();
+            layer.ltype = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,6);
+        }
+        if(specs.DXF)
+        {
+            /*
+            * SINCE (R_2000b) {
+      if (_obj->name &&
+          (bit_eq_T (dat, _obj->name, "Defpoints") ||
+           bit_eq_T (dat, _obj->name, "DEFPOINTS")))
+      {
+        _obj->plotflag = 0;
+        FIELD_B (plotflag, 290);
+      } else {
+        FIELD_B0 (plotflag, 290);
+      }
+    }
+    SINCE (R_13b1) {
+      int lw = dxf_cvt_lweight (FIELD_VALUE (linewt));
+      KEY (linewt); VALUE_BSd (lw, 370);
+    }
+    SINCE (R_2000b) {
+      FIELD_HANDLE (plotstyle, 5, 390);
+    }
+    SINCE (R_2007a) {
+      DXF { FIELD_HANDLE (material, 5, 0); } // yet unstable class
+      else {
+        FIELD_HANDLE (material, 5, 347);
+      }
+    }
+  }
+  SINCE (R_2013b) {
+    FIELD_HANDLE (visualstyle, 5, 348);
+  }
+            * */
+        }
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_LAYER(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LAYER layer = obj.tio.object.tio.LAYER;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,layer.common);
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_CMC(dat,"color",layer.color,62);
+            out_json.FIELD_HANDLE(hdl_dat,"ltype",layer.ltype,2,6);
+
+            if(obj.size == 38){
+                out_json.FIELD_CAST(dat,layer.flag0,"flag0","BS",0);
+
+            }
+            if(specs.DECODER)
+            {
+                layer.on = layer.color.index >= 0 ? '1' : 0;
+                layer.frozen = (char)(layer.common.flag & 1);
+                layer.frozen_in_new = (char)(layer.common.flag & 2);
+                layer.locked = (char)(layer.common.flag & 4);
+            }
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            out_json.FIELD_B(dat,"frozen",layer.frozen,0);
+            out_json.FIELD_B(dat,"on",layer.on,0);
+            out_json.FIELD_B(dat,"frozen_in_new",layer.frozen_in_new,0);
+            out_json.FIELD_B(dat,"locked",layer.locked,0);
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            int flag0 = layer.flag0;
+            out_json.FIELD_BSx(dat,"flag0",(short)flag0,0);
+
+            layer.frozen = (char) (flag0 & 1);
+            layer.on = (char) ((flag0 & 2) == 0 ? 1 : 0);
+            layer.frozen_in_new = (char) ((flag0 & 4) != 0 ? 1 : 0);
+            layer.locked = (char) ((flag0 & 8) != 0 ? 1 : 0);
+            layer.plotflag = (char) ((flag0 & 16) != 0 ? 1 : 0);
+            layer.linewt = (char) ((flag0 & 0x03E0) >> 5);
+
+            layer.common.flag |= (layer.frozen) |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    (layer.common.is_xref_ref << 3) |
+                    ((layer.common.is_xref_resolved != 0 ? 1 : 0) << 4) |
+                    (layer.common.is_xref_dep << 5);
+
+            if(specs.JSON)
+            {
+                out_json.FIELD_RC("linewt",layer.linewt,dat,370);
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_CMC(dat,"color",layer.color,62);
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            // For DWG
+            layer.flag0 |= layer.frozen |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    ((layer.color.index < 0 ? 32 : 0));
+            // For DXF
+            layer.common.flag |= layer.frozen |
+                    (layer.frozen_in_new << 1) |
+                    (layer.locked << 2) |
+                    ((layer.color.index < 0 ? 32 : 0));
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            //dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"plotstyle",layer.plotstyle,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"material",layer.material,5,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"ltype",layer.ltype,5,6);
+        }
+        if(specs.DXF)
+        {
+            /*
+            * SINCE (R_2000b) {
+      if (_obj->name &&
+          (bit_eq_T (dat, _obj->name, "Defpoints") ||
+           bit_eq_T (dat, _obj->name, "DEFPOINTS")))
+      {
+        _obj->plotflag = 0;
+        FIELD_B (plotflag, 290);
+      } else {
+        FIELD_B0 (plotflag, 290);
+      }
+    }
+    SINCE (R_13b1) {
+      int lw = dxf_cvt_lweight (FIELD_VALUE (linewt));
+      KEY (linewt); VALUE_BSd (lw, 370);
+    }
+    SINCE (R_2000b) {
+      FIELD_HANDLE (plotstyle, 5, 390);
+    }
+    SINCE (R_2007a) {
+      DXF { FIELD_HANDLE (material, 5, 0); } // yet unstable class
+      else {
+        FIELD_HANDLE (material, 5, 347);
+      }
+    }
+  }
+  SINCE (R_2013b) {
+    FIELD_HANDLE (visualstyle, 5, 348);
+  }
+            * */
+        }
+        return error;
+    }
+
+
 }

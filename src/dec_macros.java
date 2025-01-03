@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class dec_macros {
-    private static final int REFS_PER_REALLOC = 16384;
-    private static final long MAX_MEM_ALLOC =  0x10000000000L;
+    static final int REFS_PER_REALLOC = 16384;
+    static final long MAX_MEM_ALLOC =  0x10000000000L;
     static int loglevel =  0;
 
     static char FIELD_RC(Bit_Chain dat, String type, int dxf)
@@ -506,41 +506,10 @@ public class dec_macros {
           //  _VECTOR_CHKCOUNT_STATIC()
         }
         String nam = "";
-        nam = bit_read_fixed(dat,len);
+        nam = bits.bit_read_fixed(dat,len);
         return nam;
     }
 
-    static String bit_read_fixed(Bit_Chain dat, long len) {
-        String dest = "";
-        if(dat._byte >= MAX_MEM_ALLOC || len >= MAX_MEM_ALLOC ||
-                (dat.bit != 0 ? (((dat._byte + len) * 8) +
-                        dat.bit > dat.size * 8) : (dat._byte + len > dat.size)))
-        {
-            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
-            if (len < dat.size - dat._byte) {
-                char[] tempDest = new char[(int) len];
-                for (int i = 0; i < len; i++) {
-                    tempDest[i] = 0;
-                }
-                dest = new String(tempDest);
-            }
-        }
-        if(dat.bit == 0)
-        {
-            assert dat._byte + len <= dat.size;
-            System.arraycopy(dat.chain, (int) dat._byte, dest, 0, (int) len);
-            dat._byte += len;
-        }
-        else{
-            char[] temp = new char[11];
-            for(long i = 0; i < len; i++)
-            {
-               temp[(int)i] = bits.bit_read_RC(dat);
-            }
-            dest = new String(temp);
-        }
-        return dest;
-    }
 
     static int FIELD_BSx(Bit_Chain dat, String type, int dxf) {
         return (int)FIELD_CAST(dat,"BS",dxf);
@@ -805,6 +774,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.PLACEHOLDER;
+            case "LAYER":
+                if (objDwgObject.tio.LAYER == null)
+                {
+                    objDwgObject.tio.LAYER = new Dwg_Object_LAYER();
+                    objDwgObject.tio.LAYER.common.setParent(objDwgObject);
+                    return objDwgObject.tio.LAYER;
+                }
+                else
+                    return objDwgObject.tio.LAYER;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -944,6 +922,9 @@ public class dec_macros {
     }
 
 
+    /**
+     * Ending Then OBJECT, ENTITY AND TABLE when read are completed.
+    */
     static int DWG_OBJECT_END(Bit_Chain dat, Bit_Chain hdl_dat, Bit_Chain str_dat,
                               Dwg_Object obj, int error) {
         return DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
@@ -1028,5 +1009,65 @@ public class dec_macros {
         {
             bits.bit_set_position(dat,obj.hdlpos);
         }
+    }
+
+    static COMMON_TABLE_FIELDS COMMON_TABLE_FLAGS_READ(String name,Bit_Chain dat, Bit_Chain hdlDat, Bit_Chain strDat,
+                                                               Dwg_Object obj, Dwg_Data objDwgData)
+    {
+        COMMON_TABLE_FIELDS acdbname = new COMMON_TABLE_FIELDS();
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            if(name.trim().equals("LAYER"))
+            {
+                acdbname.flag = (int)dec_macros.FIELD_CAST(dat,"RS",70);
+            }
+            else {
+                acdbname.flag = (int)dec_macros.FIELD_CAST(dat,"RC",70);
+            }
+
+            acdbname.name = dec_macros.FIELD_TFv(dat,32,2);
+            if(commen.VERSION(DWG_VERSION_TYPE.R_11,dat))
+                acdbname.used = (short) dec_macros.FIELD_RS(dat,"RS",0);
+        }
+        else {
+            acdbname.name = dec_macros.FIELD_T(dat, obj,"T",2);
+            if(commen.UNTIL(DWG_VERSION_TYPE.R_2004,dat))
+            {
+                acdbname.is_xref_ref = dec_macros.FIELD_B(dat,"B",0);
+                acdbname.is_xref_resolved = dec_macros.FIELD_BS(dat,"BS",0);
+                acdbname.is_xref_dep = dec_macros.FIELD_B(dat,"B",0);
+            }
+            else{
+                acdbname.is_xref_ref = 1;
+                acdbname.is_xref_resolved = dec_macros.FIELD_BS(dat,"BS",0);
+                if(acdbname.is_xref_resolved == 256)
+                    acdbname.is_xref_dep = 1;
+            }
+            acdbname.xref = new Dwg_Object_Ref();
+            acdbname.xref = dec_macros.FIELD_HANDLE(hdlDat,obj,objDwgData,5,0);
+            acdbname.flag = acdbname.is_xref_dep << 4 | acdbname.is_xref_ref << 6;
+        }
+        commen.RESET_VER(dat);
+        return acdbname;
+    }
+
+
+
+    static String FIELD_T(Bit_Chain dat, Dwg_Object obj, String type, int dxf) {
+        if(dat.from_version.ordinal() < DWG_VERSION_TYPE.R_2007.ordinal())
+        {
+            return bits.bit_read_TV(dat);
+        }
+        else {
+            if(obj == null || obj.has_strings != 0)
+            {
+                return bits.bit_read_TU(dat);
+            }
+        }
+        return null;
+    }
+
+    static String FIELD_TFv(Bit_Chain dat, int size, int dxf) {
+        return bits.bit_read_TF(dat,size);
     }
 }

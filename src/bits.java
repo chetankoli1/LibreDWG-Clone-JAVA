@@ -1058,6 +1058,44 @@ public class bits {
         dat._byte = 0;
         dat.bit = '\0';
     }
+
+    static String bit_read_TF(Bit_Chain dat, int size)
+    {
+        char[] chain = new char[size + 1];
+        return bit_read_fixed(dat, size);
+    }
+
+    static String bit_read_fixed(Bit_Chain dat, long len) {
+        String dest = "";
+        if(dat._byte >= dec_macros.MAX_MEM_ALLOC || len >= dec_macros.MAX_MEM_ALLOC ||
+                (dat.bit != 0 ? (((dat._byte + len) * 8) +
+                        dat.bit > dat.size * 8) : (dat._byte + len > dat.size)))
+        {
+            loglevel = dat.opts & dwg.DWG_OPTS_LOGLEVEL;
+            if (len < dat.size - dat._byte) {
+                char[] tempDest = new char[(int) len];
+                for (int i = 0; i < len; i++) {
+                    tempDest[i] = 0;
+                }
+                dest = new String(tempDest);
+            }
+        }
+        if(dat.bit == 0)
+        {
+            assert dat._byte + len <= dat.size;
+            System.arraycopy(dat.chain, (int) dat._byte, dest, 0, (int) len);
+            dat._byte += len;
+        }
+        else{
+            char[] temp = new char[(int)len];
+            for(long i = 0; i < len; i++)
+            {
+                temp[(int)i] = bits.bit_read_RC(dat);
+            }
+            dest = new String(temp);
+        }
+        return dest;
+    }
 }
 class Bit_Chain {
     public char[] chain;

@@ -426,16 +426,21 @@ public class out_json {
         FIELD_RL(name, val, dat, dxf);
     }
 
-    static void FIELD_CAST(Bit_Chain dat, long val, String name, String type, int dxf) throws IOException {
+    static void FIELD_CAST(Bit_Chain dat, Object val, String name, String type, int dxf) throws IOException {
         switch (type) {
             case "RLx":
-                FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
+                FIELD(name, val, dat, dxf);
                 break;
             case "RLL":
-                FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
+                FIELD(name, val , dat, dxf);
                 break;
             case "RL":
-                FIELD(name, val & 0xFFFFFFFFL, dat, dxf);
+                FIELD(name, val, dat, dxf);
+            case "RS":
+                FIELD(name,val,dat,dxf);
+                break;
+            case "RC":
+                FIELD(name,val,dat,dxf);
                 break;
         }
 
@@ -775,6 +780,12 @@ public class out_json {
         config.streamWriter.write("\""+_path_field(name)+ "\": ");
         json_write_TF(dat,value,value.length());
     }
+
+    static void FIELD_TFv(Bit_Chain dat, String name, String value, int dxf) throws IOException {
+        FIRSTPREFIX(dat);
+        config.streamWriter.write("\""+_path_field(name)+ "\": ");
+        json_write_TF(dat,value,value.length());
+    }
     static void json_write_TF(Bit_Chain dat, String src, int len) {
         int slen = (src != null) ? src.length() : 0;
         boolean hasSlack = false;
@@ -931,10 +942,13 @@ public class out_json {
             case DWG_TYPE_DICTIONARY:
                 error = dwg_spec.dwg_json_DICTIONARY("DICTIONARY", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY);
                 break;
+            case DWG_TYPE_LAYER:
+                error = dwg_spec.dwg_json_LAYER("LAYER", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYER);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {
-                    //return dwg_json_LAYOUT();
+                    return dwg_spec.dwg_json_LAYOUT("LAYOUT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT);
                 }
                 else if((DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value & (error = dwg_json_variable_type(obj.parent,dat,obj))) != 0)
                 {
@@ -1172,4 +1186,36 @@ public class out_json {
 //            }
 //        }
 //    }
+
+    static void COMMON_TABLE_FLAGS_WRITE(String name,Bit_Chain dat, Bit_Chain hdlDat, Bit_Chain strDat,
+                                                       Dwg_Object obj, Dwg_Data objDwgData, COMMON_TABLE_FIELDS acdbname) throws IOException {
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            if(name.trim().equals("LAYER"))
+            {
+                out_json.FIELD_CAST(dat,acdbname.flag,"flag","RS",70);
+            }
+            else {
+                out_json.FIELD_CAST(dat,acdbname.flag,"flag","RC",70);
+            }
+
+            out_json.FIELD_TFv(dat,"name",acdbname.name,2);
+            if(commen.VERSION(DWG_VERSION_TYPE.R_11,dat))
+                out_json.FIELD_RS(dat,acdbname.used,"RS",0);
+        }
+        else {
+            out_json.FIELD_T(dat,"name",acdbname.name,2);
+            if(commen.UNTIL(DWG_VERSION_TYPE.R_2004,dat))
+            {
+                out_json.FIELD_B(dat,"is_xref_ref",acdbname.is_xref_ref,0);
+                out_json.FIELD_BS(dat,"is_xref_resolved",acdbname.is_xref_resolved,0);
+                out_json.FIELD_B(dat,"is_xref_dep",acdbname.is_xref_dep,0);
+            }
+            else{
+                out_json.FIELD_BS(dat,"is_xref_resolved",acdbname.is_xref_resolved,0);
+            }
+            out_json.FIELD_HANDLE(hdlDat,"xref",acdbname.xref,5,0);
+        }
+        commen.RESET_VER(dat);
+    }
 }

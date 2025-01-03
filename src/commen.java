@@ -126,6 +126,12 @@ public class commen {
         return Long.reverseBytes(value);
     }
 
+    /**
+     * Check 1st Source value greater than 2nd Source value.
+     * @param srcLen main source length.
+     * @param destLen how much values requered there length.
+     * @return the error 0 or DWG_ERROR value
+     */
     public static void VALUEOUTOFBOUNDS(Object srcLen, int destLen) {
         if((int)srcLen > destLen)
         {
@@ -186,6 +192,7 @@ public class commen {
         DWG_SENTINEL_R11_AUXHEADER_BEGIN,
         DWG_SENTINEL_R11_AUXHEADER_END
     }
+
     static DWG_VERSION_TYPE dwg_version_hdr_type(String hdr) {
         for(int i = DWG_VERSION_TYPE.R_AFTER.ordinal() - 1; i > 0; i--)
             if (strEQ(dwg_versions[i].hdr, hdr)) {
@@ -257,26 +264,35 @@ public class commen {
 
     static boolean VERSIONS(DWG_VERSION_TYPE v1,DWG_VERSION_TYPE v2,Bit_Chain dat)
     {
+        decode.cur_ver = v1;
         return dat.version.ordinal() >= v1.ordinal() && dat.version.ordinal() <= v2.ordinal();
     }
 
     static boolean VERSION(DWG_VERSION_TYPE v1,Bit_Chain dat)
     {
+        decode.cur_ver = v1;
         return dat.version.ordinal() == v1.ordinal();
     }
     static boolean UNTIL(DWG_VERSION_TYPE v1, Bit_Chain dat)
     {
+        decode.cur_ver = v1;
         return dat.version.ordinal() <= v1.ordinal();
     }
 
     static boolean SINCE(DWG_VERSION_TYPE version, Bit_Chain dat)
     {
+        decode.cur_ver = version;
         return dat.version.ordinal() >= version.ordinal();
     }
 
     static boolean PRE(DWG_VERSION_TYPE version, Bit_Chain dat)
     {
+        decode.cur_ver = version;
         return dat.version.ordinal() < version.ordinal();
+    }
+    public static void RESET_VER(Bit_Chain dat)
+    {
+        decode.cur_ver = dat.from_version;
     }
     static boolean memcmp(String a1, String b1, int length) {
         return !a1.substring(0, length).equals(b1);

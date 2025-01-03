@@ -7,7 +7,7 @@ public class specs {
     static final boolean DXF_OR_PRINT = false;
     static final boolean DXF_OR_FREE = false;
     static final boolean DXF = false;
-    static final boolean JSON = false;
+    static boolean JSON = false;
     static final boolean FREE = false;
     static final boolean IF_FREE_OR_SINCE = false;  // Custom implementation needed
     static final boolean IF_FREE_OR_VERSIONS = false;  // Custom implementation needed

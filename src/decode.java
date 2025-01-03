@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class decode {
-
+    static DWG_VERSION_TYPE cur_ver;
     static int loglevel;
     public static int dwg_decode(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         int error = 0;
@@ -840,10 +840,14 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY:
                 error = dwg_spec.dwg_decode_DICTIONARY("DICTIONARY", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_DICTIONARY);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_LAYER:
+                error = dwg_spec.dwg_decode_LAYER("LAYER", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYER);
+                break;
+
             default:
                 if(obj.type == objDwgData.layout_type)
                 {
-                   // error = dwg_decode_LAYOUT("LAYOUT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT);
+                    error = dwg_spec.dwg_decode_LAYOUT("LAYOUT", obj, dat, objDwgData, DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT);
                 }
                 else if(((error = dwg_decode_variable_type(objDwgData,dat,hdl_dat,obj)) & DWG_ERROR.DWG_ERR_UNHANDLEDCLASS.value) != 0)
                 {
