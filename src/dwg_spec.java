@@ -1340,7 +1340,49 @@ public class dwg_spec {
                     if(dash.shape_flag != 0)
                     {
                         dash.complex_shapecode = dec_macros.SUB_FIELD_BS(dat,"BS",75);
+                        dash.style = new Dwg_Object_Ref();
+                        dash.style = dec_macros.SUB_FIELD_HANDLE(hdl_dat,dash.style,5,obj,objDwgData,0);
+                        dash.scale = dec_macros.SUB_FIELD_BD(dat,"BD",46);
+                        dash.rotation = dec_macros.SUB_FIELD_BD(dat,"BD",50);
+                        dash.x_offset = dec_macros.SUB_FIELD_RD(dat,"RD",44);
+                        dash.y_offset = dec_macros.SUB_FIELD_RD(dat,"RD",45);
                     }
+                    if((dash.shape_flag & 2) != 0)
+                    {
+                        dash.text = dec_macros.SUB_FIELD_T(dat,obj,"T",9);
+                    }
+                }
+                else {
+                    dash.complex_shapecode = dec_macros.SUB_FIELD_BS(dat,"BS",75);
+                    dash.style = new Dwg_Object_Ref();
+                    dash.style = dec_macros.SUB_FIELD_HANDLE(hdl_dat,dash.style,5,obj,objDwgData,0);
+                    dash.x_offset = dec_macros.SUB_FIELD_RD(dat,"RD",44);
+                    dash.y_offset = dec_macros.SUB_FIELD_RD(dat,"RD",45);
+                    dash.scale = dec_macros.SUB_FIELD_BD(dat,"BD",46);
+                    dash.rotation = dec_macros.SUB_FIELD_BD(dat,"BD",50);
+                    dash.shape_flag = dec_macros.SUB_FIELD_BS(dat,"BS",74);
+                }
+                if(specs.DECODER)
+                {
+                    if((dash.shape_flag & 2) != 0)
+                    {
+                        ltype.has_string_area = 1;
+                    }
+                    if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat)){
+                        ltype.pattern_len += dash.length;
+                    }
+                }
+                specs.SET_PARENT_OBJ(dash,ltype);
+            }
+
+            if(commen.UNTIL(DWG_VERSION_TYPE.R_2004,dat))
+            {
+                if(!macros.IS_DECODER)
+                {
+
+                }
+                else {
+
                 }
             }
         }

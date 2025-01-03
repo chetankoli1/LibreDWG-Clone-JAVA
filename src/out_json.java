@@ -436,6 +436,7 @@ public class out_json {
                 break;
             case "RL":
                 FIELD(name, val, dat, dxf);
+                break;
             case "RS":
                 FIELD(name,val,dat,dxf);
                 break;

@@ -1167,4 +1167,19 @@ public class dec_macros {
     public static int SUB_FIELD_BS(Bit_Chain dat, String type, int dxf) {
         return (int)FIELDG(dat,type,dxf);
     }
+
+    static Dwg_Object_Ref SUB_FIELD_HANDLE(Bit_Chain hdlDat, Dwg_Object_Ref ref,
+                                                  int code, Dwg_Object obj, Dwg_Data objDwgData, int dxf)
+    {
+        return VALUE_HANDLE(hdlDat,ref,code,obj,objDwgData,dxf);
+    }
+
+    static double SUB_FIELD_RD(Bit_Chain dat, String type, int dxf)
+    {
+        return FIELD_RD(dat,type,dxf);
+    }
+
+    static String SUB_FIELD_T(Bit_Chain dat, Dwg_Object obj, String type, int dxf) {
+        return FIELD_T(dat,obj,type,dxf);
+    }
 }

@@ -79,4 +79,15 @@ public class specs {
         }
         return 0;
     }
+
+    public static <T, U> void SET_PARENT_OBJ(T child, U parent)
+    {
+        try {
+            java.lang.reflect.Field parentField = child.getClass().getDeclaredField("parent");
+            parentField.setAccessible(true);
+            parentField.set(child, parent);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            System.err.println("Error setting parent: " + e.getMessage());
+        }
+    }
 }

@@ -52,7 +52,8 @@ public class objfreespace_spec {
         return 0;
     }
 
-    static int objfreespace_spec_write(Bit_Chain dat, Dwg_Object obj, Dwg_Data objDwgData) throws IOException {
+    static int objfreespace_spec_write(Bit_Chain dat, Dwg_Object obj, Dwg_Data objDwgData)
+            throws IOException {
         int error = 0;
         Dwg_ObjFreeSpace objFreeSpace = objDwgData.objfreespace;
 

@@ -1927,7 +1927,7 @@ class Dwg_Object_LTYPE extends Dwg_Object_With_COMMON_TABLE_FIELDS{
 }
 
 class Dwg_LTYPE_dash {
-    public Dwg_Object_Object parent;
+    public Dwg_Object_LTYPE parent = new Dwg_Object_LTYPE();
     public double length;
     public int complex_shapecode;
     public Dwg_Object_Ref style;
@@ -1938,6 +1938,14 @@ class Dwg_LTYPE_dash {
     public int shape_flag;
 
     public String text;
+
+    public Dwg_Object_LTYPE getParent() {
+        return parent;
+    }
+
+    public void setParent(Dwg_Object_LTYPE parent) {
+        this.parent = parent;
+    }
 }
 
 class Dwg_AuxHeader

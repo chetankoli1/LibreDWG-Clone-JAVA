@@ -850,7 +850,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 error = dwg_spec.dwg_decode_APPID("APPID",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_APPID);
                 break;
             case DWG_OBJECT_TYPE.DWG_TYPE_LTYPE:
-                error = dwg_spec.dwg_decode_LTYPE("LTYPE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE);
+                 error = dwg_spec.dwg_decode_LTYPE("LTYPE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE);
                 break;
             default:
                 if(obj.type == objDwgData.layout_type)
