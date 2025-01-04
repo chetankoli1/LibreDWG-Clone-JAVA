@@ -336,7 +336,7 @@ public class out_json {
         ISFIRST = 1;
     }
 
-
+    //hey my name is chatan
     static void FIELD_RC(String nam, char val, Bit_Chain dat, int dxf) throws IOException {
         FIELD(nam, val, dat, dxf);
     }
@@ -384,6 +384,7 @@ public class out_json {
         }
     }
 
+    //ont tow nine
     static void FIELD_RL(String nam, long val, Bit_Chain dat, int dxf) throws IOException {
         FIELD(nam, val, dat, dxf);
     }
