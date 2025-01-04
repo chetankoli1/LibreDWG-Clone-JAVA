@@ -1444,8 +1444,37 @@ public class dwg_spec {
         Dwg_Object_LTYPE ltype = obj.tio.object.tio.LTYPE;
 
         out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,ltype.common);
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_TFv(dat,"description",ltype.description,3);
+        }
+        else{
+            out_json.FIELD_T(dat,"description",ltype.description,3);
+            out_json.FIELD_BD(dat,"pattern_len",ltype.pattern_len,0);
+        }
+        out_json.FIELD_RC("alignment",ltype.alignment,dat,72);
+        out_json.FIELD_RCu(dat,"numdashes",ltype.numdashes,73);
 
+        if(specs.DXF)
+        {
 
+        }
+
+        if(ltype.numdashes > 0)
+        {
+
+        }
+
+        if(commen.UNTIL(DWG_VERSION_TYPE.R_2004,dat))
+        {
+            if(specs.JSON)
+            {
+                if(ltype.has_string_area == 0)
+                {
+                    out_json.FIELD_BINARY(dat,"strings_area",ltype.string_area,256,0);
+                }
+            }
+        }
         return error;
     }
 }
