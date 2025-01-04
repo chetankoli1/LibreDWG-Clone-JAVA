@@ -1477,4 +1477,115 @@ public class dwg_spec {
         }
         return error;
     }
+
+    static int dwg_decode_MLINESTYLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_MLINESTYLE mlinestyle = obj.tio.object.tio.MLINESTYLE;
+
+        //SUBCLASS (AcDbMlineStyle)
+        mlinestyle.name = dec_macros.FIELD_T(dat,obj,"T",2);
+        mlinestyle.description = dec_macros.FIELD_T(dat,obj,"T",0);
+        mlinestyle.flag = dec_macros.FIELD_BS(dat,"BS",70);
+        //        LOG_MLINESTYLE_FLAG
+//        DXF { FIELD_T (description, 3); }
+        mlinestyle.fill_color = dec_macros.FIELD_CMC(dat,str_dat,62);
+        if(macros.IS_DXF)
+        {
+
+        }
+        else{
+            mlinestyle.start_angle = dec_macros.FIELD_BD(dat,"BD",51);
+            mlinestyle.end_angle = dec_macros.FIELD_BD(dat,"BD",52);
+        }
+        mlinestyle.num_lines = dec_macros.FIELD_RCu(dat,72);
+        if(mlinestyle.num_lines > 0)
+        {
+            if(mlinestyle.lines == null)
+            {
+                mlinestyle.lines = new Dwg_MLINESTYLE_line[mlinestyle.num_lines];
+            }
+            for(int i = 0; i < mlinestyle.num_lines; i++)
+            {
+                mlinestyle.lines[i] = new Dwg_MLINESTYLE_line();
+                mlinestyle.lines[i].offset = dec_macros.SUB_FIELD_BD(dat,"BD",49);
+                mlinestyle.lines[i].color = dec_macros.SUB_FIELD_CMC(dat,str_dat,62);
+                if(commen.PRE(DWG_VERSION_TYPE.R_2018,dat))
+                {
+                    if(macros.IS_DXF && !macros.IS_ENCODER)
+                    {
+
+                    }
+                    else {
+                        mlinestyle.lines[i].lt.index = dec_macros.SUB_FIELD_BSd(dat,"BS",6);
+                    }
+                }
+                else {
+                    mlinestyle.lines[i].lt.ltype = dec_macros.SUB_FIELD_HANDLE(hdl_dat,mlinestyle.lines[i].lt.ltype,5,obj,objDwgData,6);
+                }
+                specs.SET_PARENT_OBJ(mlinestyle.lines[i],mlinestyle);
+            }
+        }
+        dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_MLINESTYLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                              DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_MLINESTYLE mlinestyle = obj.tio.object.tio.MLINESTYLE;
+
+        out_json.SUBCLASS(dat,"AcDbMlineStyle");
+        out_json.FIELD_T(dat,"name",mlinestyle.name,2);
+        out_json.FIELD_T(dat,"description",mlinestyle.description,0);
+        out_json.FIELD_BS(dat,"flag",mlinestyle.flag,70);
+
+//        LOG_MLINESTYLE_FLAG
+//        DXF { FIELD_T (description, 3); }
+        out_json.FIELD_CMC(dat,"fill_color",mlinestyle.fill_color,62);
+        if(macros.IS_DXF)
+        {
+
+        }
+        else{
+            out_json.FIELD_BD(dat,"start_angle",mlinestyle.start_angle,51);
+            out_json.FIELD_BD(dat,"end_angle",mlinestyle.end_angle,52);
+        }
+        out_json.FIELD_RCu(dat,"num_lines",mlinestyle.num_lines,71);
+        out_json.REPEAT(dat,"lines");
+        if(mlinestyle.num_lines > 0)
+        {
+            for(int i = 0; i < mlinestyle.num_lines; i++)
+            {
+                out_json.REPEAT_BLOCK(dat);
+                out_json.SUB_FIELD_BD(dat,"offset",mlinestyle.lines[i].offset,49);
+                out_json.SUB_FIELD_CMC(dat,"color",mlinestyle.lines[i].color,62);
+                if(commen.PRE(DWG_VERSION_TYPE.R_2018,dat))
+                {
+                    if(macros.IS_DXF && !macros.IS_ENCODER)
+                    {
+
+                    }
+                    else {
+                        out_json.SUB_FIELD_BSd(dat,"lt.index",(short)mlinestyle.lines[i].lt.index,6);
+                    }
+                }
+                else {
+                    out_json.SUB_FIELD_HANDLE(dat,"lt.ltype",mlinestyle.lines[i].lt.ltype,5,6);
+                }
+//                specs.SET_PARENT_OBJ(mlinestyle.lines[i],mlinestyle);
+                out_json.END_REPEAT_BLOCK(dat);
+            }
+            out_json.ENDREPEAT(dat);
+        }
+
+        return error;
+    }
 }

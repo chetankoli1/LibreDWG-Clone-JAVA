@@ -1165,6 +1165,7 @@ class Dwg_Object_Object
         public Dwg_Object_STYLE STYLE;
         public Dwg_Object_APPID APPID;
         public Dwg_Object_LTYPE LTYPE;
+        public Dwg_Object_MLINESTYLE MLINESTYLE;
         public Dwg_Object_UNKNOWN_OBJ UNKNOWN_OBJ;
 
     }
@@ -1924,6 +1925,42 @@ class Dwg_Object_LTYPE extends Dwg_Object_With_COMMON_TABLE_FIELDS{
     public String string_area;
     public char unknown_r11;
     public char unknown_r13;
+}
+
+/**
+ MLINESTYLE (73) object
+ */
+class Dwg_MLINESTYLE_line {
+    public Dwg_Object_MLINESTYLE parent;
+    public double offset;
+    public Dwg_Color color = new Dwg_Color();
+    class LT {
+        public int index;
+        public Dwg_Object_Ref ltype = new Dwg_Object_Ref();
+    }
+    public LT lt = new LT();
+}
+class Dwg_Object_MLINESTYLE implements IParent {
+
+    public Dwg_Object_Object parent;
+    public String name;
+    public String description;
+    public int flag;
+    public Dwg_Color fill_color = new Dwg_Color();
+    public double start_angle;
+    public double end_angle;
+    public int num_lines;
+    public Dwg_MLINESTYLE_line[] lines;
+
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
 }
 
 class Dwg_LTYPE_dash {

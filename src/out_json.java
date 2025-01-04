@@ -490,6 +490,13 @@ public class out_json {
             _VALUE_BD(val, dat, dxf);
         }
     }
+    static void SUB_FIELD_BD(Bit_Chain dat, String name, double val, int dxf) throws IOException {
+        if (!bits.bit_isnan(val)) {
+            FIRSTPREFIX(dat);
+            config.streamWriter.write("\"" + _path_field(name) + "\": ");
+            _VALUE_BD(val, dat, dxf);
+        }
+    }
     static void FIELD_RD(Bit_Chain dat, String name, double val, int dxf) throws IOException {
         if (!bits.bit_isnan(val)) {
             FIRSTPREFIX(dat);
@@ -656,6 +663,21 @@ public class out_json {
             }
         }
     }
+    static void SUB_FIELD_HANDLE(Bit_Chain hdl_dat, String name, Dwg_Object_Ref valRef, int code, int dxf) throws IOException {
+        if(valRef != null)
+        {
+            if(commen.PRE(DWG_VERSION_TYPE.R_13b1,hdl_dat))
+            {
+                KEY(hdl_dat,name);
+                ARGS_HREF11(valRef);
+
+            }
+            else{
+                KEY(hdl_dat,name);
+                ARGS_HREF11(valRef);
+            }
+        }
+    }
 
     private static final String PRIu64 = "%d";
     private static final String FORMAT_RLL = PRIu64;
@@ -671,6 +693,9 @@ public class out_json {
     }
 
     static void FIELD_BSd(Bit_Chain dat, String name, short value, int dxf) throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+    static void SUB_FIELD_BSd(Bit_Chain dat, String name, short value, int dxf) throws IOException {
         FIELD(name,value,dat,dxf);
     }
     static void FIELD_BSx(Bit_Chain dat, String name, short value, int dxf) throws IOException {
@@ -962,6 +987,9 @@ public class out_json {
                 break;
             case DWG_TYPE_LTYPE:
                 error = dwg_spec.dwg_json_LTYPE("LTYPE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LTYPE);
+                break;
+            case DWG_TYPE_MLINESTYLE:
+                error = dwg_spec.dwg_json_MLINESTYLE("MLINESTYLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_MLINESTYLE);
                 break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)

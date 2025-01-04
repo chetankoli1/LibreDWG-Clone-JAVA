@@ -472,6 +472,11 @@ public class dec_macros {
         color = bits.bit_read_CMC(dat, str_dat);
         return color;
     }
+    static Dwg_Color SUB_FIELD_CMC(Bit_Chain dat, Bit_Chain str_dat, int dxf) {
+        Dwg_Color color = new Dwg_Color();
+        color = bits.bit_read_CMC(dat, str_dat);
+        return color;
+    }
 
 
     static Dwg_Bitcode_3BD FIELD_3BD(Bit_Chain dat, int dxf) {
@@ -858,6 +863,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.LTYPE;
+            case "MLINESTYLE":
+                if (objDwgObject.tio.MLINESTYLE == null)
+                {
+                    objDwgObject.tio.MLINESTYLE = new Dwg_Object_MLINESTYLE();
+                    objDwgObject.tio.MLINESTYLE.setParent(objDwgObject);
+                    return objDwgObject.tio.MLINESTYLE;
+                }
+                else
+                    return objDwgObject.tio.MLINESTYLE;
             case "UNKNOWN_OBJ":
                 if (objDwgObject.tio.UNKNOWN_OBJ == null)
                 {
@@ -1165,6 +1179,9 @@ public class dec_macros {
     }
 
     public static int SUB_FIELD_BS(Bit_Chain dat, String type, int dxf) {
+        return (int)FIELDG(dat,type,dxf);
+    }
+    public static int SUB_FIELD_BSd(Bit_Chain dat, String type, int dxf) {
         return (int)FIELDG(dat,type,dxf);
     }
 
