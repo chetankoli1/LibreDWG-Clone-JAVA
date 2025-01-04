@@ -1182,4 +1182,8 @@ public class dec_macros {
     static String SUB_FIELD_T(Bit_Chain dat, Dwg_Object obj, String type, int dxf) {
         return FIELD_T(dat,obj,type,dxf);
     }
+
+    static String FIELD_BINARY(Bit_Chain dat, int len, int dxf) {
+        return bits.bit_read_TF(dat,len);
+    }
 }

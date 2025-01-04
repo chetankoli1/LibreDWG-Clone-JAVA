@@ -1084,7 +1084,9 @@ public class bits {
         if(dat.bit == 0)
         {
             assert dat._byte + len <= dat.size;
-            System.arraycopy(dat.chain, (int) dat._byte, dest, 0, (int) len);
+            char[] arrs = new char[ (int) len];
+            System.arraycopy(dat.chain, (int) dat._byte, arrs, 0, (int) len);
+            dest = new String(arrs);
             dat._byte += len;
         }
         else{

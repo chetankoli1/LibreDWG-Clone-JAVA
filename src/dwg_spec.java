@@ -1382,7 +1382,48 @@ public class dwg_spec {
 
                 }
                 else {
+                    if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_13c3,dat))
+                    {
+                        ltype.unknown_r13 = (char)dec_macros.FIELD_RC(dat,"RC",0);
+                    }
+                    ltype.string_area = dec_macros.FIELD_BINARY(dat,256,0);
 
+                    if(specs.DECODER)
+                    {
+                        int dash_i = 0;
+                        for (int ki = 0; ltype.string_area != null && ki < (int)ltype.numdashes; ki++)
+                        {
+                            if((ltype.dashes[ki].shape_flag & 2) != 0)
+                            {
+                                if(dash_i >= 256)
+                                {
+                                    break;
+                                }
+                                ltype.dashes[ki].text = ltype.string_area;
+                                dash_i += (ltype.dashes[ki].text.length() + 256 - dash_i) + 1;
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                if(ltype.has_string_area != 0)
+                {
+                    int dash_i = 0;
+                    ltype.string_area = dec_macros.FIELD_BINARY(dat,512,0);
+                    for(int ji = 0;  ltype.string_area.isEmpty() && ji < (int)ltype.numdashes; ji++)
+                    {
+                        if((ltype.dashes[ji].shape_flag & 2) !=0 )
+                        {
+                            if(dash_i >= 512)
+                            {
+                                break;
+                            }
+                            ltype.dashes[ji].text = ltype.string_area;
+//                            dash_i += ((2 * bit_wcs2nlen ((BITCODE_TU)_obj->dashes[rcount1].text,
+//                                    256 - (dash_i / 2))) + 2 ) & 0xFFFF;
+                        }
+                    }
                 }
             }
         }
