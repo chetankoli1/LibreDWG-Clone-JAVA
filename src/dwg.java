@@ -1089,9 +1089,11 @@ class Dwg_Object_Entity
     public int objid;
 
     class Tio{
-        Dwg_Entity_POINT POINT;
+        public Dwg_Entity_POINT POINT;
+        public Dwg_Entity_BLOCK BLOCK;
+        public Dwg_Entity_ENDBLK ENDBLK;
     }
-    Tio tio;
+    Tio tio = new Tio();
     public Dwg_Data dwg;
     public int num_eed;
     public Dwg_Eed eed;
@@ -1118,6 +1120,7 @@ class Dwg_Object_Entity
     public char has_full_visualstyle;
     public char has_face_visualstyle;
     public char has_edge_visualstyle;
+    public int invisible;
     public int linewt;
 
     public char flag_r11;
@@ -2014,6 +2017,31 @@ class Dwg_LTYPE_dash {
         this.parent = parent;
     }
 }
+class Dwg_Entity_BLOCK implements IParentEntity {
+    private Dwg_Object_Entity parent;
+    public String name;
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
+}
+class Dwg_Entity_ENDBLK implements IParentEntity {
+    private Dwg_Object_Entity parent;
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
+}
 
 class Dwg_AuxHeader
 {
@@ -2217,4 +2245,9 @@ interface ICommon {
 interface IParent {
     public Dwg_Object_Object getParent();
     public void setParent(Dwg_Object_Object parent);
+}
+
+interface IParentEntity{
+    public Dwg_Object_Entity getParent();
+    public void setParent(Dwg_Object_Entity parent);
 }

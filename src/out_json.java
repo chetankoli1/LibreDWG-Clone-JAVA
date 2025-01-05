@@ -1003,6 +1003,10 @@ public class out_json {
                 break;
             case DWG_TYPE_BLOCK_HEADER:
                 error = dwg_spec.dwg_json_BLOCK_HEADER("BLOCK_HEADER",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER);
+                break;
+            case DWG_TYPE_BLOCK:
+                error = dwg_spec.dwg_json_BLOCK("BLOCK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {
@@ -1347,6 +1351,97 @@ public class out_json {
 
     static void FIELD_NUM_INSERTS(Bit_Chain dat, String name, long value, int dxf)
             throws IOException {
+        FIELD(name,value,dat,dxf);
+    }
+
+    static int dwg_json_entity_token(Bit_Chain dat, Dwg_Object obj, String name,
+                                     DWG_OBJECT_TYPE type, Bit_Chain hdl_dat, Bit_Chain str_dat) throws IOException {
+        int error = 0;
+        Dwg_Data objDwg = obj.parent;
+        Dwg_Object_Entity ent = obj.tio.entity;
+        ent.dwg = objDwg;
+
+        if (name.equals("_")) {
+            FIELD_TEXT(dat,"entity", String.valueOf(name.charAt(1)),0 );
+        } else {
+            FIELD_TEXT(dat,"entity", name, 0);
+        }
+
+        if (obj.dxfname != null && (!obj.dxfname.equals(name) || obj.dxfname.contains("3D"))) {
+            if (!obj.dxfname.equals("VERTEX_3D") && !obj.dxfname.equals("POLYLINE_3D")) {
+                FIELD_TEXT(dat,"dxfname", obj.dxfname, 0);
+            }
+        }
+        FIELD("index",obj.index,dat,0);
+        FIELD("type",obj.type,dat,0);
+        KEY(dat,"handle");
+        VALUE_H(obj.handle,dat,5);
+        FIELD("size",obj.size,dat,0);
+        FIELD("bitsize",obj.bitsize,dat,0);
+
+        if(ent.preview_exists != 0)
+            ENT_FIELD(dat,"preview_exists",ent.preview_exists);
+
+        error |= json_common_entity_data(dat, obj, name, hdl_dat, objDwg);
+        error |= dwg_json_token_entity_private(dat, hdl_dat, str_dat, obj, name);
+        return error;
+    }
+
+    static int dwg_json_token_entity_private(Bit_Chain dat, Bit_Chain hdlDat,
+                                             Bit_Chain strDat, Dwg_Object obj, String name) {
+        int error = 0;
+        Dwg_Data dwg = obj.parent;
+        Dwg_Object_Entity ent = obj.tio.entity;
+        return error;
+    }
+
+    static int json_common_entity_data(Bit_Chain dat, Dwg_Object obj, String name,
+                                       Bit_Chain hdl_dat, Dwg_Data objDwgData) throws IOException {
+        int error = 0;
+        Dwg_Object_Entity ent = null;
+        Dwg_Object_Entity _obj = null;
+        ent = obj.tio.entity;
+        _obj = ent;
+
+       // error |= json_eed(dat, ent, name);
+        // clang-format off
+        error = common_entity_handle_data_spec.common_entity_handle_data_spec_write(dat, hdl_dat, ent, obj, objDwgData);
+        error = common_entity_data_spec.common_entity_data_spec_write(dat, hdl_dat, ent, obj, objDwgData);
+        // clang-format on
+        return error;
+    }
+
+    static void ENT_FIELD(Bit_Chain dat, String name, char value) throws IOException {
+        FIRSTPREFIX(dat);
+        config.streamWriter.write("\""+_path_field(name)+"\"");
+        config.streamWriter.write(value);
+    }
+
+    static void ENT_REACTORS(Bit_Chain dat, Dwg_Object_Entity objEnt, int code) throws IOException {
+        if (dat.version.ordinal() >= DWG_VERSION_TYPE.R_13.ordinal()
+                && objEnt.num_reactor != 0 && objEnt.reactors != null)
+        {
+            KEY(dat, "reactors");
+            ARRAY(dat);
+            for (int vcount = 0; vcount < objEnt.num_reactor; vcount++)
+            {
+                FIRSTPREFIX(dat);
+                VALUE_HANDLE(dat, objEnt.reactors[vcount]);
+            }
+            ENDARRAY(dat);
+        }
+    }
+
+    static void ENT_XDICOBJHANDLE(Bit_Chain dat, Dwg_Object_Entity objEnt, int code) throws IOException {
+        if ((dat.version.ordinal() < DWG_VERSION_TYPE.R_2004.ordinal() || (objEnt.is_xdic_missing == 0)) &&
+                (objEnt.xdicobjhandle != null) && (objEnt.xdicobjhandle.handleref.value != 0))
+        {
+            KEY(dat, "xdicobjhandle");
+            VALUE_HANDLE(dat, objEnt.xdicobjhandle);
+        }
+    }
+
+    static void FIELD_BB(Bit_Chain dat, String name, char value, int dxf) throws IOException {
         FIELD(name,value,dat,dxf);
     }
 }

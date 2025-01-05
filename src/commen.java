@@ -152,6 +152,14 @@ public class commen {
         return false;
     }
 
+    static boolean strEQc(String s1, String s2) {
+        if (strcmp(s1, s2) == 0)
+        {
+            return true;
+        }
+        return false;
+    }
+
     static enum DWG_SENTINEL
     {
         DWG_SENTINEL_HEADER_END,

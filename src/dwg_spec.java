@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
+
 public class dwg_spec {
     static int dwg_decode_BLOCK_CONTROL(String name, Dwg_Object obj, Bit_Chain dat,
                                         Dwg_Data objDwgData,DWG_OBJECT_TYPE type)
@@ -1848,5 +1849,27 @@ public class dwg_spec {
 
         return error;
 
+    }
+
+    static int dwg_decode_BLOCK(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                       DWG_OBJECT_TYPE type){
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_BLOCK block = obj.tio.entity.tio.BLOCK;
+        block.name = dec_macros.BLOCK_NAME(dat,str_dat,obj,2);
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+    static int dwg_json_BLOCK(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                     DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+        return error;
     }
 }

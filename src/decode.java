@@ -858,6 +858,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER:
                 error = dwg_spec.dwg_decode_BLOCK_HEADER("BLOCK_HEADER",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_BLOCK:
+                error = dwg_spec.dwg_decode_BLOCK("BLOCK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {
@@ -1511,5 +1514,106 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
         }
     }
 
+    /** The first common part of every entity.
 
+   The last common part is common_entity_handle_data.spec
+   called by COMMON_ENTITY_HANDLE_DATA in dwg.spec
+
+   For EED check page 269, par 28 (Extended Object Data)
+   For proxy graphics check page 270, par 29 (Proxy Entity Graphics)
+
+   PRE(R_13b1) goes into decode_entity_preR13 instead.
+ */
+    static int dwg_decode_entity(Bit_Chain dat, Bit_Chain hdl_dat,
+                                 Bit_Chain str_dat, Dwg_Object_Entity ent)
+    {
+        int error = 0;
+        Dwg_Data objDwg = ent.dwg;
+        Dwg_Object obj = objDwg.object [ent.objid];
+        Dwg_Object_Entity _obj = ent;
+        Dwg_Object_Entity _ent = ent;
+        Dwg_Class klass = null;
+        long objetpos = bits.bit_position(dat);
+        int has_wrong_bitsize = 0;
+
+        obj.bitsize_pos = objetpos;
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_2000,DWG_VERSION_TYPE.R_2007,dat))
+        {
+            obj.bitsize = (int)bits.bit_read_RL(dat);
+            if(obj.bitsize > obj.size * 8)
+            {
+                obj.bitsize = obj.size * 8;
+                has_wrong_bitsize = 1;
+                error |= DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
+            }
+            else {
+                error |= obj_handle_stream(dat,obj,hdl_dat);
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2010b,dat))
+            {
+                error = obj_handle_stream(dat,obj,hdl_dat);
+            }
+            DWG_OBJECT_TYPE mType = DWG_OBJECT_TYPE.fromValue(obj.type);
+            if (mType != null && (obj.type >= 500 || obj_has_strings(mType) != 0)) {
+                error |= obj_string_stream(dat, obj, str_dat);
+            }
+            else{
+                bits.bit_set_position(str_dat, obj.bitsize - 1);
+                str_dat.size = 0;
+            }
+        }
+
+        error |= bits.bit_read_H(dat,obj.handle);
+        if((error & DWG_ERROR.DWG_ERR_INVALIDHANDLE.value) != 0 ||
+                obj.handle.value == 0 || obj.handle.size == 0)
+        {
+            if(has_wrong_bitsize != 0)
+                obj.bitsize = 0;
+            ent.num_eed = 0;
+            ent.preview_exists = 0;
+            return error |= DWG_ERROR.DWG_ERR_INVALIDHANDLE.value;
+        }
+        if(has_wrong_bitsize != 0)
+        {
+            //LOG_WARN ("Skip eed")
+        }
+        else{
+            //error |= dwg_decode_eed (dat, (Dwg_Object_Object *)ent);
+            dat.bit += 2;
+            error = 0;
+        }
+
+        if((error & (DWG_ERROR.DWG_ERR_INVALIDEED.value | DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value)) != 0)
+        {
+            return error;
+        }
+        common_entity_data_spec.common_entity_data_spec_read(dat, hdl_dat, str_dat, ent, obj, objDwg);
+        error |= dwg_decode_common_entity_handle_data(dat,hdl_dat,obj);
+
+        obj.comman_size = bits.bit_position(dat) - objetpos;
+
+        return error;
+    }
+
+    static int dwg_decode_common_entity_handle_data(Bit_Chain dat, Bit_Chain hdlDat,
+                                                    Dwg_Object obj) {
+        Dwg_Data objDwg = obj.parent;
+        Dwg_Object_Entity _obj = null;
+        Dwg_Object_Entity ent = null;
+        _obj = obj.tio.entity;
+        ent = obj.tio.entity;
+        int error = 0;
+
+        if(dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2007.ordinal() && (ent.color.flag & 0x40) != 0)
+        {
+            ent.color.handle = new Dwg_Object_Ref();
+            ent.color.handle = dec_macros.FIELD_HANDLE(hdlDat,obj,objDwg,0,430);
+        }
+
+        common_entity_handle_data_spec.common_entity_handle_data_spec_read(dat, hdlDat, ent, obj, objDwg);
+        return error;
+    }
 }

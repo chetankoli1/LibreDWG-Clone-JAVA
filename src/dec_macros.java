@@ -241,6 +241,7 @@ public class dec_macros {
             case "BS" -> bits.bit_read_BS(dat);
             case "B" -> bits.bit_read_B(dat);
             case "TV" -> bits.bit_read_TV(dat);
+            case "BB" -> bits.bit_read_BB(dat);
             default -> null;
         };
     }
@@ -703,6 +704,111 @@ public class dec_macros {
         return 0;
     }
 
+    static int dwg_decode_entity_token(Bit_Chain dat, Dwg_Object obj, String name,
+                                               DWG_OBJECT_TYPE type, Bit_Chain hdl_dat, Bit_Chain str_dat)
+    {
+        int error = dwg_entity_setup_token(obj,name,type);
+        if(error != 0)
+        {
+            return error;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007,dat))
+        {
+            Bit_Chain obj_dat = dat;
+            str_dat = new Bit_Chain(dat);
+            error = dwg_decode_entity_token_private(obj_dat, hdl_dat, str_dat, obj, name);
+        }
+        else {
+            error = dwg_decode_entity_token_private(dat, hdl_dat, dat, obj, name);
+        }
+        return error;
+    }
+    static int dwg_entity_setup_token(Dwg_Object obj, String name, DWG_OBJECT_TYPE obj_type)
+    {
+        obj.tio.entity = new Dwg_Object_Entity();
+        Object _obj = getObject(name,obj.tio.entity);
+
+        obj.parent.num_entities++;
+        obj.supertype = DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_ENTITY;
+        if(obj.fixedtype == DWG_OBJECT_TYPE.DWG_TYPE_UNUSED)
+        {
+            obj.fixedtype = obj_type;
+        }
+        if(obj.type == 0 && obj.fixedtype.value <= DWG_OBJECT_TYPE.DWG_TYPE_LAYOUT.value)
+        {
+            obj.type = obj_type.value;
+        }
+        if(obj.dxfname == null)
+        {
+            if(name.length() > 3 && !commen.memcmp(name,"_3D",3))
+            {
+                char[] arr = name.toCharArray();
+                obj.name = String.valueOf(arr[1]);
+            }
+            else if (commen.strEQc(name, "PROXY_ENTITY"))
+            {
+                obj.dxfname = "ACAD_PROXY_ENTITY";
+                obj.name = name;
+            }
+            else{
+                obj.dxfname = name;
+                obj.name = name;
+            }
+        }
+        else if(obj.name != null)
+        {
+            if(name.length() > 3 && !commen.memcmp(name,"_3D",3))
+            {
+                char[] arr = name.toCharArray();
+                obj.name = String.valueOf(arr[1]);
+            }
+            else{
+                obj.name = name;
+            }
+        }
+        if (obj.parent.opts != 0 && (0x40 | 0x80) != 0)//need to check
+        {
+            obj.dxfname = obj.dxfname;
+            if (obj.parent.opts != 0 && 0x80 != 0)//need to check
+            {
+                obj.name = obj.name;
+            }
+        }
+        if (_obj == null)
+        {
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+        }
+        if(_obj instanceof IParentEntity entity) {
+           entity.setParent(obj.tio.entity);
+        }
+        return 0;
+    }
+    static int dwg_decode_entity_token_private(Bit_Chain dat, Bit_Chain hdl_dat,
+                                               Bit_Chain str_dat, Dwg_Object obj, String name)
+    {
+        int error = 0;
+        Dwg_Data dwgObj = obj.parent;
+        Dwg_Object_Entity _ent = obj.tio.entity;
+
+        _ent.dwg = dwgObj;
+        _ent.objid = obj.index;
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            error = decode.dwg_decode_entity(dat, hdl_dat, str_dat, _ent);
+        }
+        else {
+            //error = decode.decode_entity_preR13(_ent, obj, dat);
+        }
+        if(error >= DWG_ERROR.DWG_ERR_CLASSESNOTFOUND.value)
+        {
+            return error;
+        }
+
+        return error;
+    }
+
+
     static Object getObject(String name, Dwg_Object_Object objDwgObject) {
         switch (name)
         {
@@ -890,6 +996,22 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.UNKNOWN_OBJ;
+            default:
+                throw new IllegalArgumentException("Invalid Type");
+        }
+    }
+    static Object getObject(String name, Dwg_Object_Entity objDwgEntity) {
+        switch (name)
+        {
+            case "BLOCK":
+                if (objDwgEntity.tio.BLOCK == null)
+                {
+                    objDwgEntity.tio.BLOCK = new Dwg_Entity_BLOCK();
+                    objDwgEntity.tio.BLOCK.setParent(objDwgEntity);
+                    return objDwgEntity.tio.BLOCK;
+                }
+                else
+                    return objDwgEntity.tio.BLOCK;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -1105,6 +1227,13 @@ public class dec_macros {
         START_HANDLE_STREAM(dat,obj);
         assert obj.supertype == DWG_OBJECT_SUPERTYPE.DWG_SUPERTYPE_OBJECT;
     }
+    static void COMMON_ENTITY_HANDLE_DATA(Bit_Chain dat, Dwg_Object obj)
+    {
+        if (commen.SINCE(DWG_VERSION_TYPE.R_13, dat))
+        {
+            START_HANDLE_STREAM(dat, obj);
+        }
+    }
 
     static void START_HANDLE_STREAM(Bit_Chain dat, Dwg_Object obj) {
         long vcount = bits.bit_position(dat);
@@ -1230,5 +1359,48 @@ public class dec_macros {
             }
         }
         return mInsert;
+    }
+
+    static int FIELD_BB(Bit_Chain dat, String type, int dxf) {
+        return (int)FIELDG(dat,type,dxf);
+    }
+
+    static void ENT_REACTORS(Dwg_Object_Entity ent, int code, Bit_Chain hdl_dat,
+                             Dwg_Object obj, Dwg_Data objDwgData) {
+        if(ent.num_reactor > 0)
+        {
+            _VECTOR_CHKCOUNT(ent.num_reactor,TYPE_MAXELEMSIZE("BS"),hdl_dat,obj,ent.reactors);
+            if(ent.reactors == null)
+            {
+                ent.reactors = new Dwg_Object_Ref[ent.num_reactor];
+            }
+            for(int i = 0; i < ent.num_reactor; i++)
+            {
+                ent.reactors[i] = new Dwg_Object_Ref();
+                ent.reactors[i] = dec_macros.VALUE_HANDLE_N_SPEC(hdl_dat,code,objDwgData,obj,0);
+            }
+        }
+    }
+    static void ENT_XDICOBJHANDLE(Dwg_Object_Entity objEnt, int code, Bit_Chain dat,
+                                  Dwg_Object obj, Dwg_Data objDwgData)
+    {
+        if (commen.SINCE(DWG_VERSION_TYPE.R_2004, dat))
+        {
+            if ((int)(objEnt.is_xdic_missing) == 0)
+            {
+                objEnt.xdicobjhandle = dec_macros.VALUE_HANDLE(dat,objEnt.xdicobjhandle, code, obj,objDwgData,0);
+            }
+        }
+        else
+        {
+            if (commen.SINCE(DWG_VERSION_TYPE.R_13, dat))
+            {
+                objEnt.xdicobjhandle = dec_macros.VALUE_HANDLE(dat,objEnt.xdicobjhandle, code, obj,objDwgData,0);
+            }
+        }
+    }
+
+    static String BLOCK_NAME(Bit_Chain dat, Bit_Chain strDat, Dwg_Object obj, int dxf) {
+        return FIELD_T(dat,obj,"T",dxf);
     }
 }
