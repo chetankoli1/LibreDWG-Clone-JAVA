@@ -1870,6 +1870,10 @@ public class dwg_spec {
         Bit_Chain hdl_dat = new Bit_Chain(dat);
         Bit_Chain str_dat = dat;
         error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_BLOCK block = obj.tio.entity.tio.BLOCK;
+        out_json.SUBCLASS(dat,"AcDbBlockBegin");
+        out_json.BLOCK_NAME(dat,"name",block.name,2,0);
         return error;
     }
 }

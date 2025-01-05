@@ -1444,4 +1444,8 @@ public class out_json {
     static void FIELD_BB(Bit_Chain dat, String name, char value, int dxf) throws IOException {
         FIELD(name,value,dat,dxf);
     }
+
+    static void BLOCK_NAME(Bit_Chain dat, String name, String value, int length, int dxf) throws IOException {
+        out_json.FIELD_T(dat,name,value,dxf);
+    }
 }
