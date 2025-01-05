@@ -763,6 +763,16 @@ public class out_json {
         FIELD_HANDLE(hdl_dat,name,valRef,code,dxf);
     }
 
+    static void FIELD_3DPOINT(Bit_Chain dat, String name, Dwg_Bitcode_3BD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_BD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.y,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.z,dat,dxf);
+        config.streamWriter.write(" ] ");
+    }
     static void FIELD_3BD(Bit_Chain dat, String name, Dwg_Bitcode_3BD value, int dxf) throws IOException {
         KEY(dat,_path_field(name));
         config.streamWriter.write("[ ");
@@ -991,6 +1001,8 @@ public class out_json {
             case DWG_TYPE_MLINESTYLE:
                 error = dwg_spec.dwg_json_MLINESTYLE("MLINESTYLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_MLINESTYLE);
                 break;
+            case DWG_TYPE_BLOCK_HEADER:
+                error = dwg_spec.dwg_json_BLOCK_HEADER("BLOCK_HEADER",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER);
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {
@@ -1331,5 +1343,10 @@ public class out_json {
             }
         }
         config.streamWriter.write("\"");
+    }
+
+    static void FIELD_NUM_INSERTS(Bit_Chain dat, String name, long value, int dxf)
+            throws IOException {
+        FIELD(name,value,dat,dxf);
     }
 }

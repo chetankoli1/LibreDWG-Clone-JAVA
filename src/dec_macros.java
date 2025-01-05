@@ -872,6 +872,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.MLINESTYLE;
+            case "BLOCK_HEADER":
+                if (objDwgObject.tio.BLOCK_HEADER == null)
+                {
+                    objDwgObject.tio.BLOCK_HEADER = new Dwg_Object_BLOCK_HEADER();
+                    objDwgObject.tio.BLOCK_HEADER.common.setParent(objDwgObject);
+                    return objDwgObject.tio.BLOCK_HEADER;
+                }
+                else
+                    return objDwgObject.tio.BLOCK_HEADER;
             case "UNKNOWN_OBJ":
                 if (objDwgObject.tio.UNKNOWN_OBJ == null)
                 {
@@ -1202,5 +1211,24 @@ public class dec_macros {
 
     static String FIELD_BINARY(Bit_Chain dat, int len, int dxf) {
         return bits.bit_read_TF(dat,len);
+    }
+
+    public static Dwg_Bitcode_3BD FIELD_3DPOINT(Bit_Chain dat, int dxf) {
+        return FIELD_3BD(dat,dxf);
+    }
+
+    static long FIELD_NUM_INSERTS(Bit_Chain dat, String type, int dxf)
+    {
+        long mInsert = 0;
+        int vcount = 0;
+        while ((vcount = (int)bits.bit_read_RC(dat)) != 0)
+        {
+            mInsert++;
+            if(vcount != 1){
+                bits.bit_advance_position(dat,-8);
+                break;
+            }
+        }
+        return mInsert;
     }
 }

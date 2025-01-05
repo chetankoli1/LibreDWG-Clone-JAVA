@@ -855,6 +855,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_MLINESTYLE:
                 error = dwg_spec.dwg_decode_MLINESTYLE("MLINESTYLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_MLINESTYLE);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER:
+                error = dwg_spec.dwg_decode_BLOCK_HEADER("BLOCK_HEADER",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK_HEADER);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {

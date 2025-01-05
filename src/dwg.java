@@ -1166,6 +1166,7 @@ class Dwg_Object_Object
         public Dwg_Object_APPID APPID;
         public Dwg_Object_LTYPE LTYPE;
         public Dwg_Object_MLINESTYLE MLINESTYLE;
+        public Dwg_Object_BLOCK_HEADER BLOCK_HEADER;
         public Dwg_Object_UNKNOWN_OBJ UNKNOWN_OBJ;
 
     }
@@ -1961,6 +1962,35 @@ class Dwg_Object_MLINESTYLE implements IParent {
     public void setParent(Dwg_Object_Object parent) {
         this.parent = parent;
     }
+}
+
+class Dwg_Object_BLOCK_HEADER extends Dwg_Object_With_COMMON_TABLE_FIELDS {
+    public long __iterator;
+    public char anonymous;
+    public char hasattrs;
+    public char blkisxref;
+    public char xrefoverlaid;
+    public char loaded_bit;
+    public long num_owned;
+    public Dwg_Bitcode_3BD base_pt;
+    public String xref_pname;
+    public long num_inserts;
+    public String description;
+    public long preview_size;
+    public String preview;
+    public int insert_units;
+    public char explodable;
+    public char block_scaling;
+    public Dwg_Object_Ref block_entity;
+    public Dwg_Object_Ref first_entity;
+    public Dwg_Object_Ref last_entity;
+    public Dwg_Object_Ref[] entities;
+    public Dwg_Object_Ref endblk_entity;
+    public Dwg_Object_Ref[] inserts;
+    public Dwg_Object_Ref layout;
+    public int flag2;
+    public char unknown_r11;
+    public long block_offset_r11;
 }
 
 class Dwg_LTYPE_dash {

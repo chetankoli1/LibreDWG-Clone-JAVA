@@ -1588,4 +1588,265 @@ public class dwg_spec {
 
         return error;
     }
+
+    static int dwg_decode_BLOCK_HEADER(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                     DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_BLOCK_HEADER blockHeader = obj.tio.object.tio.BLOCK_HEADER;
+
+        blockHeader.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+/*
+* DXF {
+    // not allowed to be skipped, can be 0
+    VALUE_HANDLE (_obj->layout, layout, 5, 340);
+    if (FIELD_VALUE (preview_size))
+      {
+        FIELD_BINARY (preview, FIELD_VALUE (preview_size), 310);
+      }
+    if (FIELD_VALUE (num_inserts))
+      {
+        VALUE_TFF ("{BLKREFS", 102);
+        HANDLE_VECTOR (inserts, num_inserts, 4, 331);
+        VALUE_TFF ("}", 102);
+      }
+    // The DXF TABLE.BLOCK_RECORD only has this. More later in the BLOCKS section.
+    return 0;
+  }
+* */
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            blockHeader.block_offset_r11 = dec_macros.FIELD_RLx(dat,"RL",0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            blockHeader.anonymous = dec_macros.FIELD_B(dat,"B",0);
+            blockHeader.hasattrs = dec_macros.FIELD_B(dat,"B",0);
+            blockHeader.blkisxref = dec_macros.FIELD_B(dat,"B",0);
+            blockHeader.xrefoverlaid = dec_macros.FIELD_B(dat,"B",0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            blockHeader.loaded_bit = dec_macros.FIELD_B(dat,"B",0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            blockHeader.common.flag |= blockHeader.anonymous | blockHeader.hasattrs << 1 |
+                    blockHeader.blkisxref << 2 | blockHeader.xrefoverlaid << 3;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+           blockHeader.num_owned = dec_macros.FIELD_BL(dat,"BL",0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            blockHeader.base_pt = dec_macros.FIELD_3DPOINT(dat,10);
+            blockHeader.xref_pname = dec_macros.FIELD_T(dat,obj,"T",1);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            blockHeader.num_inserts = dec_macros.FIELD_NUM_INSERTS(dat,"RL",0);
+            blockHeader.description = dec_macros.FIELD_T(dat,obj,"T",4);
+            if(specs.IS_JSON)
+            {
+                blockHeader.preview_size = dec_macros.FIELD_BL(dat,"BL",0);
+            } else {
+                if(blockHeader.preview_size < 0xa00000)
+                {
+                    blockHeader.preview = dec_macros.FIELD_BINARY(dat,(int)blockHeader.preview_size,310);
+                }
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            blockHeader.insert_units = dec_macros.FIELD_BS(dat,"BS",70);
+            blockHeader.explodable = dec_macros.FIELD_B(dat,"B",280);
+            blockHeader.block_scaling = dec_macros.FIELD_RC(dat,"RC",281);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+            blockHeader.block_entity = new Dwg_Object_Ref();
+            blockHeader.block_entity = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            if(blockHeader.blkisxref == 0 && blockHeader.xrefoverlaid == 0)
+            {
+                blockHeader.first_entity = new Dwg_Object_Ref();
+                blockHeader.first_entity = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,4,0);
+
+                blockHeader.last_entity = new Dwg_Object_Ref();
+                blockHeader.last_entity = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,4,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            if(blockHeader.num_owned < 0xf00000)
+            {
+                if(blockHeader.entities == null)
+                    blockHeader.entities = new Dwg_Object_Ref[(int)blockHeader.num_owned];
+
+                blockHeader.entities = dec_macros.HANDLE_VECTOR(hdl_dat,(int)blockHeader.num_owned,4,obj,objDwgData,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_13b1,dat)){
+            blockHeader.endblk_entity = new Dwg_Object_Ref();
+            blockHeader.endblk_entity = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,3,0);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat)){
+            if(blockHeader.num_inserts != 0 && blockHeader.num_inserts < 0xf00000)
+            {
+                if(blockHeader.inserts == null)
+                    blockHeader.inserts = new Dwg_Object_Ref[(int)blockHeader.num_inserts];
+
+                blockHeader.inserts = dec_macros.HANDLE_VECTOR(hdl_dat,(int)blockHeader.num_inserts,
+                        4,obj,objDwgData,0);
+            }
+            blockHeader.layout = new Dwg_Object_Ref();
+            blockHeader.layout = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+        }
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_BLOCK_HEADER(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                   DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_BLOCK_HEADER blockHeader = obj.tio.object.tio.BLOCK_HEADER;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,blockHeader.common);
+        /*
+* DXF {
+    // not allowed to be skipped, can be 0
+    VALUE_HANDLE (_obj->layout, layout, 5, 340);
+    if (FIELD_VALUE (preview_size))
+      {
+        FIELD_BINARY (preview, FIELD_VALUE (preview_size), 310);
+      }
+    if (FIELD_VALUE (num_inserts))
+      {
+        VALUE_TFF ("{BLKREFS", 102);
+        HANDLE_VECTOR (inserts, num_inserts, 4, 331);
+        VALUE_TFF ("}", 102);
+      }
+    // The DXF TABLE.BLOCK_RECORD only has this. More later in the BLOCKS section.
+    return 0;
+  }
+* */
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_RLx(dat,blockHeader.block_offset_r11,"block_offset_r11",0);
+/*
+* DECODER_OR_ENCODER {
+      if (_obj->block_offset_r11 >= 0x40000000)
+        {
+          BITCODE_RL off = _obj->block_offset_r11 & 0x3fffffff;
+          LOG_TRACE ("abs. offset => " FORMAT_RLx "\n",
+                     off + dwg->header.blocks_start);
+        }
+      else
+        {
+          LOG_TRACE ("abs. offset => " FORMAT_RLx "\n",
+                     _obj->block_offset_r11 + dwg->header.blocks_start);
+        }
+    }
+    if (!obj->size || obj->size == 38)
+      FIELD_RC (unknown_r11, 0);
+    SINCE (R_11)
+    {
+      FIELD_HANDLE (block_entity, 2, 0);
+      FIELD_RSd (flag2, 0);
+    }
+    FIELD_VALUE (anonymous)    = FIELD_VALUE (flag) & 1;
+    FIELD_VALUE (hasattrs)     = FIELD_VALUE (flag) & 2;
+    FIELD_VALUE (blkisxref)    = FIELD_VALUE (flag) & 4;
+    FIELD_VALUE (xrefoverlaid) = FIELD_VALUE (flag) & 8;
+* */
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_B(dat,"anonymous",blockHeader.anonymous,0);
+            out_json.FIELD_B(dat,"hasattrs",blockHeader.hasattrs,0);
+            out_json.FIELD_B(dat,"blkisxref",blockHeader.blkisxref,0);
+            out_json.FIELD_B(dat,"xrefoverlaid",blockHeader.xrefoverlaid,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_B(dat,"loaded_bit",blockHeader.loaded_bit,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            blockHeader.common.flag |= blockHeader.anonymous | blockHeader.hasattrs << 1 |
+                    blockHeader.blkisxref << 2 | blockHeader.xrefoverlaid << 3;
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            out_json.FIELD_BL(dat,"num_owned",blockHeader.num_owned,0);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_3DPOINT(dat,"base_pt",blockHeader.base_pt,10);
+            out_json.FIELD_T(dat,"xref_pname",blockHeader.xref_pname,1);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_NUM_INSERTS(dat,"num_inserts",blockHeader.num_inserts,0);
+            out_json.FIELD_T(dat,"description",blockHeader.description,4);
+            if(!specs.IS_JSON)
+            {
+                out_json.FIELD_BL(dat,"preview_size",blockHeader.preview_size,0);
+            } else {
+                out_json.FIELD_BINARY(dat,"preview",blockHeader.preview,(int)blockHeader.preview_size,310);
+            }
+        }
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_BS(dat,"insert_units",blockHeader.insert_units,70);
+            out_json.FIELD_B(dat,"explodable",blockHeader.explodable,280);
+            out_json.FIELD_RC("block_scaling",blockHeader.block_scaling,dat,281);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            //dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+            out_json.FIELD_HANDLE(dat,"block_entity",blockHeader.block_entity,3,0);
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_2000,dat))
+        {
+            if(blockHeader.blkisxref == 0 && blockHeader.xrefoverlaid == 0)
+            {
+                out_json.FIELD_HANDLE(dat,"first_entity",blockHeader.first_entity,4,0);
+                out_json.FIELD_HANDLE(dat,"last_entity",blockHeader.last_entity,4,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            if(blockHeader.num_owned < 0xf00000)
+            {
+                out_json.HANDLE_VECTOR(dat,blockHeader.entities,"entities",
+                        (int)blockHeader.num_owned,4,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_13b1,dat)){
+            out_json.FIELD_HANDLE(dat,"endblk_entity",blockHeader.endblk_entity,3,0);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat)){
+            if(blockHeader.num_inserts != 0 && blockHeader.num_inserts < 0xf00000)
+            {
+                out_json.HANDLE_VECTOR(dat,blockHeader.inserts,"entities",
+                        (int)blockHeader.num_inserts,4,0);
+            }
+            out_json.FIELD_HANDLE(dat,"layout",blockHeader.layout,5,0);
+        }
+
+        return error;
+
+    }
 }
