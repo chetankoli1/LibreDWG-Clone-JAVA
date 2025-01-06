@@ -1007,6 +1007,9 @@ public class out_json {
             case DWG_TYPE_BLOCK:
                 error = dwg_spec.dwg_json_BLOCK("BLOCK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK);
                 break;
+            case DWG_TYPE_ENDBLK:
+                dwg_spec.dwg_json_ENDBLK("ENDBLK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {

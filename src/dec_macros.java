@@ -1012,6 +1012,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgEntity.tio.BLOCK;
+            case "ENDBLK":
+                if (objDwgEntity.tio.ENDBLK == null)
+                {
+                    objDwgEntity.tio.ENDBLK = new Dwg_Entity_ENDBLK();
+                    objDwgEntity.tio.ENDBLK.setParent(objDwgEntity);
+                    return objDwgEntity.tio.ENDBLK;
+                }
+                else
+                    return objDwgEntity.tio.ENDBLK;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }

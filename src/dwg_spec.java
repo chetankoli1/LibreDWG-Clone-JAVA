@@ -1876,4 +1876,32 @@ public class dwg_spec {
         out_json.BLOCK_NAME(dat,"name",block.name,2,0);
         return error;
     }
+
+
+    static int dwg_decode_ENDBLK(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_ENDBLK block = obj.tio.entity.tio.ENDBLK;
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_ENDBLK(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                              DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_ENDBLK endblk = obj.tio.entity.tio.ENDBLK;
+
+        out_json.SUBCLASS(dat,"AcDbBlockEnd");
+
+        return error;
+    }
 }

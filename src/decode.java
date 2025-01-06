@@ -861,6 +861,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_BLOCK:
                 error = dwg_spec.dwg_decode_BLOCK("BLOCK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_BLOCK);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK:
+                error = dwg_spec.dwg_decode_ENDBLK("ENDBLK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {
