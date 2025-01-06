@@ -1204,6 +1204,7 @@ class Dwg_Object_Object
         public Dwg_Object_BLOCK_HEADER BLOCK_HEADER;
         public Dwg_Object_LAYOUT LAYOUT;
         public Dwg_Object_DIMSTYLE DIMSTYLE;
+        public Dwg_Object_VPORT VPORT;
         public Dwg_Object_UNKNOWN_OBJ UNKNOWN_OBJ;
 
     }
@@ -2273,6 +2274,57 @@ class Dwg_Object_DIMSTYLE extends Dwg_Object_With_COMMON_TABLE_FIELDS
     public Dwg_Object_Ref DIMLTYPE;
     public Dwg_Object_Ref DIMLTEX1;
     public Dwg_Object_Ref DIMLTEX2;
+}
+
+class Dwg_Object_VPORT extends Dwg_Object_With_COMMON_TABLE_FIELDS {
+    // AbstractViewTableRecord
+    public double VIEWSIZE;     // really the view height
+    public double view_width;   // in DWG r13+, needed to calc. aspect_ratio
+    public double aspect_ratio; // DXF 41 = view_width / VIEWSIZE
+    // ViInfo
+    public Dwg_Bitcode_2RD VIEWCTR;
+    public Dwg_Bitcode_3BD view_target;
+    public Dwg_Bitcode_3BD VIEWDIR;
+    public double view_twist;
+    public double lens_length;
+    public double front_clip_z;
+    public double back_clip_z;
+    public char VIEWMODE;
+    public char render_mode;
+    public char use_default_lights;
+    public char default_lightning_type;
+    public double brightness;
+    public double contrast;
+    public Dwg_Color ambient_color = new Dwg_Color();
+    // ViewportTableRecord
+    public Dwg_Bitcode_2RD lower_left;
+    public Dwg_Bitcode_2RD upper_right;
+    public char UCSFOLLOW;
+    public int circle_zoom; /* circle sides: nr of tesselations */
+    public char FASTZOOM;
+    public char UCSICON;     /* DXF 71:  0: icon_on, 1: icon_at_ucsorg */
+    public char GRIDMODE;     /* DXF 76: on or off */
+    public Dwg_Bitcode_2RD GRIDUNIT;
+    public char SNAPMODE;     /* DXF 75: on or off */
+    public char SNAPSTYLE;
+    public int SNAPISOPAIR;
+    public double SNAPANG;
+    public Dwg_Bitcode_2RD SNAPBASE;
+    public Dwg_Bitcode_2RD SNAPUNIT;
+    public char ucs_at_origin;
+    public char UCSVP;
+    public Dwg_Bitcode_3BD ucsorg;
+    public Dwg_Bitcode_3BD ucsxdir;
+    public Dwg_Bitcode_3BD ucsydir;
+    public double ucs_elevation;
+    public int UCSORTHOVIEW;
+    public int grid_flags; /* bit 1: bound to limits, bit 2: adaptive */
+    public int grid_major;
+    public Dwg_Object_Ref background;
+    public Dwg_Object_Ref visualstyle;
+    public Dwg_Object_Ref sun;
+    public Dwg_Object_Ref named_ucs;
+    public Dwg_Object_Ref base_ucs;
 }
 class Dwg_AuxHeader
 {

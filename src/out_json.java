@@ -1025,6 +1025,7 @@ public class out_json {
                 error = dwg_spec.dwg_json_POINT("POINT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_POINT);
                 break;
             case DWG_TYPE_VPORT:
+                error = dwg_spec.dwg_json_VPORT("VPORT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VPORT);
                 break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
@@ -1475,5 +1476,10 @@ public class out_json {
     static void FIELD_BE(Bit_Chain dat, String name, Dwg_Bitcode_3BD value, int dxf) throws IOException {
         Dwg_Bitcode_3RD temp = new Dwg_Bitcode_3RD(value);
         FIELD_3RD(dat,name,temp,dxf);
+    }
+
+    static void FIELD_4BIT(Bit_Chain dat, String name, char value, int dxf)
+            throws IOException {
+        FIELD(name,value,dat,dxf);
     }
 }

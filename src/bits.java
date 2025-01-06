@@ -1187,6 +1187,14 @@ public class bits {
         }
         return temp;
     }
+
+    static int bit_read_4BITS(Bit_Chain dat) {
+        int b = bit_read_B(dat) << 3 |
+                bit_read_B(dat) << 2 |
+                bit_read_B(dat) << 1 | bit_read_B(dat);
+
+        return b & 0xff;
+    }
 }
 class Bit_Chain {
     public char[] chain;

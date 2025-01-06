@@ -2472,4 +2472,201 @@ public class dwg_spec {
         }
         return error;
     }
+
+    static int dwg_decode_VPORT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Object_VPORT vport = obj.tio.object.tio.VPORT;
+        vport.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+        if(specs.DXF)
+        {
+
+        }
+        else { //DWG
+            if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+
+            }
+            else {
+                vport.VIEWSIZE = dec_macros.FIELD_BD(dat,"BD",40);
+                vport.view_width = dec_macros.FIELD_BD(dat,"BD",0);
+                if(specs.DECODER)
+                {
+                    vport.aspect_ratio = (vport.VIEWSIZE == 0.0) ? 0.0 : (vport.view_width / vport.VIEWSIZE);
+                }
+                if(specs.JSON)
+                {
+                    vport.aspect_ratio = dec_macros.FIELD_BD(dat,"BD",0);
+                }
+                vport.VIEWCTR = new Dwg_Bitcode_2RD();
+                vport.VIEWCTR = dec_macros.FIELD_2RD(dat,12);
+
+                vport.view_target = new Dwg_Bitcode_3BD();
+                vport.view_target = dec_macros.FIELD_3BD(dat,17);
+
+                vport.VIEWDIR = new Dwg_Bitcode_3BD();
+                vport.VIEWDIR = dec_macros.FIELD_3BD(dat,16);
+
+                vport.view_twist = dec_macros.FIELD_BD(dat,"BD",51);
+                vport.lens_length = dec_macros.FIELD_BD(dat,"BD",42);
+                vport.front_clip_z = dec_macros.FIELD_BD(dat,"BD",43);
+                vport.back_clip_z = dec_macros.FIELD_BD(dat,"BD",44);
+
+                vport.VIEWMODE = dec_macros.FIELD_4BIT(dat,"4BIT",71);
+                if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+                {
+                    vport.render_mode = dec_macros.FIELD_RC(dat,"RC",281);
+                }
+                if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+                {
+
+                }
+                vport.lower_left = new Dwg_Bitcode_2RD();
+                vport.lower_left = dec_macros.FIELD_2RD(dat,10);
+                vport.upper_right = new Dwg_Bitcode_2RD();
+                vport.upper_right = dec_macros.FIELD_2RD(dat,11);
+                vport.UCSFOLLOW = dec_macros.FIELD_B(dat,"B",0);
+                vport.circle_zoom = dec_macros.FIELD_BS(dat,"BS",72);
+                vport.FASTZOOM = dec_macros.FIELD_B(dat,"B",73);
+                vport.UCSICON = (char)dec_macros.FIELD_BB(dat,"BB",74);
+                vport.GRIDMODE = dec_macros.FIELD_B(dat,"B",73);
+                vport.GRIDUNIT = new Dwg_Bitcode_2RD();
+                vport.GRIDUNIT = dec_macros.FIELD_2RD(dat,15);
+                vport.SNAPMODE = dec_macros.FIELD_B(dat,"B",75);
+                vport.SNAPSTYLE = dec_macros.FIELD_B(dat,"B",77);
+                vport.SNAPISOPAIR = dec_macros.FIELD_B(dat,"BS",78);
+                if(objDwgData.header.dwg_version != 0x1a)
+                {
+                    vport.SNAPANG = dec_macros.FIELD_BD(dat,"BD",50);
+                    vport.SNAPBASE = new Dwg_Bitcode_2RD();
+                    vport.SNAPBASE = dec_macros.FIELD_2RD(dat,13);
+                }
+                vport.SNAPUNIT = new Dwg_Bitcode_2RD();
+                vport.SNAPUNIT = dec_macros.FIELD_2RD(dat,14);
+                if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+                {
+                    vport.ucs_at_origin = dec_macros.FIELD_B(dat,"B",0);
+                    vport.UCSVP = dec_macros.FIELD_B(dat,"B",71);
+                    vport.ucsorg = new Dwg_Bitcode_3BD();
+                    vport.ucsorg = dec_macros.FIELD_3BD(dat,110);
+                    vport.ucsxdir = new Dwg_Bitcode_3BD();
+                    vport.ucsxdir = dec_macros.FIELD_3BD(dat,111);
+                    vport.ucsydir = new Dwg_Bitcode_3BD();
+                    vport.ucsydir = dec_macros.FIELD_3BD(dat,112);
+                    vport.ucs_elevation = dec_macros.FIELD_BD(dat,"BD",146);
+                    vport.UCSORTHOVIEW = dec_macros.FIELD_BS(dat,"BS",79);
+                }
+                if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+                {
+
+                }
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+            {
+                dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                vport.named_ucs = new Dwg_Object_Ref();
+                vport.named_ucs = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,345);
+
+                vport.base_ucs = new Dwg_Object_Ref();
+                vport.base_ucs = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,3467);
+            }
+        }//DWG end
+
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_VPORT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                              DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Object_VPORT vport = obj.tio.object.tio.VPORT;
+
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,vport.common);
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        }
+        else {
+            out_json.FIELD_BD(dat,"VIEWSIZE",vport.VIEWSIZE,40);
+            out_json.FIELD_BD(dat,"view_width",vport.view_width,0);
+            if(specs.DECODER)
+            {
+                vport.aspect_ratio = (vport.VIEWSIZE == 0.0) ? 0.0 : (vport.view_width / vport.VIEWSIZE);
+            }
+            if(specs.JSON)
+            {
+                out_json.FIELD_BD(dat,"aspect_ratio",vport.aspect_ratio,0);
+            }
+            out_json.FIELD_2RD(dat,"VIEWCTR",vport.VIEWCTR,0);
+            out_json.FIELD_3BD(dat,"view_target",vport.view_target,0);
+            out_json.FIELD_3BD(dat,"VIEWDIR",vport.VIEWDIR,0);
+            out_json.FIELD_BD(dat,"view_twist",vport.view_twist,51);
+            out_json.FIELD_BD(dat,"lens_length",vport.lens_length,42);
+            out_json.FIELD_BD(dat,"front_clip_z",vport.front_clip_z,43);
+            out_json.FIELD_BD(dat,"back_clip_z",vport.back_clip_z,44);
+            out_json.FIELD_4BIT(dat,"VIEWMODE",vport.VIEWMODE,71);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                out_json.FIELD_RC("render_mode",vport.render_mode,dat,281);
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+
+            }
+            out_json.FIELD_2RD(dat,"lower_left",vport.lower_left,0);
+            out_json.FIELD_2RD(dat,"upper_right",vport.upper_right,0);
+            out_json.FIELD_B(dat,"UCSFOLLOW",vport.UCSFOLLOW,0);
+            out_json.FIELD_BS(dat,"circle_zoom",vport.circle_zoom,0);
+            out_json.FIELD_B(dat,"FASTZOOM",vport.FASTZOOM,0);
+            out_json.FIELD_BB(dat,"UCSICON",vport.UCSICON,0);
+            out_json.FIELD_B(dat,"GRIDMODE",vport.GRIDMODE,0);
+            out_json.FIELD_2RD(dat,"GRIDUNIT",vport.GRIDUNIT,0);
+            out_json.FIELD_B(dat,"SNAPMODE",vport.SNAPMODE,0);
+            out_json.FIELD_B(dat,"SNAPSTYLE",vport.SNAPSTYLE,0);
+            out_json.FIELD_BS(dat,"SNAPISOPAIR",vport.SNAPISOPAIR,0);
+            if(objDwgData.header.dwg_version != 0x1a)
+            {
+                out_json.FIELD_BD(dat,"SNAPANG",vport.SNAPANG,50);
+                out_json.FIELD_2RD(dat,"SNAPBASE",vport.SNAPBASE,50);
+            }
+            out_json.FIELD_2RD(dat,"SNAPUNIT",vport.SNAPUNIT,0);
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+            {
+                out_json.FIELD_B(dat,"ucs_at_origin",vport.ucs_at_origin,0);
+                out_json.FIELD_B(dat,"UCSVP",vport.UCSVP,0);
+                out_json.FIELD_3BD(dat,"ucsorg",vport.ucsorg,0);
+                out_json.FIELD_3BD(dat,"ucsxdir",vport.ucsxdir,0);
+                out_json.FIELD_3BD(dat,"ucsydir",vport.ucsydir,0);
+                out_json.FIELD_BD(dat,"ucs_elevation",vport.ucs_elevation,0);
+                out_json.FIELD_BS(dat,"UCSORTHOVIEW",vport.UCSORTHOVIEW,0);
+            }
+            if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+            {
+
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            //dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_HANDLE(dat,"named_ucs",vport.named_ucs,5,345);
+            out_json.FIELD_HANDLE(dat,"base_ucs",vport.base_ucs,5,345);
+        }
+
+        return error;
+    }
 }

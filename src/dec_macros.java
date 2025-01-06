@@ -243,6 +243,7 @@ public class dec_macros {
             case "TV" -> bits.bit_read_TV(dat);
             case "BB" -> bits.bit_read_BB(dat);
             case "BT" -> bits.bit_read_BT(dat);
+            case "4BITS" -> bits.bit_read_4BITS(dat);
             default -> null;
         };
     }
@@ -1017,6 +1018,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.DIMSTYLE;
+            case "VPORT":
+                if (objDwgObject.tio.VPORT == null)
+                {
+                    objDwgObject.tio.VPORT = new Dwg_Object_VPORT();
+                    objDwgObject.tio.VPORT.common.setParent(objDwgObject);
+                    return objDwgObject.tio.VPORT;
+                }
+                else
+                    return objDwgObject.tio.VPORT;
             case "UNKNOWN_OBJ":
                 if (objDwgObject.tio.UNKNOWN_OBJ == null)
                 {
@@ -1467,5 +1477,9 @@ public class dec_macros {
 
     static Dwg_Bitcode_3BD FIELD_BE(Bit_Chain dat, int dxf) {
         return bits.bit_read_BE(dat);
+    }
+
+    static char FIELD_4BIT(Bit_Chain dat, String type, int dxf) {
+        return (char)bits.bit_read_4BITS(dat);
     }
 }

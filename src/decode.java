@@ -871,6 +871,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 error = dwg_spec.dwg_decode_POINT("POINT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_POINT);
                 break;
             case DWG_OBJECT_TYPE.DWG_TYPE_VPORT:
+                error = dwg_spec.dwg_decode_VPORT("VPORT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VPORT);
                 break;
             default:
                 if(obj.type == objDwgData.layout_type)
