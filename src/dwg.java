@@ -1033,6 +1033,12 @@ class Dwg_Bitcode_3BD {
     {
 
     }
+    Dwg_Bitcode_3BD(Dwg_Bitcode_3RD val)
+    {
+        this.x = val.x;
+        this.y = val.y;
+        this.z = val.z;
+    }
 }
 class Dwg_Bitcode_3RD {
     public double x;
@@ -1048,6 +1054,12 @@ class Dwg_Bitcode_3RD {
     {
 
     }
+    Dwg_Bitcode_3RD(Dwg_Bitcode_3BD val)
+    {
+        this.x = val.x;
+        this.y = val.y;
+        this.z = val.z;
+    }
 }
 class Dwg_Bitcode_2BD {
     public double x;
@@ -1060,6 +1072,11 @@ class Dwg_Bitcode_2BD {
     Dwg_Bitcode_2BD()
     {
 
+    }
+    Dwg_Bitcode_2BD(Dwg_Bitcode_2RD val)
+    {
+        this.x = val.x;
+        this.y = val.y;
     }
 }
 class Dwg_Bitcode_2RD {
@@ -1074,8 +1091,14 @@ class Dwg_Bitcode_2RD {
     {
 
     }
+    Dwg_Bitcode_2RD(Dwg_Bitcode_2BD val)
+    {
+        this.x = val.x;
+        this.y = val.y;
+    }
 }
-class Dwg_Entity_POINT{
+class Dwg_Entity_POINT implements IParentEntity{
+    public Dwg_Object_Entity parent;
     public double x;
     public double y;
     public double z;
@@ -1083,6 +1106,15 @@ class Dwg_Entity_POINT{
     public Dwg_Bitcode_3BD extrusion;
     public double x_ang;
 
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
 }
 class Dwg_Object_Entity
 {
@@ -1170,6 +1202,8 @@ class Dwg_Object_Object
         public Dwg_Object_LTYPE LTYPE;
         public Dwg_Object_MLINESTYLE MLINESTYLE;
         public Dwg_Object_BLOCK_HEADER BLOCK_HEADER;
+        public Dwg_Object_LAYOUT LAYOUT;
+        public Dwg_Object_DIMSTYLE DIMSTYLE;
         public Dwg_Object_UNKNOWN_OBJ UNKNOWN_OBJ;
 
     }
@@ -1995,7 +2029,6 @@ class Dwg_Object_BLOCK_HEADER extends Dwg_Object_With_COMMON_TABLE_FIELDS {
     public char unknown_r11;
     public long block_offset_r11;
 }
-
 class Dwg_LTYPE_dash {
     public Dwg_Object_LTYPE parent = new Dwg_Object_LTYPE();
     public double length;
@@ -2042,7 +2075,205 @@ class Dwg_Entity_ENDBLK implements IParentEntity {
         this.parent = parent;
     }
 }
+class Dwg_Object_LAYOUT implements IParent {
+    private Dwg_Object_Object parent;
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
 
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+
+    public Dwg_Object_PLOTSETTINGS plotsettings = new Dwg_Object_PLOTSETTINGS();
+
+    public String layout_name;
+    public int tab_order;
+    public int layout_flags;
+    public Dwg_Bitcode_3BD INSBASE;
+    public Dwg_Bitcode_2RD LIMMIN;
+    public Dwg_Bitcode_2RD LIMMAX;
+    public Dwg_Bitcode_3BD UCSORG;
+    public Dwg_Bitcode_3BD UCSXDIR;
+    public Dwg_Bitcode_3BD UCSYDIR;
+    public double ucs_elevation;
+    public int UCSORTHOVIEW;
+    public Dwg_Bitcode_3BD EXTMIN;
+    public Dwg_Bitcode_3BD EXTMAX;
+    public Dwg_Object_Ref block_header;
+    public Dwg_Object_Ref active_viewport;
+    public Dwg_Object_Ref base_ucs;
+    public Dwg_Object_Ref named_ucs;
+    public long num_viewports; // r2004+
+    public Dwg_Object_Ref[] viewports;
+}
+
+class Dwg_Object_PLOTSETTINGS implements IParent {
+    private Dwg_Object_Object parent;
+    @Override
+    public Dwg_Object_Object getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Object parent) {
+        this.parent = parent;
+    }
+
+    public String printer_cfg_file;
+    public String paper_size;           /*!< DXF 2 */
+    public String canonical_media_name; /*!< DXF 4 */
+    public short plot_flags;          /*!< DXF 70
+                                 1 = PlotViewportBorders
+                                 2 = ShowPlotStyles
+                                 4 = PlotCentered
+                                 8 = PlotHidden
+                                 16 = UseStandardScale
+                                 32 = PlotPlotStyles
+                                 64 = ScaleLineweights
+                                 128 = PrintLineweights
+                                 512 = DrawViewportsFirst
+                                 1024 = ModelType
+                                 2048 = UpdatePaper
+                                 4096 = ZoomToPaperOnUpdate
+                                 8192 = Initializing
+                                 16384 = PrevPlotInit */
+    public Dwg_Object_Ref plotview;             /*!< DXF 6, r2004+ */
+    public String plotview_name;        /*!< DXF 6, until r2000 */
+    public double left_margin;         /*!< DXF 40, margins in mm */
+    public double bottom_margin;       /*!< DXF 42 */
+    public double right_margin;        /*!< DXF 43 */
+    public double top_margin;          /*!< DXF 44 */
+    public double paper_width;         /*!< DXF 44, in mm */
+    public double paper_height;        /*!< DXF 45, in mm */
+    public Dwg_Bitcode_2BD plot_origin;      /*!< DXF 46,47 */
+    public Dwg_Bitcode_2BD plot_window_ll;   /*!< DXF 48,49 */
+    public Dwg_Bitcode_2BD plot_window_ur;   /*!< DXF 140,141 */
+    public int plot_paper_unit;     /*!< DXF 72,  0 inches, 1 mm, 2 pixel */
+    public int plot_rotation_mode; /*!< DXF 73,  0 normal, 1 90, 2 180, 3 270 deg */
+    public int plot_type; /*!< DXF 74,  0 display, 1 extents, 2 limits, 3 view
+                           (see DXF 6), 4 window (see 48-140), 5 layout */
+    public double paper_units;   /*!< DXF 142 */
+    public double drawing_units; /*!< DXF 143 */
+    public String stylesheet;     /*!< DXF 7 */
+    public int
+            std_scale_type;               /*!< DXF 75, 0 = scaled to fit,
+                                      1 = 1/128"=1', 2 = 1/64"=1', 3 = 1/32"=1'
+                                      4 = 1/16"=1', 5 = 3/32"=1', 6 = 1/8"=1'
+                                      7 = 3/16"=1', 8 = 1/4"=1', 9 = 3/8"=1'
+                                      10 = 1/2"=1', 11 = 3/4"=1', 12 = 1"=1'
+                                      13 = 3"=1', 14 = 6"=1', 15 = 1'=1'
+                                      16 = 1:1, 17= 1:2, 18 = 1:4 19 = 1:8, 20 = 1:10, 21=
+                                      1:16               22 = 1:20, 23 = 1:30, 24 = 1:40, 25 = 1:50, 26 =
+                                      1:100               27 = 2:1, 28 = 4:1, 29 = 8:1, 30 = 10:1, 31 =
+                                      100:1, 32 = 1000:1
+                                    */
+    public double std_scale_factor;      /*!< DXF 147, value of 75 */
+    Dwg_Bitcode_2BD paper_image_origin; /*!< DXF 148 + 149 */
+    public int shadeplot_type; /*!< DXF 76, 0 display, 1 wireframe, 2 hidden, 3
+                                rendered, 4 visualstyle, 5 renderPreset */
+    public int
+            shadeplot_reslevel;         /*!< DXF 77, 0 draft, 1 preview, 2 nomal,
+                                               3 presentation, 4 maximum, 5 custom */
+    public int shadeplot_customdpi; /*!< DXF 78, 100-32767 */
+    public Dwg_Object_Ref shadeplot;            /*!< DXF 333 optional. As in VIEWPORT */
+}
+class Dwg_Object_DIMSTYLE extends Dwg_Object_With_COMMON_TABLE_FIELDS
+{
+    public char DIMTOL;
+    public char DIMLIM;
+    public char DIMTIH;
+    public char DIMTOH;
+    public char DIMSE1;
+    public char DIMSE2;
+    public char DIMALT;
+    public char DIMTOFL;
+    public char DIMSAH;
+    public char DIMTIX;
+    public char DIMSOXD;
+    public int DIMALTD;   /*!< r13-r14 only RC */
+    public int DIMZIN;    /*!< r13-r14 only RC */
+    public char DIMSD1;
+    public char DIMSD2;
+    public int DIMTOLJ;   /*!< r13-r14 only RC */
+    public int DIMJUST;   /*!< r13-r14 only RC */
+    public int DIMFIT;    /*!< r13-r14 only RC */
+    public char DIMUPT;
+    public int DIMTZIN;   /*!< r13-r14 only RC */
+    public int DIMALTZ;   /*!< r13-r14 only RC */
+    public int DIMALTTZ;  /*!< r13-r14 only RC */
+    public int DIMTAD;    /*!< r13-r14 only RC */
+    public int DIMUNIT;
+    public int DIMAUNIT;
+    public int DIMDEC;
+    public int DIMTDEC;
+    public int DIMALTU;
+    public int DIMALTTD;
+    /* BITCODE_H DIMTXSTY; */
+    public double DIMSCALE;
+    public double DIMASZ;
+    public double DIMEXO;
+    public double DIMDLI;
+    public double DIMEXE;
+    public double DIMRND;
+    public double DIMDLE;
+    public double DIMTP;
+    public double DIMTM;
+    public double DIMFXL;
+    public double DIMJOGANG;
+    public double DIMTFILL;
+    public Dwg_Color DIMTFILLCLR = new Dwg_Color();
+    public int DIMAZIN;
+    public int DIMARCSYM;
+    public double DIMTXT;
+    public double DIMCEN;
+    public double DIMTSZ;
+    public double DIMALTF;
+    public double DIMLFAC;
+    public double DIMTVP;
+    public double DIMTFAC;
+    public double DIMGAP;
+    public String DIMPOST;
+    public String DIMAPOST;
+    public String DIMBLK_T;
+    public String DIMBLK1_T;
+    public String DIMBLK2_T;
+    public double DIMALTRND;
+    public short DIMCLRD_N; /* preR13 */
+    public short DIMCLRE_N; /* preR13 */
+    public short DIMCLRT_N; /* preR13 */
+    public Dwg_Color DIMCLRD = new Dwg_Color();
+    public Dwg_Color DIMCLRE = new Dwg_Color();
+    public Dwg_Color DIMCLRT = new Dwg_Color();
+    public int DIMADEC;
+    public int DIMFRAC;
+    public int DIMLUNIT;
+    public int DIMDSEP;
+    public int DIMTMOVE;
+    public int DIMATFIT;
+    public char DIMFXLON;   /*!< r2007+ */
+    public char DIMTXTDIRECTION; /*!< r2010+ */
+    public double DIMALTMZF; /*!< r2010+ */
+    public String  DIMALTMZS; /*!< r2010+ */
+    public double DIMMZF;    /*!< r2010+ */
+    public String DIMMZS;    /*!< r2010+ */
+    public int DIMLWD;
+    public int DIMLWE;
+    public char flag0;
+
+    public Dwg_Object_Ref DIMTXSTY;
+
+    public Dwg_Object_Ref DIMLDRBLK;
+    public Dwg_Object_Ref DIMBLK;
+    public Dwg_Object_Ref DIMBLK1;
+    public Dwg_Object_Ref DIMBLK2;
+
+    public Dwg_Object_Ref DIMLTYPE;
+    public Dwg_Object_Ref DIMLTEX1;
+    public Dwg_Object_Ref DIMLTEX2;
+}
 class Dwg_AuxHeader
 {
     public char[] aux_intro;

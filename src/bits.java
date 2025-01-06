@@ -456,6 +456,7 @@ public class bits {
         }
     }
 
+
 //    static String bit_u_expand(char[] src) {
 //        char[] ret = src;
 //        char[] p = src;
@@ -1131,6 +1132,60 @@ public class bits {
         }
 
         return strBits;
+    }
+    public static int bit_empty_T(Bit_Chain dat, String str) {
+        if (str == null) {
+            return 1;
+        }
+        if (!IS_FROM_TU(dat)) {
+            return str.isEmpty() ? 1 : 0;
+        } else {
+            int c;
+            if ((System.identityHashCode(str) % Integer.BYTES) != 0) {
+                byte[] bytes = str.getBytes();
+                c = TU_to_int(bytes);
+                return (c == 0) ? 1 : 0;
+            }
+            c = str.codePointAt(0);
+            return (c == 0) ? 1 : 0;
+        }
+    }
+    public static int TU_to_int(byte[] b) {
+        if (b.length < 2) {
+            throw new IllegalArgumentException("Byte array must have at least 2 bytes");
+        }
+        return ((b[1] & 0xFF) << 8) | (b[0] & 0xFF);
+    }
+    /**
+     * Read bit-thickness.
+     *
+     * @param dat The Bit_Chain object containing the data to be read.
+     * @return The bit-thickness value.
+     */
+    public static double bit_read_BT(Bit_Chain dat) {
+        int mode = 0;
+        if (dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2000.ordinal()) {
+            mode = bit_read_B(dat);
+        }
+        return (mode != 0) ? 0.0 : bit_read_BD(dat);
+    }
+
+    static Dwg_Bitcode_3BD bit_read_BE(Bit_Chain dat) {
+        Dwg_Bitcode_3BD temp = new Dwg_Bitcode_3BD();
+        if(dat.from_version.ordinal() >= DWG_VERSION_TYPE.R_2000.ordinal() && bit_read_B(dat) != 0)
+        {
+            temp.x = 0.0;
+            temp.y = 0.0;
+            temp.z = 1.0;
+        }
+        else {
+            temp.x = bit_read_BD(dat);
+            temp.y = bit_read_BD(dat);
+            temp.z = bit_read_BD(dat);
+            if(temp.x == 0.0 && temp.y == 0.0)
+                temp.z = (temp.z <= 0.0) ? -1.0 : 1.0;
+        }
+        return temp;
     }
 }
 class Bit_Chain {

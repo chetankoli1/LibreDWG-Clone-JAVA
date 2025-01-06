@@ -385,7 +385,7 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             klass.is_zombie = (char)bits.bit_read_B(dat);
             klass.item_class_id = bits.bit_read_BS(dat);
 
-            if (new String(klass.dxfname).equals("LAYOUT" ) && klass.dxfname != null)
+            if (new String(klass.dxfname).trim().equals("LAYOUT" ) && klass.dxfname != null)
             {
                 objDwgData.layout_type = klass.number;
             }
@@ -863,6 +863,14 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
                 break;
             case DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK:
                 error = dwg_spec.dwg_decode_ENDBLK("ENDBLK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE:
+                error = dwg_spec.dwg_decode_DIMSTYLE("DIMSTYLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_POINT:
+                error = dwg_spec.dwg_decode_POINT("POINT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_POINT);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_VPORT:
                 break;
             default:
                 if(obj.type == objDwgData.layout_type)

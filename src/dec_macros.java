@@ -242,6 +242,7 @@ public class dec_macros {
             case "B" -> bits.bit_read_B(dat);
             case "TV" -> bits.bit_read_TV(dat);
             case "BB" -> bits.bit_read_BB(dat);
+            case "BT" -> bits.bit_read_BT(dat);
             default -> null;
         };
     }
@@ -253,6 +254,13 @@ public class dec_macros {
             return DWG_ERROR.DWG_ERR_VALUEOUTOFBOUNDS.value;
         }
         return val;
+    }
+    static double FIELD_BD1(Bit_Chain dat, String type, int dxf)
+    {
+        return FIELD_BD(dat,type,dxf);
+    }
+    static double FIELD_BD0(Bit_Chain dat, String type, int dxf){
+        return FIELD_BD(dat,type,dxf);
     }
 
     static String FIELD_TV(Bit_Chain dat, String type, int dxf) {
@@ -528,6 +536,10 @@ public class dec_macros {
             return null;
         }
         return val;
+    }
+    static Dwg_Bitcode_2BD FIELD_2BD_1(Bit_Chain dat, int dxf)
+    {
+        return FIELD_2BD(dat,dxf);
     }
 
     static Dwg_Bitcode_2RD FIELD_2RD(Bit_Chain dat, int dxf) {
@@ -987,6 +999,24 @@ public class dec_macros {
                 }
                 else
                     return objDwgObject.tio.BLOCK_HEADER;
+            case "LAYOUT":
+                if (objDwgObject.tio.LAYOUT == null)
+                {
+                    objDwgObject.tio.LAYOUT = new Dwg_Object_LAYOUT();
+                    objDwgObject.tio.LAYOUT.setParent(objDwgObject);
+                    return objDwgObject.tio.LAYOUT;
+                }
+                else
+                    return objDwgObject.tio.LAYOUT;
+            case "DIMSTYLE":
+                if (objDwgObject.tio.DIMSTYLE == null)
+                {
+                    objDwgObject.tio.DIMSTYLE = new Dwg_Object_DIMSTYLE();
+                    objDwgObject.tio.DIMSTYLE.common.setParent(objDwgObject);
+                    return objDwgObject.tio.DIMSTYLE;
+                }
+                else
+                    return objDwgObject.tio.DIMSTYLE;
             case "UNKNOWN_OBJ":
                 if (objDwgObject.tio.UNKNOWN_OBJ == null)
                 {
@@ -1021,6 +1051,16 @@ public class dec_macros {
                 }
                 else
                     return objDwgEntity.tio.ENDBLK;
+
+            case "POINT":
+                if (objDwgEntity.tio.POINT == null)
+                {
+                    objDwgEntity.tio.POINT = new Dwg_Entity_POINT();
+                    objDwgEntity.tio.POINT.setParent(objDwgEntity);
+                    return objDwgEntity.tio.POINT;
+                }
+                else
+                    return objDwgEntity.tio.POINT;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -1311,6 +1351,10 @@ public class dec_macros {
         }
         return null;
     }
+    static String FIELD_T0(Bit_Chain dat, Dwg_Object obj, String type, int dxf)
+    {
+        return FIELD_T(dat,obj,type,dxf);
+    }
 
     static String FIELD_TFv(Bit_Chain dat, int size, int dxf) {
         return bits.bit_read_TF(dat,size);
@@ -1411,5 +1455,17 @@ public class dec_macros {
 
     static String BLOCK_NAME(Bit_Chain dat, Bit_Chain strDat, Dwg_Object obj, int dxf) {
         return FIELD_T(dat,obj,"T",dxf);
+    }
+
+    static double FIELD_BT0(Bit_Chain dat, String type, int dxf) {
+        return FIELD_BT(dat,type,dxf);
+    }
+
+    static double FIELD_BT(Bit_Chain dat, String type, int dxf) {
+        return bits.bit_read_BT(dat);
+    }
+
+    static Dwg_Bitcode_3BD FIELD_BE(Bit_Chain dat, int dxf) {
+        return bits.bit_read_BE(dat);
     }
 }

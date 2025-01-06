@@ -819,28 +819,6 @@ public class dwg_spec {
         return error;
     }
 
-    static int dwg_decode_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat,
-                                 Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
-    {
-        int error = 0;
-        Bit_Chain hdl_dat = new Bit_Chain(dat);
-        Bit_Chain str_dat = dat;
-        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
-
-        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
-    }
-
-    static int dwg_json_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
-                               DWG_OBJECT_TYPE type) throws IOException {
-        int error = 0;
-        Bit_Chain hdl_dat = new Bit_Chain();
-        Bit_Chain str_dat = new Bit_Chain(dat);
-        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
-        Dwg_Object_LAYER layer = obj.tio.object.tio.LAYER;
-
-        return error;
-    }
-
     static int dwg_decode_LAYER(String name, Dwg_Object obj, Bit_Chain dat,
                                  Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
     {
@@ -1902,6 +1880,596 @@ public class dwg_spec {
 
         out_json.SUBCLASS(dat,"AcDbBlockEnd");
 
+        return error;
+    }
+
+
+    static int dwg_decode_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat,
+                                 Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = dec_macros.dwg_decode_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LAYOUT layout = obj.tio.object.tio.LAYOUT;
+
+        layout.plotsettings.printer_cfg_file = dec_macros.FIELD_T(dat,obj,"T",1);
+        layout.plotsettings.paper_size = dec_macros.FIELD_T(dat,obj,"T",2);
+        if(specs.DXF)
+        {
+            layout.plotsettings.canonical_media_name = dec_macros.FIELD_T(dat,obj,"T",4);
+            layout.plotsettings.plotview_name = dec_macros.FIELD_T(dat,obj,"T",6);
+        }
+        layout.plotsettings.plot_flags = (short)dec_macros.FIELD_BSx(dat,"BS",0);
+
+        layout.plotsettings.left_margin = dec_macros.FIELD_BD(dat,"BD",40);
+        layout.plotsettings.bottom_margin = dec_macros.FIELD_BD(dat,"BD",41);
+        layout.plotsettings.right_margin = dec_macros.FIELD_BD(dat,"BD",42);
+        layout.plotsettings.top_margin = dec_macros.FIELD_BD(dat,"BD",43);
+        layout.plotsettings.paper_width = dec_macros.FIELD_BD(dat,"BD",44);
+        layout.plotsettings.paper_height = dec_macros.FIELD_BD(dat,"BD",45);
+        layout.plotsettings.canonical_media_name = dec_macros.FIELD_T(dat,obj,"T",0);
+        layout.plotsettings.plot_origin = dec_macros.FIELD_2BD_1(dat,46);
+
+        layout.plotsettings.plot_paper_unit = dec_macros.FIELD_BS(dat,"BS",0);
+        layout.plotsettings.plot_rotation_mode = dec_macros.FIELD_BS(dat,"BS",0);
+        layout.plotsettings.plot_type = dec_macros.FIELD_BS(dat,"BS",0);
+        layout.plotsettings.plot_window_ll = dec_macros.FIELD_2BD_1(dat,48);
+        layout.plotsettings.plot_window_ur = dec_macros.FIELD_2BD_1(dat,140);
+        if(commen.UNTIL(DWG_VERSION_TYPE.R_2002,dat))
+        {
+            if(specs.ENCODER)
+            {
+
+            }
+        }
+        layout.plotsettings.plotview_name = dec_macros.FIELD_T(dat,obj,"T",6);
+        if(specs.DECODER)
+        {
+            if(layout.plotsettings.plotview == null && bits.bit_empty_T(dat,layout.plotsettings.plotview_name) == 1)
+            {
+                layout.plotsettings.plotview = new Dwg_Object_Ref();
+               // layout.plotsettings.plotview =
+            }
+        }
+        if(specs.FREE)
+        {
+
+        }
+        layout.plotsettings.paper_units = dec_macros.FIELD_BD(dat,"BD",142);
+        layout.plotsettings.drawing_units = dec_macros.FIELD_BD(dat,"BD",143);
+        if(specs.DXF)
+        {
+            layout.plotsettings.plot_flags = (short)dec_macros.FIELD_BS(dat,"BS",70);
+            layout.plotsettings.plot_paper_unit = dec_macros.FIELD_BS(dat,"BS",70);
+            layout.plotsettings.plot_rotation_mode = dec_macros.FIELD_BS(dat,"BS",70);
+            layout.plotsettings.plot_type = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        layout.plotsettings.stylesheet = dec_macros.FIELD_T(dat,obj,"T",7);
+        layout.plotsettings.std_scale_type = dec_macros.FIELD_BS(dat,"BS",75);
+        layout.plotsettings.std_scale_factor = dec_macros.FIELD_BD(dat,"BD",147);
+        layout.plotsettings.paper_image_origin = dec_macros.FIELD_2BD_1(dat,148);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            layout.plotsettings.shadeplot_type = dec_macros.FIELD_BS(dat,"BS",76);
+            layout.plotsettings.shadeplot_reslevel = dec_macros.FIELD_BS(dat,"BS",77);
+            layout.plotsettings.shadeplot_customdpi = dec_macros.FIELD_BS(dat,"BS",78);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            layout.plotsettings.shadeplot = new Dwg_Object_Ref();
+            layout.plotsettings.shadeplot = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,4,333);
+        }
+
+        layout.layout_name = dec_macros.FIELD_T(dat,obj,"T",1);
+        if(specs.DXF)
+        {
+            layout.layout_flags = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        layout.tab_order = dec_macros.FIELD_BS(dat,"BS",71);
+        layout.layout_flags = dec_macros.FIELD_BSx(dat,"BS",0);
+        layout.INSBASE = dec_macros.FIELD_3DPOINT(dat,0);
+        layout.LIMMIN = dec_macros.FIELD_2RD(dat,10);
+        layout.LIMMAX = dec_macros.FIELD_2RD(dat,11);
+        if(specs.DXF)
+        {
+            layout.INSBASE = dec_macros.FIELD_3DPOINT(dat,0);
+            layout.EXTMIN = dec_macros.FIELD_3DPOINT(dat,0);
+            layout.EXTMAX = dec_macros.FIELD_3DPOINT(dat,0);
+            layout.ucs_elevation = dec_macros.FIELD_BD(dat,"BD",146);
+        }
+        layout.UCSORG = dec_macros.FIELD_3DPOINT(dat,0);
+        layout.UCSXDIR = dec_macros.FIELD_3DPOINT(dat,0);
+        layout.UCSYDIR = dec_macros.FIELD_3DPOINT(dat,0);
+        layout.ucs_elevation = dec_macros.FIELD_BD(dat,"BD",0);
+        layout.UCSORTHOVIEW = dec_macros.FIELD_BS(dat,"BS",0);
+        layout.EXTMIN = dec_macros.FIELD_3DPOINT(dat,0);
+        layout.EXTMAX = dec_macros.FIELD_3DPOINT(dat,0);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            layout.num_viewports = dec_macros.FIELD_BL(dat,"BL",0);
+        }
+        dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+
+        layout.block_header = new Dwg_Object_Ref();
+        layout.block_header = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,4,330);
+
+        layout.active_viewport = new Dwg_Object_Ref();
+        layout.active_viewport = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,4,331);
+
+        layout.base_ucs = new Dwg_Object_Ref();
+        layout.base_ucs = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,331);
+
+        layout.named_ucs = new Dwg_Object_Ref();
+        layout.named_ucs = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,331);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            if(layout.viewports == null)
+                layout.viewports = new Dwg_Object_Ref[(int)layout.num_viewports];
+
+            layout.viewports = dec_macros.HANDLE_VECTOR(hdl_dat,(int)layout.num_viewports,4,obj,objDwgData,0);
+        }
+        return dec_macros.DWG_OBJECT_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_LAYOUT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain();
+        Bit_Chain str_dat = new Bit_Chain(dat);
+        error = out_json.dwg_json_token(dat,obj,name,type,hdl_dat,str_dat);
+        Dwg_Object_LAYOUT layout = obj.tio.object.tio.LAYOUT;
+
+        out_json.SUBCLASS(dat,"AcDbPlotSettings");
+        out_json.FIELD_T(dat,"plotsettings.printer_cfg_file",layout.plotsettings.printer_cfg_file,1);
+        out_json.FIELD_T(dat,"plotsettings.paper_size",layout.plotsettings.paper_size.trim(),2);
+        if(specs.DXF)
+        {
+            out_json.FIELD_T(dat,"plotsettings.printer_cfg_file",layout.plotsettings.canonical_media_name,4);
+            out_json.FIELD_T(dat,"plotsettings.plotview_name",layout.plotsettings.plotview_name.trim(),6);
+        }
+        out_json.FIELD_BSx(dat,"plotsettings.plot_flags",layout.plotsettings.plot_flags,0);
+
+        out_json.FIELD_BD(dat,"plotsettings.left_margin",layout.plotsettings.left_margin,40);
+        out_json.FIELD_BD(dat,"plotsettings.bottom_margin",layout.plotsettings.bottom_margin,41);
+        out_json.FIELD_BD(dat,"plotsettings.right_margin",layout.plotsettings.right_margin,42);
+        out_json.FIELD_BD(dat,"plotsettings.top_margin",layout.plotsettings.top_margin,43);
+        out_json.FIELD_BD(dat,"plotsettings.paper_width",layout.plotsettings.paper_width,44);
+        out_json.FIELD_BD(dat,"plotsettings.paper_height",layout.plotsettings.paper_height,45);
+
+        out_json.FIELD_T(dat,"plotsettings.canonical_media_name",layout.plotsettings.canonical_media_name,0);
+        out_json.FIELD_2BD_1(dat,"plotsettings.plot_origin",layout.plotsettings.plot_origin,46);
+
+        out_json.FIELD_BS(dat,"plotsettings.plot_paper_unit",layout.plotsettings.plot_paper_unit,0);
+        out_json.FIELD_BS(dat,"plotsettings.plot_rotation_mode",layout.plotsettings.plot_rotation_mode,0);
+        out_json.FIELD_BS(dat,"plotsettings.plot_type",layout.plotsettings.plot_type,0);
+        out_json.FIELD_2BD_1(dat,"plotsettings.plot_window_ll",layout.plotsettings.plot_window_ll,0);
+        out_json.FIELD_2BD_1(dat,"plotsettings.plot_window_ur",layout.plotsettings.plot_window_ur,0);
+        if(commen.UNTIL(DWG_VERSION_TYPE.R_2002,dat))
+        {
+            if(specs.ENCODER)
+            {
+
+            }
+        }
+        out_json.FIELD_T(dat,"plotsettings.plotview_name",layout.plotsettings.plotview_name ,0);
+        if(specs.DECODER)
+        {
+            if(layout.plotsettings.plotview == null && bits.bit_empty_T(dat,layout.plotsettings.plotview_name) == 1)
+            {
+                layout.plotsettings.plotview = new Dwg_Object_Ref();
+                // layout.plotsettings.plotview =
+            }
+        }
+        if(specs.FREE)
+        {
+
+        }
+        out_json.FIELD_BD(dat,"plotsettings.paper_units",layout.plotsettings.paper_units,142);
+        out_json.FIELD_BD(dat,"plotsettings.drawing_units",layout.plotsettings.drawing_units,143);
+        if(specs.DXF)
+        {
+//            layout.plotsettings.plot_flags = (short)dec_macros.FIELD_BS(dat,"BS",70);
+//            layout.plotsettings.plot_paper_unit = dec_macros.FIELD_BS(dat,"BS",70);
+//            layout.plotsettings.plot_rotation_mode = dec_macros.FIELD_BS(dat,"BS",70);
+//            layout.plotsettings.plot_type = dec_macros.FIELD_BS(dat,"BS",70);
+        }
+        out_json.FIELD_T(dat,"plotsettings.stylesheet",layout.plotsettings.stylesheet,7);
+        out_json.FIELD_BS(dat,"plotsettings.std_scale_type",layout.plotsettings.std_scale_type,75);
+        out_json.FIELD_BD(dat,"plotsettings.std_scale_factor",layout.plotsettings.std_scale_factor,147);
+        out_json.FIELD_2BD_1(dat,"plotsettings.paper_image_origin",layout.plotsettings.paper_image_origin,148);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            out_json.FIELD_BS(dat,"plotsettings.shadeplot_type",layout.plotsettings.shadeplot_type,76);
+            out_json.FIELD_BS(dat,"plotsettings.shadeplot_reslevel",layout.plotsettings.shadeplot_reslevel,77);
+            out_json.FIELD_BS(dat,"plotsettings.shadeplot_customdpi",layout.plotsettings.shadeplot_customdpi,78);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_HANDLE(dat,"plotsettings.shadeplot",layout.plotsettings.shadeplot,4,333);
+        }
+
+
+        out_json.SUBCLASS(dat,"AcDbLayout");
+        out_json.FIELD_T(dat,"layout_name",layout.layout_name,1);
+        if(specs.DXF)
+        {
+            out_json.FIELD_BS(dat,"layout_flags",layout.layout_flags,70);
+        }
+        out_json.FIELD_BS(dat,"tab_order",layout.tab_order,71);
+        out_json.FIELD_BSx(dat,"layout_flags",(short) layout.layout_flags,0);
+        out_json.FIELD_3DPOINT(dat,"INSBASE",layout.INSBASE,0);
+        out_json.FIELD_2RD(dat,"LIMMIN",layout.LIMMIN,10);
+        out_json.FIELD_2RD(dat,"LIMMAX",layout.LIMMAX,10);
+        if(specs.DXF)
+        {
+            out_json.FIELD_3DPOINT(dat,"INSBASE",layout.INSBASE,0);
+            out_json.FIELD_3DPOINT(dat,"EXTMIN",layout.EXTMIN,0);
+            out_json.FIELD_3DPOINT(dat,"EXTMAX",layout.EXTMAX,0);
+            out_json.FIELD_BD(dat,"ucs_elevation",layout.ucs_elevation,146);
+        }
+        out_json.FIELD_3DPOINT(dat,"UCSORG",layout.UCSORG,0);
+        out_json.FIELD_3DPOINT(dat,"UCSXDIR",layout.UCSXDIR,0);
+        out_json.FIELD_3DPOINT(dat,"UCSYDIR",layout.UCSYDIR,0);
+        out_json.FIELD_BD(dat,"ucs_elevation",layout.ucs_elevation,0);
+        out_json.FIELD_BS(dat,"UCSORTHOVIEW",layout.UCSORTHOVIEW,0);
+        out_json.FIELD_3DPOINT(dat,"EXTMIN",layout.EXTMIN,0);
+        out_json.FIELD_3DPOINT(dat,"EXTMAX",layout.EXTMAX,0);
+
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            out_json.FIELD_BL(dat,"num_viewports",layout.num_viewports,0);
+        }
+//        dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+        out_json.FIELD_HANDLE(dat,"block_header",layout.block_header,4,330);
+        out_json.FIELD_HANDLE(dat,"active_viewport",layout.active_viewport,4,331);
+        out_json.FIELD_HANDLE(dat,"base_ucs",layout.base_ucs,5,331);
+        out_json.FIELD_HANDLE(dat,"named_ucs",layout.named_ucs,5,331);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2004a,dat))
+        {
+            out_json.HANDLE_VECTOR(dat,layout.viewports,"viewports",(int)layout.num_viewports,4,0);
+        }
+        return error;
+    }
+
+    static int dwg_decode_DIMSTYLE(String name, Dwg_Object obj, Bit_Chain dat,
+                                 Dwg_Data objDwgData, DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Object_DIMSTYLE dimstyle = obj.tio.object.tio.DIMSTYLE;
+
+        dimstyle.common = dec_macros.COMMON_TABLE_FLAGS_READ(name,dat,hdl_dat,str_dat,obj,objDwgData);
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        }
+
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+
+        }
+        else if(specs.DXF)
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            dimstyle.DIMPOST = dec_macros.FIELD_T0(dat,obj,"T",3);
+            dimstyle.DIMAPOST = dec_macros.FIELD_T0(dat,obj,"T",4);
+            dimstyle.DIMSCALE = dec_macros.FIELD_BD1(dat,"BD",40);
+            dimstyle.DIMASZ = dec_macros.FIELD_BD0(dat,"BD",41);
+            dimstyle.DIMEXO = dec_macros.FIELD_BD0(dat,"BD",42);
+            dimstyle.DIMDLI = dec_macros.FIELD_BD0(dat,"BD",43);
+            dimstyle.DIMEXE = dec_macros.FIELD_BD0(dat,"BD",44);
+            dimstyle.DIMRND = dec_macros.FIELD_BD0(dat,"BD",45);
+            dimstyle.DIMDLE = dec_macros.FIELD_BD0(dat,"BD",46);
+            dimstyle.DIMTP = dec_macros.FIELD_BD0(dat,"BD",47);
+            dimstyle.DIMTM = dec_macros.FIELD_BD0(dat,"BD",48);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            dimstyle.DIMTOL = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMLIM = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMTIH = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMTOH = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMSE1 = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMSE2 = dec_macros.FIELD_B(dat,"B",71);
+            dimstyle.DIMTAD = dec_macros.FIELD_BS(dat,"BS",71);
+            dimstyle.DIMZIN = dec_macros.FIELD_BS(dat,"BS",71);
+            dimstyle.DIMAZIN = dec_macros.FIELD_BS(dat,"BS",71);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            dimstyle.DIMTXT = dec_macros.FIELD_BD(dat,"BD",140);
+            dimstyle.DIMCEN = dec_macros.FIELD_BD(dat,"BD",141);
+            dimstyle.DIMTSZ = dec_macros.FIELD_BD(dat,"BD",142);
+            dimstyle.DIMALTF = dec_macros.FIELD_BD(dat,"BD",143);
+            dimstyle.DIMLFAC = dec_macros.FIELD_BD(dat,"BD",144);
+            dimstyle.DIMTVP = dec_macros.FIELD_BD(dat,"BD",145);
+            dimstyle.DIMTFAC = dec_macros.FIELD_BD(dat,"BD",146);
+            dimstyle.DIMGAP = dec_macros.FIELD_BD(dat,"BD",147);
+            dimstyle.DIMALTRND = dec_macros.FIELD_BD(dat,"BD",148);
+            dimstyle.DIMALT = dec_macros.FIELD_B(dat,"B",170);
+            dimstyle.DIMALTD = dec_macros.FIELD_BS(dat,"BS",171);
+            dimstyle.DIMTOFL = dec_macros.FIELD_B(dat,"B",172);
+            dimstyle.DIMSAH = dec_macros.FIELD_B(dat,"B",173);
+            dimstyle.DIMTIX = dec_macros.FIELD_B(dat,"B",174);
+            dimstyle.DIMSOXD = dec_macros.FIELD_B(dat,"B",175);
+            dimstyle.DIMCLRD = dec_macros.FIELD_CMC(dat,str_dat,176);
+            dimstyle.DIMCLRE = dec_macros.FIELD_CMC(dat,str_dat,177);
+            dimstyle.DIMCLRT = dec_macros.FIELD_CMC(dat,str_dat,178);
+            dimstyle.DIMADEC = dec_macros.FIELD_BS(dat,"BS",179);
+            dimstyle.DIMDEC = dec_macros.FIELD_BS(dat,"BS",271);
+            dimstyle.DIMTDEC = dec_macros.FIELD_BS(dat,"BS",272);
+            dimstyle.DIMALTU = dec_macros.FIELD_BS(dat,"BS",273);
+            dimstyle.DIMALTTD = dec_macros.FIELD_BS(dat,"BS",274);
+            dimstyle.DIMAUNIT = dec_macros.FIELD_BS(dat,"BS",275);
+            dimstyle.DIMFRAC = dec_macros.FIELD_BS(dat,"BS",276);
+            dimstyle.DIMLUNIT = dec_macros.FIELD_BS(dat,"BS",277);
+            dimstyle.DIMDSEP = dec_macros.FIELD_BS(dat,"BS",278);
+            dimstyle.DIMTMOVE = dec_macros.FIELD_BS(dat,"BS",279);
+            dimstyle.DIMJUST = dec_macros.FIELD_BS(dat,"BS",280);
+            dimstyle.DIMSD1 = dec_macros.FIELD_B(dat,"B",281);
+            dimstyle.DIMSD2 = dec_macros.FIELD_B(dat,"B",282);
+            dimstyle.DIMTOLJ = dec_macros.FIELD_BS(dat,"BS",283);
+            dimstyle.DIMTZIN = dec_macros.FIELD_BS(dat,"BS",284);
+            dimstyle.DIMALTZ = dec_macros.FIELD_BS(dat,"BS",285);
+            dimstyle.DIMALTTZ = dec_macros.FIELD_BS(dat,"BS",286);
+            dimstyle.DIMUPT = dec_macros.FIELD_B(dat,"B",288);
+            dimstyle.DIMATFIT = dec_macros.FIELD_BS(dat,"BS",289);
+            dimstyle.DIMTXSTY = new Dwg_Object_Ref();
+            dimstyle.DIMTXSTY = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,340);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2010b,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            dimstyle.DIMLWD = dec_macros.FIELD_BSd(dat,"BSd","BS",371);
+            dimstyle.DIMLWE = dec_macros.FIELD_BSd(dat,"BSd","BS",372);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            dimstyle.flag0 = dec_macros.FIELD_B(dat,"B",0);
+            dimstyle.common.flag |= dimstyle.flag0;
+            dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+            if(commen.UNTIL(DWG_VERSION_TYPE.R_14,dat))
+            {
+                dimstyle.DIMTXSTY = new Dwg_Object_Ref();
+                dimstyle.DIMTXSTY = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            dimstyle.DIMLDRBLK = new Dwg_Object_Ref();
+            dimstyle.DIMLDRBLK = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,341);
+
+            dimstyle.DIMBLK = new Dwg_Object_Ref();
+            dimstyle.DIMBLK = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,342);
+
+            dimstyle.DIMBLK1 = new Dwg_Object_Ref();
+            dimstyle.DIMBLK1 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,343);
+
+            dimstyle.DIMBLK2 = new Dwg_Object_Ref();
+            dimstyle.DIMBLK2 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,344);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            dimstyle.DIMLTYPE = new Dwg_Object_Ref();
+            dimstyle.DIMLTYPE = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,345);
+
+            dimstyle.DIMLTEX1 = new Dwg_Object_Ref();
+            dimstyle.DIMLTEX1 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,346);
+
+            dimstyle.DIMLTEX2 = new Dwg_Object_Ref();
+            dimstyle.DIMLTEX2 = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,347);
+        }
+
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+    static int dwg_json_DIMSTYLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Object_DIMSTYLE dimstyle = obj.tio.object.tio.DIMSTYLE;
+        out_json.COMMON_TABLE_FLAGS_WRITE(name,dat,hdl_dat,str_dat,obj,objDwgData,dimstyle.common);
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        }
+
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+
+        }
+        else if(specs.DXF)
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_T(dat,"DIMPOST",dimstyle.DIMPOST,3);
+            out_json.FIELD_T(dat,"DIMAPOST",dimstyle.DIMAPOST,4);
+            out_json.FIELD_BD(dat,"DIMSCALE",dimstyle.DIMSCALE,40);
+            out_json.FIELD_BD(dat,"DIMASZ",dimstyle.DIMASZ,40);
+            out_json.FIELD_BD(dat,"DIMEXO",dimstyle.DIMEXO,40);
+            out_json.FIELD_BD(dat,"DIMDLI",dimstyle.DIMDLI,40);
+            out_json.FIELD_BD(dat,"DIMEXE",dimstyle.DIMEXE,40);
+            out_json.FIELD_BD(dat,"DIMRND",dimstyle.DIMRND,40);
+            out_json.FIELD_BD(dat,"DIMDLE",dimstyle.DIMDLE,40);
+            out_json.FIELD_BD(dat,"DIMTP",dimstyle.DIMTP,40);
+            out_json.FIELD_BD(dat,"DIMTM",dimstyle.DIMTM,40);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_B(dat,"DIMTOL",dimstyle.DIMTOL,71);
+            out_json.FIELD_B(dat,"DIMLIM",dimstyle.DIMLIM,71);
+            out_json.FIELD_B(dat,"DIMTIH",dimstyle.DIMTIH,72);
+            out_json.FIELD_B(dat,"DIMTOH",dimstyle.DIMTOH,73);
+            out_json.FIELD_B(dat,"DIMSE1",dimstyle.DIMSE1,74);
+            out_json.FIELD_B(dat,"DIMSE2",dimstyle.DIMSE2,75);
+            out_json.FIELD_BS(dat,"DIMTAD",dimstyle.DIMTAD,76);
+            out_json.FIELD_BS(dat,"DIMZIN",dimstyle.DIMZIN,77);
+            out_json.FIELD_BS(dat,"DIMAZIN",dimstyle.DIMAZIN,78);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_BD(dat,"DIMTXT",dimstyle.DIMTXT,140);
+            out_json.FIELD_BD(dat,"DIMCEN",dimstyle.DIMCEN,140);
+            out_json.FIELD_BD(dat,"DIMTSZ",dimstyle.DIMTSZ,140);
+            out_json.FIELD_BD(dat,"DIMALTF",dimstyle.DIMALTF,140);
+            out_json.FIELD_BD(dat,"DIMLFAC",dimstyle.DIMLFAC,140);
+            out_json.FIELD_BD(dat,"DIMTVP",dimstyle.DIMTVP,140);
+            out_json.FIELD_BD(dat,"DIMTFAC",dimstyle.DIMTFAC,140);
+            out_json.FIELD_BD(dat,"DIMGAP",dimstyle.DIMGAP,140);
+            out_json.FIELD_BD(dat,"DIMALTRND",dimstyle.DIMALTRND,140);
+            out_json.FIELD_B(dat,"DIMALT",dimstyle.DIMALT,170);
+            out_json.FIELD_BS(dat,"DIMALTD",dimstyle.DIMALTD,170);
+            out_json.FIELD_B(dat,"DIMTOFL",dimstyle.DIMTOFL,170);
+            out_json.FIELD_B(dat,"DIMSAH",dimstyle.DIMSAH,170);
+            out_json.FIELD_B(dat,"DIMTIX",dimstyle.DIMTIX,170);
+            out_json.FIELD_B(dat,"DIMSOXD",dimstyle.DIMSOXD,170);
+            out_json.FIELD_CMC(dat,"DIMCLRD",dimstyle.DIMCLRD,176);
+            out_json.FIELD_CMC(dat,"DIMCLRE",dimstyle.DIMCLRE,176);
+            out_json.FIELD_CMC(dat,"DIMCLRT",dimstyle.DIMCLRT,176);
+            out_json.FIELD_BS(dat,"DIMADEC",dimstyle.DIMADEC,179);
+            out_json.FIELD_BS(dat,"DIMDEC",dimstyle.DIMDEC,179);
+            out_json.FIELD_BS(dat,"DIMTDEC",dimstyle.DIMTDEC,179);
+            out_json.FIELD_BS(dat,"DIMALTU",dimstyle.DIMALTU,179);
+            out_json.FIELD_BS(dat,"DIMALTTD",dimstyle.DIMALTTD,179);
+            out_json.FIELD_BS(dat,"DIMAUNIT",dimstyle.DIMAUNIT,179);
+            out_json.FIELD_BS(dat,"DIMFRAC",dimstyle.DIMFRAC,179);
+            out_json.FIELD_BS(dat,"DIMLUNIT",dimstyle.DIMLUNIT,179);
+            out_json.FIELD_BS(dat,"DIMDSEP",dimstyle.DIMDSEP,179);
+            out_json.FIELD_BS(dat,"DIMTMOVE",dimstyle.DIMTMOVE,179);
+            out_json.FIELD_BS(dat,"DIMJUST",dimstyle.DIMJUST,179);
+            out_json.FIELD_B(dat,"DIMSD1",dimstyle.DIMSD1,281);
+            out_json.FIELD_B(dat,"DIMSD2",dimstyle.DIMSD2,179);
+            out_json.FIELD_BS(dat,"DIMTOLJ",dimstyle.DIMTOLJ,179);
+            out_json.FIELD_BS(dat,"DIMTZIN",dimstyle.DIMTZIN,179);
+            out_json.FIELD_BS(dat,"DIMALTZ",dimstyle.DIMALTZ,179);
+            out_json.FIELD_BS(dat,"DIMALTTZ",dimstyle.DIMALTTZ,179);
+            out_json.FIELD_B(dat,"DIMUPT",dimstyle.DIMUPT,179);
+            out_json.FIELD_BS(dat,"DIMATFIT",dimstyle.DIMATFIT,179);
+            out_json.FIELD_HANDLE(dat,"DIMTXSTY",dimstyle.DIMTXSTY,5,340);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2010b,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_BSd(dat,"DIMLWD",(short)dimstyle.DIMLWD,371);
+            out_json.FIELD_BSd(dat,"DIMLWE",(short)dimstyle.DIMLWE,371);
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_B(dat,"flag0",dimstyle.flag0,0);
+            //dimstyle.common.flag |= dimstyle.flag0;
+            //dec_macros.START_OBJECT_HANDLE_STREAM(dat,obj);
+            if(commen.UNTIL(DWG_VERSION_TYPE.R_14,dat))
+            {
+                out_json.FIELD_HANDLE(hdl_dat,"DIMTXSTY",dimstyle.DIMTXSTY,5,0);
+            }
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLDRBLK",dimstyle.DIMLDRBLK,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK",dimstyle.DIMBLK,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK1",dimstyle.DIMBLK1,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMBLK2",dimstyle.DIMBLK2,5,0);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2007a,dat))
+        {
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTYPE",dimstyle.DIMLTYPE,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTEX1",dimstyle.DIMLTEX1,5,0);
+            out_json.FIELD_HANDLE(hdl_dat,"DIMLTEX2",dimstyle.DIMLTEX2,5,0);
+        }
+        return error;
+    }
+
+    static int dwg_decode_POINT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                 DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_POINT point = obj.tio.entity.tio.POINT;
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        } else { //LATER_VERSIONS
+            point.x = dec_macros.FIELD_BD(dat,"BD",10);
+            point.y = dec_macros.FIELD_BD(dat,"BD",20);
+            point.z = dec_macros.FIELD_BD(dat,"BD",30);
+            point.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+            point.extrusion = new Dwg_Bitcode_3BD();
+            point.extrusion = dec_macros.FIELD_BE(dat,210);
+            point.x_ang = dec_macros.FIELD_BD(dat,"BD",50);
+        }
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_POINT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_POINT point = obj.tio.entity.tio.POINT;
+
+        out_json.SUBCLASS(dat,"AcDbPoint");
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        } else { //LATER_VERSIONS
+            out_json.FIELD_BD(dat,"x",point.x,10);
+            out_json.FIELD_BD(dat,"y",point.y,20);
+            out_json.FIELD_BD(dat,"z",point.z,30);
+            out_json.FIELD_BT0(dat,"thickness",point.thickness,39);
+            out_json.FIELD_BE(dat,"extrusion",point.extrusion,210);
+            out_json.FIELD_BD(dat,"x_ang",point.x_ang,50);;
+        }
         return error;
     }
 }

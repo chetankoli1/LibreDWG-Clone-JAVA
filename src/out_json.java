@@ -631,7 +631,7 @@ public class out_json {
 
 
         }
-        return dest;
+        return dest.trim();
 
     }
 
@@ -803,6 +803,14 @@ public class out_json {
         config.streamWriter.write(" ] ");
     }
     static void FIELD_2BD(Bit_Chain dat, String name, Dwg_Bitcode_2BD value, int dxf) throws IOException {
+        KEY(dat,_path_field(name));
+        config.streamWriter.write("[ ");
+        _VALUE_BD(value.x,dat,dxf);
+        config.streamWriter.write(", ");
+        _VALUE_BD(value.y,dat,dxf);
+        config.streamWriter.write(" ] ");
+    }
+    static void FIELD_2BD_1(Bit_Chain dat, String name, Dwg_Bitcode_2BD value, int dxf) throws IOException {
         KEY(dat,_path_field(name));
         config.streamWriter.write("[ ");
         _VALUE_BD(value.x,dat,dxf);
@@ -1009,6 +1017,14 @@ public class out_json {
                 break;
             case DWG_TYPE_ENDBLK:
                 dwg_spec.dwg_json_ENDBLK("ENDBLK",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ENDBLK);
+                break;
+            case DWG_TYPE_DIMSTYLE:
+                dwg_spec.dwg_json_DIMSTYLE("DIMSTYLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_DIMSTYLE);
+                break;
+            case DWG_TYPE_POINT:
+                error = dwg_spec.dwg_json_POINT("POINT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_POINT);
+                break;
+            case DWG_TYPE_VPORT:
                 break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
@@ -1450,5 +1466,14 @@ public class out_json {
 
     static void BLOCK_NAME(Bit_Chain dat, String name, String value, int length, int dxf) throws IOException {
         out_json.FIELD_T(dat,name,value,dxf);
+    }
+
+    static void FIELD_BT0(Bit_Chain dat, String name, double value, int dxf) throws IOException {
+        FIELD(name,(int)value,dat,dxf);
+    }
+
+    static void FIELD_BE(Bit_Chain dat, String name, Dwg_Bitcode_3BD value, int dxf) throws IOException {
+        Dwg_Bitcode_3RD temp = new Dwg_Bitcode_3RD(value);
+        FIELD_3RD(dat,name,temp,dxf);
     }
 }
