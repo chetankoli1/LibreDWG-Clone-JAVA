@@ -1084,6 +1084,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgEntity.tio.LINE;
+            case "CIRCLE":
+                if (objDwgEntity.tio.CIRCLE == null)
+                {
+                    objDwgEntity.tio.CIRCLE = new Dwg_Entity_CIRCLE();
+                    objDwgEntity.tio.CIRCLE.setParent(objDwgEntity);
+                    return objDwgEntity.tio.CIRCLE;
+                }
+                else
+                    return objDwgEntity.tio.CIRCLE;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }

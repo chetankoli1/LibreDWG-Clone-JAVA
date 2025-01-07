@@ -1030,6 +1030,9 @@ public class out_json {
             case DWG_TYPE_LINE:
                 error = dwg_spec.dwg_json_LINE("LINE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LINE);
                 break;
+            case DWG_TYPE_CIRCLE:
+                error = dwg_spec.dwg_json_CIRCLE("CIRCLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_CIRCLE);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {

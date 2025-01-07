@@ -1136,6 +1136,7 @@ class Dwg_Object_Entity
         public Dwg_Entity_BLOCK BLOCK;
         public Dwg_Entity_LINE LINE;
         public Dwg_Entity_ENDBLK ENDBLK;
+        public Dwg_Entity_CIRCLE CIRCLE;
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -2357,6 +2358,24 @@ class Dwg_Entity_LINE implements IParentEntity {
     public void setParent(Dwg_Object_Entity parent) {
         this.parent = parent;
     }
+}
+
+class Dwg_Entity_CIRCLE implements IParentEntity{
+    private Dwg_Object_Entity parent;
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
+
+    public Dwg_Bitcode_3BD center;
+    public double radius;
+    public double thickness;
+    public Dwg_Bitcode_3BD extrusion;
 }
 class Dwg_AuxHeader
 {

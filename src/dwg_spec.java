@@ -2796,14 +2796,54 @@ public class dwg_spec {
         }
         if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
         {
-            line.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
-            line.extrusion = new Dwg_Bitcode_3BD();
-            line.extrusion = dec_macros.FIELD_BE(dat,210);
-
             out_json.FIELD_BT0(dat,"thickness",line.thickness,39);
             out_json.FIELD_BE(dat,"extrusion",line.extrusion,210);
         }
        // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+
+        return error;
+    }
+
+    static int dwg_decode_CIRCLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_CIRCLE circle = obj.tio.entity.tio.CIRCLE;
+        circle.center = new Dwg_Bitcode_3BD();
+        circle.extrusion = new Dwg_Bitcode_3BD();
+
+        circle.center = dec_macros.FIELD_3BD(dat,10);
+        circle.radius = dec_macros.FIELD_BD(dat,"BD",40);
+        circle.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+        circle.extrusion = dec_macros.FIELD_BE(dat,210);
+
+
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_CIRCLE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                             DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        out_json.SUBCLASS(dat,"AcDbCircle");
+
+        Dwg_Entity_CIRCLE circle = obj.tio.entity.tio.CIRCLE;
+
+        out_json.FIELD_3BD(dat,"center",circle.center,10);
+        out_json.FIELD_BD(dat,"radius",circle.radius,40);
+        out_json.FIELD_BT0(dat,"thickness",circle.thickness,39);
+        out_json.FIELD_BE(dat,"extrusion",circle.extrusion,210);
+
+        // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
 
         return error;
     }
