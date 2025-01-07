@@ -2857,11 +2857,15 @@ public class dwg_spec {
         dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
 
         Dwg_Entity_ARC arc = obj.tio.entity.tio.ARC;
+        arc.center = new Dwg_Bitcode_3BD();
         arc.extrusion = new Dwg_Bitcode_3BD();
 
+        arc.center = dec_macros.FIELD_3BD(dat,10);
+        arc.radius = dec_macros.FIELD_BD(dat,"BD",40);
         arc.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
         arc.extrusion = dec_macros.FIELD_BE(dat,210);
-
+        arc.start_angle = dec_macros.FIELD_BD(dat,"BD",50);
+        arc.end_angle = dec_macros.FIELD_BD(dat,"BD",51);
 
         dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
         return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
@@ -2876,11 +2880,15 @@ public class dwg_spec {
         error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
 
         out_json.SUBCLASS(dat,"AcDbCircle");
-
         Dwg_Entity_ARC arc = obj.tio.entity.tio.ARC;
 
+        out_json.FIELD_3BD(dat,"center",arc.center,10);
+        out_json.FIELD_BD(dat,"radius",arc.radius,40);
         out_json.FIELD_BT0(dat,"thickness",arc.thickness,39);
         out_json.FIELD_BE(dat,"extrusion",arc.extrusion,210);
+        out_json.SUBCLASS(dat,"AcDbArc");
+        out_json.FIELD_BD(dat,"start_angle",arc.start_angle,40);
+        out_json.FIELD_BD(dat,"end_angle",arc.end_angle,40);
 
         // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
 
