@@ -873,6 +873,9 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_VPORT:
                 error = dwg_spec.dwg_decode_VPORT("VPORT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VPORT);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_LINE:
+                error = dwg_spec.dwg_decode_LINE("LINE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LINE);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {

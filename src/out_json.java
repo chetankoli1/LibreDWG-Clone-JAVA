@@ -797,7 +797,7 @@ public class out_json {
     static void FIELD_2RD(Bit_Chain dat, String name, Dwg_Bitcode_2RD value, int dxf) throws IOException {
         KEY(dat,_path_field(name));
         config.streamWriter.write("[ ");
-        _VALUE_RD(value.x,dat,dxf);
+        _VALUE_BD(value.x,dat,dxf);
         config.streamWriter.write(", ");
         _VALUE_RD(value.y,dat,dxf);
         config.streamWriter.write(" ] ");
@@ -1026,6 +1026,9 @@ public class out_json {
                 break;
             case DWG_TYPE_VPORT:
                 error = dwg_spec.dwg_json_VPORT("VPORT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_VPORT);
+                break;
+            case DWG_TYPE_LINE:
+                error = dwg_spec.dwg_json_LINE("LINE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_LINE);
                 break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)

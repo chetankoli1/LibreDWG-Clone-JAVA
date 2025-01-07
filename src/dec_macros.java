@@ -1,4 +1,7 @@
 import javax.swing.*;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -543,9 +546,10 @@ public class dec_macros {
         return FIELD_2BD(dat,dxf);
     }
 
+    private static final DecimalFormat formatter = new DecimalFormat("0.0###############");
     static Dwg_Bitcode_2RD FIELD_2RD(Bit_Chain dat, int dxf) {
         Dwg_Bitcode_2RD val = new Dwg_Bitcode_2RD();
-        val.x = bits.bit_read_RD(dat);
+        val.x =bits.bit_read_RD(dat);
         val.y = bits.bit_read_RD(dat);
         if(bits.bit_isnan(val.x) || bits.bit_isnan(val.y))
         {
@@ -1071,6 +1075,15 @@ public class dec_macros {
                 }
                 else
                     return objDwgEntity.tio.POINT;
+            case "LINE":
+                if (objDwgEntity.tio.LINE == null)
+                {
+                    objDwgEntity.tio.LINE = new Dwg_Entity_LINE();
+                    objDwgEntity.tio.LINE.setParent(objDwgEntity);
+                    return objDwgEntity.tio.LINE;
+                }
+                else
+                    return objDwgEntity.tio.LINE;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
@@ -1481,5 +1494,82 @@ public class dec_macros {
 
     static char FIELD_4BIT(Bit_Chain dat, String type, int dxf) {
         return (char)bits.bit_read_4BITS(dat);
+    }
+
+    /** Read bit-double with default. */
+    public static double bit_read_DD(Bit_Chain dat, double defaultValue) {
+        char two_bit_code;
+        byte[] uchar_result;
+
+        two_bit_code = (char)bits.bit_read_BB(dat);
+        if (two_bit_code == 0) {
+            if (bits.CHK_OVERFLOW(dat, (int) bits.bit_nan())) { // CHK_OVERFLOW equivalent
+                return bits.bit_nan();
+            }
+            return defaultValue;
+        }
+        if (two_bit_code == 3) {
+            return bits.bit_read_RD(dat);
+        }
+        if (two_bit_code == 2) {
+            // dbl: 7654 3210
+            // first 2 bits eq (6-7), the rest not (0-5)
+            uchar_result = doubleToByteArray(defaultValue);
+            uchar_result[4] = (byte) bits.bit_read_RC(dat);
+            uchar_result[5] = (byte) bits.bit_read_RC(dat);
+            uchar_result[0] = (byte) bits.bit_read_RC(dat);
+            uchar_result[1] = (byte) bits.bit_read_RC(dat);
+            uchar_result[2] = (byte)bits. bit_read_RC(dat);
+            uchar_result[3] = (byte) bits.bit_read_RC(dat);
+
+            if ( bits.CHK_OVERFLOW(dat, (int)  bits.bit_nan())) {
+                return bits.bit_nan();
+            }
+
+            defaultValue = byteArrayToDouble(uchar_result);
+            return defaultValue;
+        } else { // if (two_bit_code == 1)
+            // first 4 bits eq, only last 4
+            uchar_result = doubleToByteArray(defaultValue);
+            uchar_result[0] = (byte)  bits.bit_read_RC(dat);
+            uchar_result[1] = (byte)  bits.bit_read_RC(dat);
+            uchar_result[2] = (byte)  bits.bit_read_RC(dat);
+            uchar_result[3] = (byte) bits.bit_read_RC(dat);
+
+            if (bits.CHK_OVERFLOW(dat, (int) bits.bit_nan())) {
+                return bits.bit_nan();
+            }
+
+            defaultValue = byteArrayToDouble(uchar_result);
+            return defaultValue;
+        }
+    }
+
+    // Helper method to convert a double to a byte array
+    private static byte[] doubleToByteArray(double value) {
+        long bits = Double.doubleToLongBits(value);
+        return new byte[]{
+                (byte) (bits),
+                (byte) (bits >>> 8),
+                (byte) (bits >>> 16),
+                (byte) (bits >>> 24),
+                (byte) (bits >>> 32),
+                (byte) (bits >>> 40),
+                (byte) (bits >>> 48),
+                (byte) (bits >>> 56)
+        };
+    }
+
+    // Helper method to convert a byte array back to a double
+    private static double byteArrayToDouble(byte[] bytes) {
+        long bits = 0;
+        for (int i = 0; i < 8; i++) {
+            bits |= ((long) bytes[i] & 0xFF) << (i * 8);
+        }
+        return Double.longBitsToDouble(bits);
+    }
+
+    static double FIELD_DD(Bit_Chain dat, double _default, int dxf) {
+        return bit_read_DD(dat,_default);
     }
 }

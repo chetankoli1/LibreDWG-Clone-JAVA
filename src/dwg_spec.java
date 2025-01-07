@@ -2669,4 +2669,142 @@ public class dwg_spec {
 
         return error;
     }
+
+    static int dwg_decode_LINE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                 DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_LINE line = obj.tio.entity.tio.LINE;
+        if(commen.PRE(DWG_VERSION_TYPE.R_10,dat))
+        {
+
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_10,DWG_VERSION_TYPE.R_11,dat))
+        {
+
+        }
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.ENCODER)
+            {
+                line.z_is_zero = line.start.x == 0.0 && line.end.x == 0.0 ? 0 : '1';
+            }
+            if(specs.DXF_OR_PRINT)
+            {
+
+            }
+            else {
+                line.z_is_zero = dec_macros.FIELD_B(dat,"B",0);
+                line.start = new Dwg_Bitcode_3BD();
+                line.start.x = dec_macros.FIELD_RD(dat,"RD",10);
+                line.end = new Dwg_Bitcode_3BD();
+                line.end.x = dec_macros.FIELD_DD(dat,line.start.x,11);
+                line.start.y = dec_macros.FIELD_RD(dat,"RD",20);
+                line.end.y = dec_macros.FIELD_DD(dat,line.start.y,21);
+                if(line.z_is_zero != 0)
+                {
+                    line.start.z = 0.0;
+                    line.end.z = 0.0;
+                }else{
+                    line.start.z = dec_macros.FIELD_DD(dat,line.start.y,30);
+                    line.end.z = dec_macros.FIELD_DD(dat,line.start.z,31);;
+                }
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            line.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+            line.extrusion = new Dwg_Bitcode_3BD();
+            line.extrusion = dec_macros.FIELD_BE(dat,210);
+        }
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_LINE(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        out_json.SUBCLASS(dat,"AcDbLine");
+
+        Dwg_Entity_LINE line = obj.tio.entity.tio.LINE;
+
+        if(commen.PRE(DWG_VERSION_TYPE.R_10,dat))
+        {
+
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_10,DWG_VERSION_TYPE.R_11,dat))
+        {
+
+        }
+        if(commen.PRE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+
+        }
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            if(specs.ENCODER)
+            {
+                line.z_is_zero = line.start.x == 0.0 && line.end.x == 0.0 ? 0 : '1';
+            }
+            if(specs.DXF_OR_PRINT)
+            {
+                if(specs.JSON)
+                {
+                    out_json.FIELD_B(dat,"z_is_zero",line.z_is_zero,0);
+                }
+                out_json.FIELD_3DPOINT(dat,"start",line.start,10);
+                out_json.FIELD_3DPOINT(dat,"end",line.end,10);
+            }
+            else {
+                line.z_is_zero = dec_macros.FIELD_B(dat,"B",0);
+                line.start = new Dwg_Bitcode_3BD();
+                line.start.x = dec_macros.FIELD_RD(dat,"RD",10);
+                line.end = new Dwg_Bitcode_3BD();
+                line.end.x = dec_macros.FIELD_DD(dat,line.start.x,11);
+                line.start.y = dec_macros.FIELD_RD(dat,"RD",20);
+                line.end.y = dec_macros.FIELD_DD(dat,line.start.y,21);
+                if(line.z_is_zero != 0)
+                {
+                    line.start.z = 0.0;
+                    line.end.z = 0.0;
+                }else{
+                    line.start.z = dec_macros.FIELD_DD(dat,line.start.y,30);
+                    line.end.z = dec_macros.FIELD_DD(dat,line.start.z,31);;
+                }
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            line.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+            line.extrusion = new Dwg_Bitcode_3BD();
+            line.extrusion = dec_macros.FIELD_BE(dat,210);
+
+            out_json.FIELD_BT0(dat,"thickness",line.thickness,39);
+            out_json.FIELD_BE(dat,"extrusion",line.extrusion,210);
+        }
+       // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+
+        return error;
+    }
 }

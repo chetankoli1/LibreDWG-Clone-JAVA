@@ -7,7 +7,7 @@ public class specs {
     static boolean ENCODER = false;
     static final boolean PRINT = false;
     static boolean DECODER_OR_ENCODER = false;
-    static final boolean DXF_OR_PRINT = false;
+    static boolean DXF_OR_PRINT = false;
     static final boolean DXF_OR_FREE = false;
     static final boolean DXF = false;
     static boolean JSON = false;

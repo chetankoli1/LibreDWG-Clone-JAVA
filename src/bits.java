@@ -386,6 +386,7 @@ public class bits {
         return result;
     }
 
+
     /** Read 1 raw 64bit long (8 byte, BE).*/
     static long bit_read_RLL(Bit_Chain dat) {
 //        if(dat.bit == 0 && (dat._byte % 8) != 0)
@@ -407,14 +408,12 @@ public class bits {
     }
 
     static BigInteger bit_read_RLL1(Bit_Chain dat) {
-        // Read least and most significant words as unsigned 32-bit
-        long word1 = bit_read_RL(dat) & 0xFFFFFFFFL; // Least significant word
-        long word2 = bit_read_RL(dat) & 0xFFFFFFFFL; // Most significant word
+        long word1 = bit_read_RL(dat) & 0xFFFFFFFFL;
+        long word2 = bit_read_RL(dat) & 0xFFFFFFFFL;
 
-        // Combine as unsigned 64-bit using BigInteger
-        BigInteger high = BigInteger.valueOf(word2).shiftLeft(32); // Shift high bits
-        BigInteger low = BigInteger.valueOf(word1); // Low bits
-        return high.or(low); // Combine
+        BigInteger high = BigInteger.valueOf(word2).shiftLeft(32);
+        BigInteger low = BigInteger.valueOf(word1);
+        return high.or(low);
     }
 
     /** create a Not-A-Number (NaN) without libm dependency */

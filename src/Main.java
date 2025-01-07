@@ -59,6 +59,7 @@ public class Main {
                     macros.IS_DECODER = false;
                     macros.IS_ENCODER = false;
                     specs.DECODER_OR_ENCODER = false;
+                    specs.DXF_OR_PRINT = true;
                     specs.JSON = true;
                     macros.IS_JSON = true;
                     error = out_json.dwg_write_json(dat, objDwgData);

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1019,6 +1020,16 @@ class Dwg_Color
     public char alpha_type;
     public char alpha;
 }
+class Dwg_Bitcode_3BD_BIG
+{
+    public BigDecimal x;
+    public BigDecimal y;
+    public BigDecimal z;
+    Dwg_Bitcode_3BD_BIG()
+    {
+
+    }
+}
 class Dwg_Bitcode_3BD {
     public double x;
     public double y;
@@ -1123,6 +1134,7 @@ class Dwg_Object_Entity
     class Tio{
         public Dwg_Entity_POINT POINT;
         public Dwg_Entity_BLOCK BLOCK;
+        public Dwg_Entity_LINE LINE;
         public Dwg_Entity_ENDBLK ENDBLK;
     }
     Tio tio = new Tio();
@@ -2325,6 +2337,26 @@ class Dwg_Object_VPORT extends Dwg_Object_With_COMMON_TABLE_FIELDS {
     public Dwg_Object_Ref sun;
     public Dwg_Object_Ref named_ucs;
     public Dwg_Object_Ref base_ucs;
+}
+class Dwg_Entity_LINE implements IParentEntity {
+    private Dwg_Object_Entity parent;
+    public char z_is_zero;
+    public Dwg_Bitcode_3BD start;
+    public Dwg_Bitcode_3BD end;
+    public double thickness;
+    public Dwg_Bitcode_3BD extrusion;
+    public Dwg_Bitcode_2RD unknown_r11;
+
+
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
 }
 class Dwg_AuxHeader
 {
