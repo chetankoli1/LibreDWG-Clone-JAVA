@@ -1137,6 +1137,8 @@ class Dwg_Object_Entity
         public Dwg_Entity_LINE LINE;
         public Dwg_Entity_ENDBLK ENDBLK;
         public Dwg_Entity_CIRCLE CIRCLE;
+        public Dwg_Entity_ARC ARC;
+        public Dwg_Entity_TEXT TEXT;
     }
     Tio tio = new Tio();
     public Dwg_Data dwg;
@@ -2376,6 +2378,56 @@ class Dwg_Entity_CIRCLE implements IParentEntity{
     public double radius;
     public double thickness;
     public Dwg_Bitcode_3BD extrusion;
+}
+class Dwg_Entity_ARC implements IParentEntity{
+    private Dwg_Object_Entity parent;
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
+    public Dwg_Bitcode_3BD center;
+    public double radius;
+    public double thickness;
+    public Dwg_Bitcode_3BD extrusion;
+    public double start_angle;
+    public double end_angle;
+}
+class Dwg_Entity_TEXT implements IParentEntity{
+    private Dwg_Object_Entity parent;
+    @Override
+    public Dwg_Object_Entity getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(Dwg_Object_Entity parent) {
+        this.parent = parent;
+    }
+
+
+    public char dataflags;        /*!< r2000+. should be renamed to opts for r11 compat */
+    public double elevation;        /*!< DXF 30 (z coord of 10), when dataflags & 1 */
+    public Dwg_Bitcode_2BD ins_pt;      /*!< DXF 10 */
+    public Dwg_Bitcode_2BD alignment_pt; /*!< DXF 11. optional, when dataflags & 2, i.e 72/73 != 0 */
+    public double thickness;
+    public Dwg_Bitcode_3BD extrusion;     /*!< DXF 39 */
+    public double oblique_angle;   /*!< DXF 51 */
+    public double rotation;        /*!< DXF 50 */
+    public double height;          /*!< DXF 40 */
+    public double width_factor;    /*!< DXF 41 */
+    public String text_value;      /*!< DXF 1 */
+    public int generation;      /*!< DXF 71 */
+    public int horiz_alignment; /*!< DXF 72. options 0-5:
+                                 0 = Left; 1= Center; 2 = Right; 3 = Aligned;
+                                 4 = Middle; 5 = Fit */
+    public int vert_alignment;  /*!< DXF 73. options 0-3:
+                                 0 = Baseline; 1 = Bottom; 2 = Middle; 3 = Top */
+    public Dwg_Object_Ref style;	      /*!< code 5, DXF 7, optional */
 }
 class Dwg_AuxHeader
 {

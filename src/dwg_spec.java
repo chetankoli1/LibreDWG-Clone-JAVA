@@ -2847,4 +2847,82 @@ public class dwg_spec {
 
         return error;
     }
+
+    static int dwg_decode_ARC(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                 DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_ARC arc = obj.tio.entity.tio.ARC;
+        arc.extrusion = new Dwg_Bitcode_3BD();
+
+        arc.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+        arc.extrusion = dec_macros.FIELD_BE(dat,210);
+
+
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_ARC(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        out_json.SUBCLASS(dat,"AcDbCircle");
+
+        Dwg_Entity_ARC arc = obj.tio.entity.tio.ARC;
+
+        out_json.FIELD_BT0(dat,"thickness",arc.thickness,39);
+        out_json.FIELD_BE(dat,"extrusion",arc.extrusion,210);
+
+        // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+
+        return error;
+    }
+
+    static int dwg_decode_TEXT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                                 DWG_OBJECT_TYPE type)
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        dec_macros.dwg_decode_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        Dwg_Entity_TEXT text = obj.tio.entity.tio.TEXT;
+        text.extrusion = new Dwg_Bitcode_3BD();
+
+        text.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
+        text.extrusion = dec_macros.FIELD_BE(dat,210);
+
+
+        dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
+    }
+
+    static int dwg_json_TEXT(String name, Dwg_Object obj, Bit_Chain dat, Dwg_Data objDwgData,
+                               DWG_OBJECT_TYPE type) throws IOException
+    {
+        int error = 0;
+        Bit_Chain hdl_dat = new Bit_Chain(dat);
+        Bit_Chain str_dat = dat;
+        error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
+
+        out_json.SUBCLASS(dat,"AcDbCircle");
+
+        Dwg_Entity_TEXT text = obj.tio.entity.tio.TEXT;
+
+        out_json.FIELD_BT0(dat,"thickness",text.thickness,39);
+        out_json.FIELD_BE(dat,"extrusion",text.extrusion,210);
+
+        // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+
+        return error;
+    }
 }

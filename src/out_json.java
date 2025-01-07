@@ -1033,6 +1033,12 @@ public class out_json {
             case DWG_TYPE_CIRCLE:
                 error = dwg_spec.dwg_json_CIRCLE("CIRCLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_CIRCLE);
                 break;
+            case DWG_TYPE_ARC:
+                error = dwg_spec.dwg_json_ARC("ARC",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ARC);
+                break;
+            case DWG_TYPE_TEXT:
+                error = dwg_spec.dwg_json_TEXT("TEXT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_TEXT);
+                break;
             default:
                 if(obj.type != 0 && obj.type == obj.parent.layout_type)
                 {

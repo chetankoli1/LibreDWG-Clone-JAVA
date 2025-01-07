@@ -879,6 +879,12 @@ memset (&dwg->objfreespace, 0, sizeof (dwg->objfreespace));
             case DWG_OBJECT_TYPE.DWG_TYPE_CIRCLE:
                 error = dwg_spec.dwg_decode_CIRCLE("CIRCLE",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_CIRCLE);
                 break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_ARC:
+                error = dwg_spec.dwg_decode_ARC("ARC",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_ARC);
+                break;
+            case DWG_OBJECT_TYPE.DWG_TYPE_TEXT:
+                error = dwg_spec.dwg_decode_TEXT("TEXT",obj,dat,objDwgData,DWG_OBJECT_TYPE.DWG_TYPE_TEXT);
+                break;
             default:
                 if(obj.type == objDwgData.layout_type)
                 {

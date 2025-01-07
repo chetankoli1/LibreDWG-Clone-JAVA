@@ -1093,6 +1093,24 @@ public class dec_macros {
                 }
                 else
                     return objDwgEntity.tio.CIRCLE;
+            case "ARC":
+                if (objDwgEntity.tio.ARC == null)
+                {
+                    objDwgEntity.tio.ARC = new Dwg_Entity_ARC();
+                    objDwgEntity.tio.ARC.setParent(objDwgEntity);
+                    return objDwgEntity.tio.ARC;
+                }
+                else
+                    return objDwgEntity.tio.ARC;
+            case "TEXT":
+                if (objDwgEntity.tio.TEXT == null)
+                {
+                    objDwgEntity.tio.TEXT = new Dwg_Entity_TEXT();
+                    objDwgEntity.tio.TEXT.setParent(objDwgEntity);
+                    return objDwgEntity.tio.TEXT;
+                }
+                else
+                    return objDwgEntity.tio.TEXT;
             default:
                 throw new IllegalArgumentException("Invalid Type");
         }
