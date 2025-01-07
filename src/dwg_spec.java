@@ -2905,12 +2905,97 @@ public class dwg_spec {
 
         Dwg_Entity_TEXT text = obj.tio.entity.tio.TEXT;
         text.extrusion = new Dwg_Bitcode_3BD();
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            text.elevation = dec_macros.FIELD_BD(dat,"BD",30);
+            text.ins_pt = new Dwg_Bitcode_2RD();
+            text.ins_pt = dec_macros.FIELD_2RD(dat,10);
+            text.alignment_pt = new Dwg_Bitcode_2RD();
+            text.alignment_pt = dec_macros.FIELD_2RD(dat,11);
+            text.extrusion = dec_macros.FIELD_BE(dat,210);
+            text.thickness = dec_macros.FIELD_BD0(dat,"BD",39);
+            text.oblique_angle = dec_macros.FIELD_BD0(dat,"BD",51);
+            text.rotation = dec_macros.FIELD_BD0(dat,"BD",50);
+            text.height = dec_macros.FIELD_BD0(dat,"BD",40);
+            text.width_factor = dec_macros.FIELD_BD0(dat,"BD",41);
+            text.height = dec_macros.FIELD_BD0(dat,"BD",40);
+            text.text_value = dec_macros.FIELD_TV(dat,"TV",1);
+            text.generation = dec_macros.FIELD_BS(dat,"BS",71);
+            text.horiz_alignment = dec_macros.FIELD_BS(dat,"BS",72);
+            text.vert_alignment = dec_macros.FIELD_BS(dat,"BS",73);
+        }
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            text.dataflags = dec_macros.FIELD_RC(dat,"RC",0);
+            if(specs.DXF)
+            {
 
-        text.thickness = dec_macros.FIELD_BT0(dat,"BT",39);
-        text.extrusion = dec_macros.FIELD_BE(dat,210);
+            }else{
+                if((text.dataflags & 0x01) == 0)
+                {
+                    text.elevation = dec_macros.FIELD_BD(dat,"BD",0);
+                }
+                text.ins_pt = dec_macros.FIELD_2RD(dat,0);
+            }
+            if(specs.DXF)
+            {
 
+            }else{
+                if((text.dataflags & 0x02) == 0)
+                {
+                    assert text.ins_pt != null;
+                    text.alignment_pt = dec_macros.FIELD_2DD(dat,text.ins_pt,0);
+                }
+                text.extrusion = dec_macros.FIELD_BE(dat,210);
+                text.thickness = dec_macros.FIELD_BT(dat,"BT",39);
+            }
+            if(specs.DXF)
+            {
 
+            }else{
+                if((text.dataflags & 0x04) == 0)
+                {
+                    text.oblique_angle = dec_macros.FIELD_RD(dat,"RD",0);
+                }
+                if((text.dataflags & 0x08) == 0)
+                {
+                    text.rotation = dec_macros.FIELD_RD(dat,"RD",0);
+                }
+                text.height = dec_macros.FIELD_RD(dat,"RD",0);
+                if((text.dataflags & 0x10) == 0)
+                {
+                    text.width_factor = dec_macros.FIELD_RD(dat,"RD",0);
+                }else{
+                    if(macros.IS_DECODER)
+                    {
+                        text.width_factor = 1.0;
+                    }
+                    text.text_value = dec_macros.FIELD_T(dat,obj,"T",0);
+                }
+            }
+            if((text.dataflags & 0x20) == 0)
+            {
+                text.generation = dec_macros.FIELD_BS(dat,"BS",71);
+            }
+            if((text.dataflags & 0x40) == 0)
+            {
+                text.horiz_alignment = dec_macros.FIELD_BS(dat,"BS",71);
+            }
+            if((text.dataflags & 0x80) == 0)
+            {
+                text.vert_alignment = dec_macros.FIELD_BS(dat,"BS",71);
+            }
+            if(specs.DXF)
+            {
+
+            }
+        }
         dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            text.style = new Dwg_Object_Ref();
+            text.style = dec_macros.FIELD_HANDLE(hdl_dat,obj,objDwgData,5,7);
+        }
         return dec_macros.DWG_ENTITY_END(dat,hdl_dat,str_dat,obj,error);
     }
 
@@ -2922,12 +3007,97 @@ public class dwg_spec {
         Bit_Chain str_dat = dat;
         error = out_json.dwg_json_entity_token(dat, obj, name, type, hdl_dat, str_dat);
 
-        out_json.SUBCLASS(dat,"AcDbCircle");
+        out_json.SUBCLASS(dat,"AcDbText");
 
         Dwg_Entity_TEXT text = obj.tio.entity.tio.TEXT;
+        if(commen.VERSIONS(DWG_VERSION_TYPE.R_13b1,DWG_VERSION_TYPE.R_14,dat))
+        {
+            out_json.FIELD_BD(dat,"elevation",text.elevation,30);
+            out_json.FIELD_2RD(dat,"ins_pt",text.ins_pt,10);
+            out_json.FIELD_2RD(dat,"alignment_pt",text.alignment_pt,11);
+            out_json.FIELD_BE(dat,"extrusion",text.extrusion,210);
+            out_json.FIELD_BD(dat,"thickness",text.thickness,39);
+            out_json.FIELD_BD(dat,"oblique_angle",text.oblique_angle,39);
+            out_json.FIELD_BD(dat,"rotation",text.rotation,39);
+            out_json.FIELD_BD(dat,"height",text.height,39);
+            out_json.FIELD_BD(dat,"width_factor",text.width_factor,39);
+            out_json.FIELD_TV(dat,"text_value",text.text_value,0);
+            out_json.FIELD_BS(dat,"generation",text.generation,0);
+            out_json.FIELD_BS(dat,"horiz_alignment",text.horiz_alignment,0);
+            out_json.FIELD_BS(dat,"vert_alignment",text.vert_alignment,0);
+        }
 
-        out_json.FIELD_BT0(dat,"thickness",text.thickness,39);
-        out_json.FIELD_BE(dat,"extrusion",text.extrusion,210);
+        if(specs.IF_FREE_OR_SINCE(DWG_VERSION_TYPE.R_2000b,dat))
+        {
+            out_json.FIELD_RC("dataflags",text.dataflags,dat,0);
+            if(specs.DXF)
+            {
+
+            }else{
+                if((text.dataflags & 0x01) == 0)
+                {
+                    out_json.FIELD_BD(dat,"elevation",text.elevation,0);
+                }
+                out_json.FIELD_2RD(dat,"ins_pt",text.ins_pt,0);
+            }
+            if(specs.DXF)
+            {
+
+            }else{
+                if((text.dataflags & 0x02) == 0)
+                {
+                   // text.alignment_pt = dec_macros.FIELD_2DD(dat,text.ins_pt,0);
+                    out_json.FIELD_2RD(dat,"alignment_pt",text.alignment_pt,0);
+                }
+                out_json.FIELD_BE(dat,"extrusion",text.extrusion,210);
+                out_json.FIELD_BT0(dat,"thickness",text.thickness,39);
+            }
+            if(specs.DXF)
+            {
+
+            }else{
+                if((text.dataflags & 0x04) == 0)
+                {
+                    out_json.FIELD_RD(dat,"oblique_angle",text.oblique_angle,0);
+                }
+                if((text.dataflags & 0x08) == 0)
+                {
+                    out_json.FIELD_RD(dat,"rotation",text.rotation,0);
+                }
+                out_json.FIELD_RD(dat,"height",text.height,0);
+                if((text.dataflags & 0x10) == 0)
+                {
+                    out_json.FIELD_RD(dat,"width_factor",text.width_factor,0);
+                }else{
+                    if(macros.IS_DECODER)
+                    {
+                        text.width_factor = 1.0;
+                    }
+                    out_json.FIELD_T(dat,"text_value",text.text_value,0);
+                }
+            }
+            if((text.dataflags & 0x20) == 0)
+            {
+                out_json.FIELD_BS(dat,"generation",text.generation,0);
+            }
+            if((text.dataflags & 0x40) == 0)
+            {
+                out_json.FIELD_BS(dat,"horiz_alignment",text.horiz_alignment,0);
+            }
+            if((text.dataflags & 0x80) == 0)
+            {
+                out_json.FIELD_BS(dat,"vert_alignment",text.vert_alignment,0);
+            }
+            if(specs.DXF)
+            {
+
+            }
+        }
+        if(commen.SINCE(DWG_VERSION_TYPE.R_13b1,dat))
+        {
+            out_json.FIELD_HANDLE(dat,"style",text.style,5,0);
+        }
+
 
         // dec_macros.COMMON_ENTITY_HANDLE_DATA(dat,obj);
 

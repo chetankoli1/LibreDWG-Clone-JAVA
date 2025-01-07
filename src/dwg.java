@@ -2412,8 +2412,8 @@ class Dwg_Entity_TEXT implements IParentEntity{
 
     public char dataflags;        /*!< r2000+. should be renamed to opts for r11 compat */
     public double elevation;        /*!< DXF 30 (z coord of 10), when dataflags & 1 */
-    public Dwg_Bitcode_2BD ins_pt;      /*!< DXF 10 */
-    public Dwg_Bitcode_2BD alignment_pt; /*!< DXF 11. optional, when dataflags & 2, i.e 72/73 != 0 */
+    public Dwg_Bitcode_2RD ins_pt;      /*!< DXF 10 */
+    public Dwg_Bitcode_2RD alignment_pt; /*!< DXF 11. optional, when dataflags & 2, i.e 72/73 != 0 */
     public double thickness;
     public Dwg_Bitcode_3BD extrusion;     /*!< DXF 39 */
     public double oblique_angle;   /*!< DXF 51 */

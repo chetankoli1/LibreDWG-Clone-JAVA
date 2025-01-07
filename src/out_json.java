@@ -336,7 +336,6 @@ public class out_json {
         ISFIRST = 1;
     }
 
-    //hey my name is chatan
     static void FIELD_RC(String nam, char val, Bit_Chain dat, int dxf) throws IOException {
         FIELD(nam, val, dat, dxf);
     }
@@ -366,7 +365,7 @@ public class out_json {
                     tempInt = Character.getNumericValue(tempChar);
                     config.streamWriter.write(_path_field(String.valueOf(tempInt)));
                 } else {
-                    config.streamWriter.write(_path_field(String.valueOf((byte) tempChar)));
+                    config.streamWriter.write(_path_field(String.valueOf((int)tempChar)));
                 }
             }
             // Check if `val` is a positive integer

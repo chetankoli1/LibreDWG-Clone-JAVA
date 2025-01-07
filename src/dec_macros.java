@@ -1599,4 +1599,11 @@ public class dec_macros {
     static double FIELD_DD(Bit_Chain dat, double _default, int dxf) {
         return bit_read_DD(dat,_default);
     }
+
+    static Dwg_Bitcode_2RD FIELD_2DD(Bit_Chain dat, Dwg_Bitcode_2RD _defaultpt, int dxf) {
+        Dwg_Bitcode_2RD pt = new Dwg_Bitcode_2RD();
+        pt.x = dec_macros.FIELD_DD(dat,_defaultpt.x,0);
+        pt.y = dec_macros.FIELD_DD(dat,_defaultpt.y,0);
+        return pt;
+    }
 }
