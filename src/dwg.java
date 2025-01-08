@@ -2637,3 +2637,10 @@ interface IParentEntity{
     public Dwg_Object_Entity getParent();
     public void setParent(Dwg_Object_Entity parent);
 }
+class dwg_write {
+    static int opts = 1;
+
+    static void dwg_write_main(int argc, String[] argv) {
+
+    }
+}

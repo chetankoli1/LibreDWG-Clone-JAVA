@@ -11,11 +11,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws FileNotFoundException, IOException {
         int error = 0;
-//        System.out.println("");
-//        System.out.println("");
-//        System.out.println("");
-//        String commandInput = new Scanner(System.in).nextLine();
-        String commandInput = "1";
+        System.out.println("1. Read DWG to Write into JSON");
+        System.out.println("2. Read JSON to write into new DWG");
+        System.out.println("Enter your Option");
+        String commandInput = new Scanner(System.in).nextLine();
+       // String commandInput = "1";
 
         switch (commandInput)
         {
@@ -67,6 +67,16 @@ public class Main {
                     System.out.println("JSON file is Genarated Succesfully");
                 }
                 break;
+            case "2":
+                dirName = new File(args[0]).getParent();
+                fileNameWithExtension = new File(args[0]).getName().replace("[.][^.]+$","");
+                path = dirName + File.separator + fileNameWithExtension;
+                NewFile(path);
+
+                dwg_write.dwg_write_main(8, args);
+                System.out.println("New DWG file is Genarated Succesfully");
+                break;
+
         }
     }
 
