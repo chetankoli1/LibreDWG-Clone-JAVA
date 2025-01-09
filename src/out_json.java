@@ -23,9 +23,10 @@ public class out_json {
         }
 
         dat.bit++;
+        ISFIRST = 1;
 
         config.streamWriter.write("{");
-        config.streamWriter.write("\n  \"created_by\": \"" + commonvar.CreatedBy + "\",\n");
+        config.streamWriter.write("\n  \"created_by\": \"" + commonvar.CreatedBy + "\"");
 
         json_fileheader_write(dat, objDwgData);
 
@@ -60,6 +61,7 @@ public class out_json {
                 }
             }
         }
+        dat.bit--;
         config.streamWriter.write("}");
         config.streamWriter.write("\n");
         return 0;
@@ -74,6 +76,7 @@ public class out_json {
             int error = 0;
             Dwg_Object obj = objDwgData.object[i];
             FIRSTPREFIX(dat); HASH(dat);
+            ISFIRST = 0;
             error = dwg_json_object(dat,obj,objDwgData);
             ENDHASH(dat);
             CLEARFIRST(dat);
@@ -89,6 +92,8 @@ public class out_json {
         int error = 0;
 
         RECORD(dat,"Template");
+        ISFIRST = 0;
+
         error = template_spec.template_spec_write(dat,obj,objDwgData,temp);
         ENDRECORD(dat);
 
@@ -132,6 +137,7 @@ public class out_json {
         {
             Dwg_Class klass = objDwgData.dwg_class[i];
             FIRSTPREFIX(dat); HASH(dat);
+            ISFIRST = 0;
             FIELD_BS(dat,"number",klass.number,0);
             FIELD_TV(dat,"dxfname",new String(klass.dxfname),1);
             FIELD_T(dat,"cppname",new String(klass.cppname),2);
@@ -204,6 +210,7 @@ public class out_json {
             }
             KEY(dat, "THUMBNAILIMAGE");
             HASH(dat);
+            ISFIRST = 0;
             KEY(dat, "size");
             config.streamWriter.write(_obj.size + "");
 
@@ -219,6 +226,7 @@ public class out_json {
 
     private static int json_section_auxheader(Bit_Chain dat, Dwg_Data objDwgData) throws IOException {
         RECORD(dat, "AuxHeader");
+        ISFIRST = 0;
         auxheader_spec.auxheader_spec_write(dat, objDwgData);
         ENDRECORD(dat);
         return 0;

@@ -2640,7 +2640,75 @@ interface IParentEntity{
 class dwg_write {
     static int opts = 1;
 
-    static void dwg_write_main(int argc, String[] argv) {
+    static void dwg_write_main(int argc, String[] argv) throws IOException {
+        int i = 1;
+        int error = 0;
+        Dwg_Data dwg = new Dwg_Data();
+        String fmt = "";
+        String infile = "";
+        String outfile = "";
+        Bit_Chain dat = new Bit_Chain();
+        String version = "";
+        DWG_VERSION_TYPE dwg_version = DWG_VERSION_TYPE.R_2000b;
 
+        int free_outfile = 0;
+        int inputFileIndex = 1;
+        _getopt_data_w the_getopt_data_w = new _getopt_data_w();
+        getopt thegetopts = new getopt();
+        option_w[] long_options = new option_w[9];
+        if(config.HAVE_GETOPT_LONG)
+        {
+            long_options = new option_w[] {
+                    new option_w("verbose", 1, opts, 1), // optional
+                    new option_w("format", 1, 0, 'I'),
+                    new option_w("file", 1, 0, 'o'),
+                    new option_w("as", 1, 0, 'a'),
+                    new option_w("help", 0, 0, 0),
+                    new option_w("overwrite", 0, 0, 'y'),
+                    new option_w("version", 0, 0, 0),
+                    new option_w("force-free", 0, 0, 0),
+                    new option_w("", 0, 0, 0) // Empty string for the last option
+            };
+        }
+        i = the_getopt_data_w.optind;
+        if(the_getopt_data_w.optind < argc)
+        {
+            infile = argv[inputFileIndex];
+            if(!fmt.isBlank() && !fmt.isEmpty())
+            {
+                if(config_write.DISABLE_DXF == 1)
+                {
+                    if(infile.contains(".json") || infile.contains(".JSON"))
+                    {
+                        fmt = "json";
+                    }
+                    else if (infile.contains(".dxfb") || infile.contains(".DXFB"))
+                        fmt = "dxfb";
+                    else if (infile.contains(".dxf") || infile.contains(".DXF"))
+                        fmt = "dxf";
+                    else
+                    {
+                        //fprintf(stderr, "Unknown input format for '%s'\n", infile);
+                    }
+                }
+            }
+        }
+        dwg.opts = opts;
+        if(!infile.isBlank() && !infile.isEmpty())
+        {
+            File file = new File(infile);
+            if(!file.exists())
+            {
+
+            }
+            dat.fh = new RandomAccessFile(infile,"r");
+            if(dat.fh.length() <= 0)
+            {
+
+            }
+            dat.size = dat.fh.length();
+        }else {
+
+        }
     }
 }
