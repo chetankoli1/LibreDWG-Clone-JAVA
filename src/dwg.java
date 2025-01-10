@@ -849,6 +849,31 @@ public class dwg {
             -2,         // BYBLOCK
             -3 };       // BYLWDEFAULT
 
+    static int dat_read_stream(Bit_Chain dat, RandomAccessFile fp) throws IOException {
+        long size = 0;
+        dat.chain = new char[(int)fp.length()];
+        if(dat.chain == null)
+        {
+            fp.close();
+            return DWG_ERROR.DWG_ERR_OUTOFMEM.value;
+        }
+        InputStreamReader reader = new InputStreamReader(new FileInputStream(fp.getFD()), "UTF-8");
+        char[] tempChain = new char[(int) fp.length()];
+        size = reader.read(tempChain, 0, tempChain.length);
+
+        // Convert char[] to byte[] using UTF-8 encoding
+        dat.chain = new String(tempChain).toCharArray();
+
+        if(dat.size == 0)
+        {
+            fp.close();
+            dat.chain = null;
+            return DWG_ERROR.DWG_ERR_IOERROR.value;
+        }
+        reader.close();
+        return 0;
+    }
+
     static class DwgBumpData{
         public char[] chain;
         public long size;
@@ -2709,6 +2734,14 @@ class dwg_write {
             dat.size = dat.fh.length();
         }else {
 
+        }
+        if(config_write.DISABLE_DXF == 0)
+        {
+            if((!fmt.isBlank() && !fmt.isEmpty() && fmt.compareTo("json") > 0) ||
+                    (!infile.isBlank() && !infile.isEmpty() && infile.compareTo(".json") > 0))
+            {
+                error = in_json.dwg_read_json(dat,dwg);
+            }
         }
     }
 }

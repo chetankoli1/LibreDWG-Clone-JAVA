@@ -22,11 +22,10 @@ public class out_json {
             return 1;
         }
 
-        dat.bit++;
-        ISFIRST = 1;
-
         config.streamWriter.write("{");
         config.streamWriter.write("\n  \"created_by\": \"" + commonvar.CreatedBy + "\"");
+        dat.bit++;
+        ISFIRST = 1;
 
         json_fileheader_write(dat, objDwgData);
 
