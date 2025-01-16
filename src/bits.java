@@ -3,7 +3,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Scanner;
-
+//rem
 enum DWG_VERSION_TYPE {
     R_INVALID,
     // Releases based on https://autodesk.blogs.com/between_the_lines/autocad-release-history.html
